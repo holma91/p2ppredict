@@ -12,7 +12,7 @@ export default function Layout({ children }: Props) {
     <div>
       <Header />
       {children}
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
