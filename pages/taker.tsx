@@ -1,11 +1,11 @@
 import type { NextPage } from 'next';
 import styled from 'styled-components';
 
-import {
-  PrimaryButton,
-  SecondaryButton,
-  TertiaryButton,
-} from '../components/Buttons';
+import { mockOptions } from '../data/mockOptions';
+
+interface Props {
+  colored?: boolean;
+}
 
 const Container = styled.div`
   display: grid;
@@ -34,53 +34,29 @@ const Taker: NextPage = () => {
                 <p>EXPIRY</p>
               </div>
             </div>
-            <div className="choice">
+            <ChoiceDiv>
               <div>OVER</div>
               <div>UNDER</div>
-            </div>
+            </ChoiceDiv>
           </SectionHeader>
-          <MarketContainer>
-            <div className="market">
-              <AssetDiv>
-                <p>BTC</p>
-                <p className="live-price">$19003</p>
-              </AssetDiv>
-              <p>$20000</p>
-              <p>07-01</p>
-            </div>
-            <div className="choice">
-              <div>2.10</div>
-              <div>1.90</div>
-            </div>
-          </MarketContainer>
-          <MarketContainer>
-            <div className="market">
-              <AssetDiv>
-                <p>ETH</p>
-                <p className="live-price">$990</p>
-              </AssetDiv>
-              <p>$1000</p>
-              <p>07-01</p>
-            </div>
-            <div className="choice">
-              <div>2.00</div>
-              <div>2.00</div>
-            </div>
-          </MarketContainer>
-          <MarketContainer>
-            <div className="market">
-              <AssetDiv>
-                <p>AVAX</p>
-                <p className="live-price">$13</p>
-              </AssetDiv>
-              <p>$14</p>
-              <p>07-01</p>
-            </div>
-            <div className="choice">
-              <div>1.50</div>
-              <div>3.00</div>
-            </div>
-          </MarketContainer>
+          {mockOptions.slice(0, 3).map((option) => {
+            return (
+              <MarketContainer key={option.id}>
+                <div className="market">
+                  <AssetDiv>
+                    <p>{option.asset.toUpperCase()}</p>
+                    <p className="live-price">${option.current}</p>
+                  </AssetDiv>
+                  <p>${option.strike}</p>
+                  <p>{option.expiry}</p>
+                </div>
+                <ChoiceDiv colored={true}>
+                  <div>{option.over}</div>
+                  <div>{option.under}</div>
+                </ChoiceDiv>
+              </MarketContainer>
+            );
+          })}
           <SectionHeader>
             <div className="section-left">
               <div className="top">
@@ -92,67 +68,29 @@ const Taker: NextPage = () => {
                 <p>EXPIRY</p>
               </div>
             </div>
-            <div className="choice">
+            <ChoiceDiv>
               <div>OVER</div>
               <div>UNDER</div>
-            </div>
+            </ChoiceDiv>
           </SectionHeader>
-          <MarketContainer>
-            <div className="market">
-              <AssetDiv>
-                <p>SOL</p>
-                <p className="live-price">$30</p>
-              </AssetDiv>
-              <p>$33</p>
-              <p>07-03</p>
-            </div>
-            <div className="choice">
-              <div>2.20</div>
-              <div>1.75</div>
-            </div>
-          </MarketContainer>
-          <MarketContainer>
-            <div className="market">
-              <AssetDiv>
-                <p>ETH</p>
-                <p className="live-price">$990</p>
-              </AssetDiv>
-              <p>$1040</p>
-              <p>07-02</p>
-            </div>
-            <div className="choice">
-              <div>2.20</div>
-              <div>1.77</div>
-            </div>
-          </MarketContainer>
-          <MarketContainer>
-            <div className="market">
-              <AssetDiv>
-                <p>AVAX</p>
-                <p className="live-price">$13</p>
-              </AssetDiv>
-              <p>$15</p>
-              <p>07-04</p>
-            </div>
-            <div className="choice">
-              <div>2.00</div>
-              <div>2.00</div>
-            </div>
-          </MarketContainer>
-          <MarketContainer>
-            <div className="market">
-              <AssetDiv>
-                <p>LINK</p>
-                <p className="live-price">$7.12</p>
-              </AssetDiv>
-              <div>$7.5</div>
-              <div>07-05</div>
-            </div>
-            <div className="choice">
-              <div>2.00</div>
-              <div>2.00</div>
-            </div>
-          </MarketContainer>
+          {mockOptions.slice(3).map((option) => {
+            return (
+              <MarketContainer key={option.id}>
+                <div className="market">
+                  <AssetDiv>
+                    <p>{option.asset.toUpperCase()}</p>
+                    <p className="live-price">${option.current}</p>
+                  </AssetDiv>
+                  <p>${option.strike}</p>
+                  <p>{option.expiry}</p>
+                </div>
+                <ChoiceDiv colored={true}>
+                  <div>{option.over}</div>
+                  <div>{option.under}</div>
+                </ChoiceDiv>
+              </MarketContainer>
+            );
+          })}
         </Overview>
       </Left>
       <Right>
@@ -165,7 +103,7 @@ const Taker: NextPage = () => {
 };
 
 const Left = styled.div`
-  height: 90vh;
+  height: 92.75vh;
   overflow-y: scroll;
   color: ${({ theme }) => theme.text.secondary};
 
@@ -216,23 +154,33 @@ const SectionHeader = styled.div`
       font-size: ${({ theme }) => theme.typeScale.smallParagraph};
     }
   }
+`;
 
-  .choice {
-    display: flex;
-    justify-content: space-evenly;
+const ChoiceDiv = styled.div<Props>`
+  color: ${({ colored, theme }) =>
+    colored ? theme.colors.secondary : theme.text.secondary};
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+
+  align-items: center;
+
+  div,
+  p {
     width: 100%;
-
+    height: 100%;
+    display: flex;
+    justify-content: center;
     align-items: center;
+    font-size: ${({ theme }) => theme.typeScale.helperText};
 
-    div,
-    p {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: ${({ theme }) => theme.typeScale.helperText};
+    :hover {
+      background-color: ${({ theme }) => theme.colors.primaryHover};
     }
+  }
+
+  :hover {
+    cursor: pointer;
   }
 `;
 
@@ -246,33 +194,6 @@ const MarketContainer = styled.div`
   h6 {
     font-size: ${({ theme }) => theme.typeScale.smallParagraph};
     font-weight: 500;
-  }
-
-  .choice {
-    color: ${({ theme }) => theme.colors.secondary};
-    display: flex;
-    justify-content: space-evenly;
-    width: 100%;
-
-    align-items: center;
-
-    div,
-    p {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: ${({ theme }) => theme.typeScale.helperText};
-
-      :hover {
-        background-color: ${({ theme }) => theme.colors.primaryHover};
-      }
-    }
-
-    :hover {
-      cursor: pointer;
-    }
   }
 
   .market {
