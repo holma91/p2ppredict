@@ -35,6 +35,12 @@ const bet365Gray = {
   400: '#383838',
   500: '#333333',
   600: '#303030',
+  hover: '#636363',
+};
+
+const bet365Text = {
+  100: 'white',
+  200: '#dddddd',
 };
 
 const neutral = {
@@ -49,11 +55,15 @@ const neutral = {
 export const bet365Theme: DefaultTheme = {
   colors: {
     primary: bet365Green,
+    primaryHover: bet365Gray.hover,
     secondary: bet365Yellow,
     tertiary: bet365GreenHover,
     gray: bet365Gray,
   },
-  text: {},
+  text: {
+    primary: bet365Text[100],
+    secondary: bet365Text[200],
+  },
   font: {
     primary: primaryFont,
   },

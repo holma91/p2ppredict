@@ -23,13 +23,22 @@ const Taker: NextPage = () => {
           <h4>Markets</h4>
         </div>
         <Overview>
-          <div className="section-header">
-            <h6>Expires: Today</h6>
-            <div className="choice">
-              <p>OVER</p>
-              <p>UNDER</p>
+          <SectionHeader>
+            <div className="section-left">
+              <div className="top">
+                <h6>Expires: Today</h6>
+              </div>
+              <div className="bottom">
+                <p>ASSET</p>
+                <p>STRIKE</p>
+                <p>EXPIRY</p>
+              </div>
             </div>
-          </div>
+            <div className="choice">
+              <div>OVER</div>
+              <div>UNDER</div>
+            </div>
+          </SectionHeader>
           <MarketContainer>
             <div className="market">
               <AssetDiv>
@@ -72,13 +81,22 @@ const Taker: NextPage = () => {
               <div>3.00</div>
             </div>
           </MarketContainer>
-          <div className="section-header">
-            <h6>Expires: This Week</h6>
-            <div className="choice">
-              <p>OVER</p>
-              <p>UNDER</p>
+          <SectionHeader>
+            <div className="section-left">
+              <div className="top">
+                <h6>Expires: This Week</h6>
+              </div>
+              <div className="bottom">
+                <p>ASSET</p>
+                <p>STRIKE</p>
+                <p>EXPIRY</p>
+              </div>
             </div>
-          </div>
+            <div className="choice">
+              <div>OVER</div>
+              <div>UNDER</div>
+            </div>
+          </SectionHeader>
           <MarketContainer>
             <div className="market">
               <AssetDiv>
@@ -149,6 +167,7 @@ const Taker: NextPage = () => {
 const Left = styled.div`
   height: 90vh;
   overflow-y: scroll;
+  color: ${({ theme }) => theme.text.secondary};
 
   .header {
     padding: 0.65rem 1.4rem;
@@ -156,7 +175,6 @@ const Left = styled.div`
     justify-content: space-between;
     background-color: ${({ theme }) => theme.colors.gray[300]};
     h4 {
-      color: #f0f0f0;
       font-size: ${({ theme }) => theme.typeScale.header4};
       font-weight: 500;
     }
@@ -168,18 +186,35 @@ const Right = styled.div`
   overflow-y: scroll;
 `;
 
-const MarketContainer = styled.div`
-  border-bottom: 1px solid ${({ theme }) => theme.colors.gray[100]};
-  /* padding: 0.65rem 1.4rem; */
+const SectionHeader = styled.div`
   display: grid;
-  justify-items: stretch;
-  align-items: stretch; //
   grid-template-columns: 1fr 1fr;
-  background-color: ${({ theme }) => theme.colors.gray[200]};
-  color: #f0f0f0;
+  background-color: ${({ theme }) => theme.colors.gray[100]};
   h6 {
     font-size: ${({ theme }) => theme.typeScale.smallParagraph};
-    font-weight: 500;
+    font-weight: 400;
+  }
+
+  .section-left {
+    border-right: 1px solid #606060;
+    padding: 0.65rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    .top {
+      color: ${({ theme }) => theme.colors.tertiary};
+    }
+
+    .bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    p {
+      font-size: ${({ theme }) => theme.typeScale.smallParagraph};
+    }
   }
 
   .choice {
@@ -197,9 +232,41 @@ const MarketContainer = styled.div`
       justify-content: center;
       align-items: center;
       font-size: ${({ theme }) => theme.typeScale.helperText};
+    }
+  }
+`;
+
+const MarketContainer = styled.div`
+  border-bottom: 1px solid ${({ theme }) => theme.colors.gray[100]};
+  display: grid;
+  justify-items: stretch;
+  align-items: stretch; //
+  grid-template-columns: 1fr 1fr;
+  background-color: ${({ theme }) => theme.colors.gray[200]};
+  h6 {
+    font-size: ${({ theme }) => theme.typeScale.smallParagraph};
+    font-weight: 500;
+  }
+
+  .choice {
+    color: ${({ theme }) => theme.colors.secondary};
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+
+    align-items: center;
+
+    div,
+    p {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: ${({ theme }) => theme.typeScale.helperText};
 
       :hover {
-        background-color: #eccccc;
+        background-color: ${({ theme }) => theme.colors.primaryHover};
       }
     }
 
@@ -220,31 +287,7 @@ const MarketContainer = styled.div`
   }
 `;
 
-const Overview = styled.div`
-  .section-header {
-    padding: 0.65rem 1.4rem;
-    display: grid;
-    /* align-items: stretch; */
-    grid-template-columns: 1fr 1fr;
-    background-color: ${({ theme }) => theme.colors.gray[100]};
-    color: #f0f0f0;
-    h6 {
-      font-size: ${({ theme }) => theme.typeScale.smallParagraph};
-      font-weight: 500;
-    }
-
-    .choice {
-      display: flex;
-      justify-content: space-evenly;
-      align-items: center;
-
-      div,
-      p {
-        font-size: ${({ theme }) => theme.typeScale.helperText};
-      }
-    }
-  }
-`;
+const Overview = styled.div``;
 
 const AssetDiv = styled.div`
   display: flex;
