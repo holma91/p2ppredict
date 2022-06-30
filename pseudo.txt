@@ -1,0 +1,10 @@
+left:
+  - all markets
+
+
+
+
+
+right:
+  - chart
+  - markets for the chosen asset

@@ -1,6 +1,7 @@
 import { createGlobalStyle, DefaultTheme } from 'styled-components';
 
-const primaryFont = '"IBM Plex Sans", sans-serif';
+const primaryFont = `-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;`;
 
 const typeScale = {
   header1: '1.8rem',
@@ -9,6 +10,7 @@ const typeScale = {
   header4: '1.2rem',
   header5: '1.1rem',
   paragraph: '1rem',
+  smallParagraph: '0.92rem',
   helperText: '0.8rem',
   copyrightText: '0.7rem',
 };
@@ -21,6 +23,19 @@ const purple = {
   500: '#050449',
 };
 
+const bet365Green = '#126e51';
+const bet365GreenHover = '#26ffbe';
+const bet365Yellow = '#FFE418';
+
+const bet365Gray = {
+  100: '#585858',
+  200: '#505050',
+  300: '#404040',
+  400: '#383838',
+  500: '#333333',
+  600: '#303030',
+};
+
 const neutral = {
   100: '#ffffff',
   200: '#f4f5f7',
@@ -28,6 +43,20 @@ const neutral = {
   400: '#737581',
   500: '#4a4b53',
   600: '#000000',
+};
+
+export const bet365Theme: DefaultTheme = {
+  colors: {
+    primary: bet365Green,
+    secondary: bet365Yellow,
+    tertiary: bet365GreenHover,
+    gray: bet365Gray,
+  },
+  text: {},
+  font: {
+    primary: primaryFont,
+  },
+  typeScale: typeScale,
 };
 
 export const defaultTheme: DefaultTheme = {

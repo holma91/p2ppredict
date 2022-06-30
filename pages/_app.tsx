@@ -1,11 +1,11 @@
 import type { AppProps } from 'next/app'
 import { ThemeProvider } from "styled-components";
-import { defaultTheme, GlobalStyle } from '../design/themes';
+import { defaultTheme, bet365Theme, GlobalStyle } from '../design/themes';
 import Layout from '../components/Layout'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={bet365Theme}>
       <GlobalStyle />
       <Layout>
         <Component {...pageProps} />
