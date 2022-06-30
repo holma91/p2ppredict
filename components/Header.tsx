@@ -13,10 +13,10 @@ const Header = () => {
         </Link>
       </Title>
       <MenuContainer>
-        <div className="choice">
+        <div className="actor">
           <p>maker</p>
         </div>
-        <div className="choice">
+        <div className="actor">
           <p>taker</p>
         </div>
       </MenuContainer>
@@ -39,7 +39,7 @@ const MenuContainer = styled.div`
   align-items: stretch;
   /* gap: 2rem; */
 
-  .choice {
+  .actor {
     display: flex;
     align-items: center;
     color: white;
