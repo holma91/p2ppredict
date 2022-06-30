@@ -9,6 +9,7 @@ const typeScale = {
   header3: '1.4rem',
   header4: '1.2rem',
   header5: '1.1rem',
+  header6: '1rem',
   paragraph: '1rem',
   smallParagraph: '0.92rem',
   helperText: '0.8rem',

@@ -7,20 +7,26 @@ const Header = () => {
     <HeaderContainer>
       <Title>
         <Link href="/">
-          <a>p2p<span>predict</span></a>
+          <a>
+            p2p<span>predict</span>
+          </a>
         </Link>
       </Title>
       <MenuContainer>
-        <div className='choice'><p>maker</p></div>
-        <div className='choice'><p>taker</p></div>
+        <div className="choice">
+          <p>maker</p>
+        </div>
+        <div className="choice">
+          <p>taker</p>
+        </div>
       </MenuContainer>
       <ButtonContainer>
         <Link href="/positions">
-            <a className='signUp'>sign up</a>
+          <a className="signUp">sign up</a>
         </Link>
         <Link href="/positions">
           <PrimaryButton>
-            <a className='logIn'>log in</a>
+            <a className="logIn">log in</a>
           </PrimaryButton>
         </Link>
       </ButtonContainer>
@@ -37,20 +43,18 @@ const MenuContainer = styled.div`
     display: flex;
     align-items: center;
     color: white;
-    /* border-bottom: 4px solid ${({theme}) => theme.colors.primary}; */
+    /* border-bottom: 4px solid ${({ theme }) => theme.colors.primary}; */
 
-    
     p {
       font-weight: 300;
       padding: 0 0.75rem;
     }
-    
+
     :hover {
       cursor: pointer;
-      color: ${({theme}) => theme.colors.tertiary};
-      /* border-bottom: 4px solid ${({theme}) => theme.colors.secondary}; */
+      color: ${({ theme }) => theme.colors.tertiary};
+      /* border-bottom: 4px solid ${({ theme }) => theme.colors.secondary}; */
     }
-
   }
 `;
 
@@ -58,47 +62,46 @@ const HeaderContainer = styled.div`
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: ${({theme}) => theme.colors.primary};
-  border-bottom: 1px solid #ecedef;
+  background-color: ${({ theme }) => theme.colors.primary};
   display: flex;
   justify-content: space-between;
   align-items: stretch;
 `;
 
 const Title = styled.div`
-  padding: 14px 20px;
+  padding: 0.9rem 1.3rem;
 
   a {
     color: white;
     font-weight: 800;
-    font-size: 25px;
+    font-size: ${({ theme }) => theme.typeScale.header2};
     span {
-      color: ${({theme}) => theme.colors.secondary}
+      color: ${({ theme }) => theme.colors.secondary};
     }
   }
 `;
 
 const ButtonContainer = styled.div`
-  padding: 14px 20px;
+  padding: 0.9rem 1.3rem;
 
   display: flex;
-  gap: 15px;
+  gap: 0.9rem;
   justify-content: space-between;
   align-items: center;
 
   .signUp {
-    font-size: ${({theme}) => theme.typeScale.smallParagraph};
+    font-size: ${({ theme }) => theme.typeScale.smallParagraph};
     font-weight: 300;
     color: white;
     :hover {
       cursor: pointer;
-      color: ${({theme}) => theme.colors.tertiary};
+      color: ${({ theme }) => theme.colors.tertiary};
     }
   }
 
   .logIn {
-    font-size: ${({theme}) => theme.typeScale.smallParagraph};
-    color: black
+    font-size: ${({ theme }) => theme.typeScale.smallParagraph};
+    color: black;
   }
 `;
 
