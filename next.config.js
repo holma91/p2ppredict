@@ -4,6 +4,9 @@ const nextConfig = {
   compiler: {
     styledComponents: true,
   },
+  images: {
+    domains: ['assets.vercel.com', 'cryptologos.cc'],
+  },
 };
 
 module.exports = nextConfig;

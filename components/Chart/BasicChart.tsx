@@ -121,7 +121,7 @@ const StyledFlex = styled.div`
 `;
 
 const ButtonMenu2 = styled.div`
-  width: 100%;
+  /* width: 100%; */
   display: flex;
   background-color: #47b5ff;
   border: 1px solid ${({ theme }) => theme.colors.primary};
@@ -132,7 +132,7 @@ type ButtonProps = {
 };
 
 const Button = styled.button<ButtonProps>`
-  padding: 0.5rem 0.75rem;
+  padding: 0.5rem;
   font-weight: 600;
   font-size: 1rem;
   border: 0;

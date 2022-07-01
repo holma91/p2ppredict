@@ -1,6 +1,8 @@
 import type { NextPage } from 'next';
+import Image from 'next/image';
 import styled from 'styled-components';
 
+import { assetToImage } from '../utils/misc';
 import { mockOptions } from '../data/mockOptions';
 
 interface Props {
@@ -14,8 +16,6 @@ const Container = styled.div`
 `;
 
 const Taker: NextPage = () => {
-  const filledArray = Array(100).fill(0);
-
   return (
     <Container>
       <Left>
@@ -44,7 +44,10 @@ const Taker: NextPage = () => {
               <MarketContainer key={option.id}>
                 <div className="market">
                   <AssetDiv>
-                    <p>{option.asset.toUpperCase()}</p>
+                    <div>
+                      <img src={assetToImage[option.asset]} alt="logo" />
+                      <p>{option.asset.toUpperCase()}</p>
+                    </div>
                     <p className="live-price">${option.current}</p>
                   </AssetDiv>
                   <p>${option.strike}</p>
@@ -78,7 +81,10 @@ const Taker: NextPage = () => {
               <MarketContainer key={option.id}>
                 <div className="market">
                   <AssetDiv>
-                    <p>{option.asset.toUpperCase()}</p>
+                    <div>
+                      <img src={assetToImage[option.asset]} alt="logo" />
+                      <p>{option.asset.toUpperCase()}</p>
+                    </div>
                     <p className="live-price">${option.current}</p>
                   </AssetDiv>
                   <p>${option.strike}</p>
@@ -93,7 +99,7 @@ const Taker: NextPage = () => {
           })}
         </Overview>
       </Left>
-      <Right></Right>
+      <Right>sup brah</Right>
     </Container>
   );
 };
@@ -205,6 +211,10 @@ const MarketContainer = styled.div`
     p {
       font-size: ${({ theme }) => theme.typeScale.smallParagraph};
     }
+    :hover {
+      cursor: pointer;
+      background-color: ${({ theme }) => theme.colors.primaryHover};
+    }
   }
 `;
 
@@ -217,6 +227,17 @@ const AssetDiv = styled.div`
 
   .live-price {
     font-size: 0.8rem;
+  }
+
+  div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    img {
+      height: 20px;
+      width: 20px;
+    }
   }
 `;
 
