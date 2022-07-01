@@ -158,7 +158,7 @@ const SectionHeader = styled.div`
 
 const ChoiceDiv = styled.div<Props>`
   color: ${({ colored, theme }) =>
-    colored ? theme.colors.secondary : theme.text.secondary};
+    colored ? theme.colors.tertiary : theme.text.secondary};
   display: flex;
   justify-content: space-evenly;
   width: 100%;

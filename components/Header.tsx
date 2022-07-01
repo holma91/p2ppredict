@@ -1,24 +1,41 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { PrimaryButton, SecondaryButton } from './Buttons';
 
+interface ActorProps {
+  isActive: boolean;
+}
+
 const Header = () => {
+  const router = useRouter();
+  const actor =
+    router.asPath === '/taker'
+      ? 'taker'
+      : router.asPath === '/maker'
+      ? 'maker'
+      : '';
+
+  console.log(actor);
+
   return (
     <HeaderContainer>
       <Title>
         <Link href="/">
-          <a>
-            p2p<span>predict</span>
-          </a>
+          <a>p2ppredict</a>
         </Link>
       </Title>
       <MenuContainer>
-        <div className="actor">
-          <p>maker</p>
-        </div>
-        <div className="actor">
-          <p>taker</p>
-        </div>
+        <Link href="/maker">
+          <Actor isActive={actor === 'maker'}>
+            <a>maker</a>
+          </Actor>
+        </Link>
+        <Link href="/taker">
+          <Actor isActive={actor === 'taker'}>
+            <a>taker</a>
+          </Actor>
+        </Link>
       </MenuContainer>
       <ButtonContainer>
         <Link href="/positions">
@@ -37,24 +54,25 @@ const Header = () => {
 const MenuContainer = styled.div`
   display: flex;
   align-items: stretch;
-  /* gap: 2rem; */
+`;
 
-  .actor {
-    display: flex;
-    align-items: center;
-    color: white;
-    /* border-bottom: 4px solid ${({ theme }) => theme.colors.primary}; */
+const Actor = styled.div<ActorProps>`
+  display: flex;
+  align-items: center;
+  color: white;
+  border-bottom: 3px solid
+    ${({ theme, isActive }) =>
+      isActive ? theme.colors.secondary : theme.colors.primary};
 
-    p {
-      font-weight: 300;
-      padding: 0 0.75rem;
-    }
+  a {
+    font-weight: 300;
+    padding: 0 0.75rem;
+  }
 
-    :hover {
-      cursor: pointer;
-      color: ${({ theme }) => theme.colors.tertiary};
-      /* border-bottom: 4px solid ${({ theme }) => theme.colors.secondary}; */
-    }
+  :hover {
+    cursor: pointer;
+    color: ${({ theme, isActive }) =>
+      isActive ? 'white' : theme.colors.tertiary};
   }
 `;
 
