@@ -176,6 +176,8 @@ const ChoiceDiv = styled.div<Props>`
 
     :hover {
       background-color: ${({ theme }) => theme.colors.primaryHover};
+      background-color: ${({ colored, theme }) =>
+        colored ? theme.colors.primaryHover : theme.colors.gray[100]};
     }
   }
 
