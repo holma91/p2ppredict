@@ -93,14 +93,12 @@ const Taker: NextPage = () => {
           })}
         </Overview>
       </Left>
-      <Right>
-        {filledArray.map((_) => {
-          return <p key={Math.random()}>right side</p>;
-        })}
-      </Right>
+      <Right></Right>
     </Container>
   );
 };
+
+// Chart is a component
 
 const Left = styled.div`
   height: 92.75vh;
