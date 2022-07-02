@@ -2,7 +2,17 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import PriceChart from './PriceChart';
 
-const PriceChartContainer: React.FC = () => {
+type PriceChartContainerProps = {
+  height: number;
+  width: number;
+  chartHeight: number;
+};
+
+const PriceChartContainer = ({
+  height,
+  width,
+  chartHeight,
+}: PriceChartContainerProps) => {
   const inputCurrency = 'bnb';
   const outputCurrency = 'cake';
   const token0Address = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c';
@@ -15,21 +25,25 @@ const PriceChartContainer: React.FC = () => {
   };
 
   return (
-    <Cont>
+    <ChartContainer height={height} width={width}>
       <PriceChart
+        height={height}
+        width={width}
+        chartHeight={chartHeight}
         token0Address={isPairReversed ? token1Address : token0Address}
         token1Address={isPairReversed ? token0Address : token1Address}
         inputCurrency={isPairReversed ? outputCurrency : inputCurrency}
         outputCurrency={isPairReversed ? inputCurrency : outputCurrency}
         currentSwapPrice={currentSwapPrice}
       />
-    </Cont>
+    </ChartContainer>
   );
 };
 
-const Cont = styled.div`
-  height: 500px;
-  width: 900px;
+const ChartContainer = styled.div<{ height: number; width: number }>`
+  display: flex;
+  height: ${({ height }) => height + 'px'};
+  width: ${({ width }) => width + 'px'};
 `;
 
 export default PriceChartContainer;

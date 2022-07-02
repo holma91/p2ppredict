@@ -1,18 +1,24 @@
 import { useState, memo } from 'react';
 import styled from 'styled-components';
 import { getTimeWindowChange } from './utils/utils';
-import { prices } from '../../data/mockPrices';
+import { getPrices } from '../../data/mockPrices';
 import SwapLineChart from './SwapLineChart';
 
 type BasicChartProps = {
-  token0Address: any;
-  token1Address: any;
-  inputCurrency: any;
-  outputCurrency: any;
+  height: number;
+  width: number;
+  chartHeight: number;
+  token0Address: string;
+  token1Address: string;
+  inputCurrency: string;
+  outputCurrency: string;
   currentSwapPrice: any;
 };
 
 const BasicChart = ({
+  height,
+  width,
+  chartHeight,
   token0Address,
   token1Address,
   inputCurrency,
@@ -21,7 +27,9 @@ const BasicChart = ({
 }: BasicChartProps) => {
   const timeWindow = 0;
 
-  const pairPrices = prices;
+  const pairPrices = getPrices();
+  console.log(pairPrices);
+
   const pairId = '0x0ed7e52944161450477ee417de9cd3a859b14fd0';
 
   const [hoverValue, setHoverValue] = useState<number | undefined>();
@@ -29,7 +37,6 @@ const BasicChart = ({
   const valueToDisplay = hoverValue || pairPrices[pairPrices.length - 1]?.value;
   const { changePercentage, changeValue } = getTimeWindowChange(pairPrices);
   const isChangePositive = changeValue >= 0;
-  const chartHeight = '378px';
 
   const locale = 'en-US';
   const currentDate = new Date().toLocaleString(locale, {
@@ -45,10 +52,11 @@ const BasicChart = ({
       <StyledFlex>
         <div className="inner">
           <div className="inner-inner">
-            <span className="price">72.01</span>
-            <span className="change">+0.940 (1.32%)</span>
+            <span className="price">{valueToDisplay.toFixed(2)}</span>
+            <span className="change">
+              +{changeValue.toFixed(2)} ({changePercentage})
+            </span>
           </div>
-
           <div className="date">{hoverDate || currentDate}</div>
         </div>
         <div>
@@ -74,11 +82,11 @@ const BasicChart = ({
 };
 
 type BoxProps = {
-  height: string;
+  height: number;
 };
 
 const Box = styled.div<BoxProps>`
-  height: ${({ height }) => height};
+  height: ${({ height }) => height + 'px'};
   width: 100%;
   padding: 1rem;
 `;

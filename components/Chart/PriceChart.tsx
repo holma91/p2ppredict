@@ -2,21 +2,21 @@ import styled from 'styled-components';
 import BasicChart from './BasicChart';
 import { assetToImage } from '../../utils/misc';
 
-const StyledPriceChart = styled.div`
-  border-radius: 0.2rem;
-  padding-top: 0.5rem;
-  background-color: ${({ theme }) => `${theme.colors.gray[10]}`};
-`;
-
 type PriceChartProps = {
-  inputCurrency: any;
-  outputCurrency: any;
-  token0Address: any;
-  token1Address: any;
+  height: number;
+  width: number;
+  chartHeight: number;
+  inputCurrency: string;
+  outputCurrency: string;
+  token0Address: string;
+  token1Address: string;
   currentSwapPrice: any;
 };
 
 const PriceChart = ({
+  height,
+  width,
+  chartHeight,
   inputCurrency,
   outputCurrency,
   token0Address,
@@ -33,6 +33,9 @@ const PriceChart = ({
         </div>
       </StyledFlex>
       <BasicChart
+        height={height}
+        width={width}
+        chartHeight={chartHeight}
         token0Address={token0Address}
         token1Address={token1Address}
         inputCurrency={inputCurrency}
@@ -42,6 +45,14 @@ const PriceChart = ({
     </StyledPriceChart>
   );
 };
+
+const StyledPriceChart = styled.div`
+  width: 100%;
+  height: 100%;
+  border-radius: 0.2rem;
+  padding-top: 0.5rem;
+  background-color: ${({ theme }) => `${theme.colors.gray[10]}`};
+`;
 
 const StyledFlex = styled.div`
   display: flex;

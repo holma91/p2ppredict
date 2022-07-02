@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import { assetToImage } from '../utils/misc';
 import { mockOptions } from '../data/mockOptions';
+import PriceChartContainer from '../components/Chart/PriceChartContainer';
 
 interface Props {
   colored?: boolean;
@@ -99,12 +100,25 @@ const Taker: NextPage = () => {
           })}
         </Overview>
       </Left>
-      <Right>sup brah</Right>
+      <Right>
+        <PriceChartContainer
+          height={375}
+          width={500}
+          chartHeight={240}
+        ></PriceChartContainer>
+      </Right>
     </Container>
   );
 };
 
-// Chart is a component
+const Right = styled.div`
+  height: 90vh;
+  overflow-y: scroll;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
 const Left = styled.div`
   height: 92.75vh;
@@ -121,11 +135,6 @@ const Left = styled.div`
       font-weight: 500;
     }
   }
-`;
-
-const Right = styled.div`
-  height: 90vh;
-  overflow-y: scroll;
 `;
 
 const SectionHeader = styled.div`
