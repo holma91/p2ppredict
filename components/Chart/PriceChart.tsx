@@ -1,66 +1,34 @@
 import styled from 'styled-components';
 import BasicChart from './BasicChart';
+import { assetToImage } from '../../utils/misc';
 
-const StyledPriceChart = styled.div<{
-  $isDark: boolean;
-  $isExpanded: boolean;
-  $isFullWidthContainer?: boolean;
-}>`
-  border: none;
+const StyledPriceChart = styled.div`
   border-radius: 0.2rem;
-  padding-top: 36px;
-
-  padding-top: 8px;
-  background: ${({ $isDark }) =>
-    $isDark ? 'rgba(39, 38, 44, 0.5)' : 'rgba(255, 255, 255, 0.5)'};
-  border: ${({ theme }) => `1px solid ${theme.colors.cardBorder}`};
-  width: '70%';
-  height: '516px';
+  padding-top: 0.5rem;
+  background-color: ${({ theme }) => `${theme.colors.gray[10]}`};
 `;
 
 type PriceChartProps = {
   inputCurrency: any;
   outputCurrency: any;
-  isDark: any;
-  isFullWidthContainer: any;
   token0Address: any;
   token1Address: any;
   currentSwapPrice: any;
 };
 
-const StyledFlex = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 0.5rem 1.5rem;
-
-  .styledFlex-inner {
-    display: flex;
-    align-items: center;
-
-    .chosen-assets {
-      font-size: ${({ theme }) => theme.typeScale.paragraph};
-      font-weight: 600;
-    }
-  }
-`;
-
 const PriceChart = ({
   inputCurrency,
   outputCurrency,
-  isDark,
-  isFullWidthContainer,
   token0Address,
   token1Address,
   currentSwapPrice,
 }: PriceChartProps) => {
   return (
-    <StyledPriceChart
-      $isDark={isDark}
-      $isExpanded={false}
-      $isFullWidthContainer={isFullWidthContainer}
-    >
+    <StyledPriceChart>
       <StyledFlex>
         <div className="styledFlex-inner">
+          <img src={assetToImage['bnb']} alt="logo" />
+          <img src={assetToImage['btc']} alt="logo" />
           <div className="chosen-assets">BNB/CAKE</div>
         </div>
       </StyledFlex>
@@ -74,5 +42,27 @@ const PriceChart = ({
     </StyledPriceChart>
   );
 };
+
+const StyledFlex = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 1.5rem;
+
+  .styledFlex-inner {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    .chosen-assets {
+      font-size: ${({ theme }) => theme.typeScale.header4};
+      font-weight: 600;
+    }
+
+    img {
+      height: 27px;
+      width: 27px;
+    }
+  }
+`;
 
 export default PriceChart;

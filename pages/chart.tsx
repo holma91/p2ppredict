@@ -124,27 +124,16 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
   height: 100vh;
 `;
 
 const Maker: NextPage = () => {
   return (
-    <>
-      <Container>
-        <PriceChartContainer></PriceChartContainer>
-      </Container>
-    </>
+    <Container>
+      <PriceChartContainer></PriceChartContainer>
+    </Container>
   );
 };
-
-interface BoxProps {
-  height: string;
-  width: string;
-}
-
-const Box = styled.div<BoxProps>`
-  height: ${({ height }) => height};
-  width: ${({ width }) => width};
-`;
 
 export default Maker;
