@@ -25,11 +25,17 @@ const priceFetcher = async ({ queryKey }: any) => {
 	const url = `https://api.coingecko.com/api/v3/coins/${asset0}/market_chart/range?vs_currency=${asset1}&from=${from}&to=${to}`;
 
 	const response = await fetch(url);
-	const prices = (await response.json()).prices;
+	let prices: number[][] = (await response.json()).prices;
 
 	// do processing here
+	const processedPrices = prices.map(moment => {
+		return {
+			time: new Date(moment[0]),
+			value: moment[1],
+		};
+	});
 
-	return prices;
+	return processedPrices;
 };
 
 export const useFetchPrices = (asset0: string, asset1: string, timespan: string) => {

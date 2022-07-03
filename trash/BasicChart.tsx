@@ -16,6 +16,13 @@ type BasicChartProps = {
 	currentSwapPrice: any;
 };
 
+const timeWindowToNumber: { [key: string]: number } = {
+	'24H': 0,
+	'1W': 1,
+	'1M': 2,
+	'1Y': 3,
+};
+
 const BasicChart = ({
 	height,
 	width,
@@ -26,17 +33,15 @@ const BasicChart = ({
 	outputCurrency,
 	currentSwapPrice,
 }: BasicChartProps) => {
-	const timeWindow = 0;
+	const [assetValue, setAssetValue] = useState('bitcoin');
+	const [timeWindowValue, setTimeWindowValue] = useState('24H');
 
-	// get data here, access to: asset, timespan
-	const pairPrices = getPrices();
-
-	const pairId = '0x0ed7e52944161450477ee417de9cd3a859b14fd0';
+	const { prices = [], isLoading, isError } = useFetchPrices(assetValue, 'usd', timeWindowValue);
 
 	const [hoverValue, setHoverValue] = useState<number | undefined>();
 	const [hoverDate, setHoverDate] = useState<string | undefined>();
-	const valueToDisplay = hoverValue || pairPrices[pairPrices.length - 1]?.value;
-	const { changePercentage, changeValue } = getTimeWindowChange(pairPrices);
+	const valueToDisplay = hoverValue || (prices && prices[prices.length - 1]?.value);
+	const { changePercentage, changeValue } = getTimeWindowChange(prices);
 	const isChangePositive = changeValue >= 0;
 
 	const locale = 'en-US';
@@ -48,30 +53,24 @@ const BasicChart = ({
 		minute: '2-digit',
 	});
 
+	const timeWindow = timeWindowToNumber[timeWindowValue];
+
 	return (
 		<>
 			<StyledFlex>
 				<div className="inner">
 					<div className="inner-inner">
-						<span className="price">{valueToDisplay.toFixed(2)}</span>
+						<span className="price">{valueToDisplay && valueToDisplay.toFixed(2)}</span>
 						<span className="change">
 							+{changeValue.toFixed(2)} ({changePercentage})
 						</span>
 					</div>
 					<div className="date">{hoverDate || currentDate}</div>
 				</div>
-				<div>
-					<ButtonMenu2>
-						<Button active={timeWindow === 0}>24H</Button>
-						<Button active={false}>1W</Button>
-						<Button active={false}>1M</Button>
-						<Button active={false}>1Y</Button>
-					</ButtonMenu2>
-				</div>
 			</StyledFlex>
 			<Box height={chartHeight}>
 				<SwapLineChart
-					data={pairPrices}
+					data={prices}
 					setHoverValue={setHoverValue}
 					setHoverDate={setHoverDate}
 					isChangePositive={isChangePositive}
@@ -126,31 +125,6 @@ const StyledFlex = styled.div`
 			font-weight: 600;
 			padding-bottom: 0.25rem;
 		}
-	}
-`;
-
-const ButtonMenu2 = styled.div`
-	/* width: 100%; */
-	display: flex;
-	background-color: #47b5ff;
-	border: 1px solid ${({ theme }) => theme.colors.primary};
-`;
-
-type ButtonProps = {
-	active: boolean;
-};
-
-const Button = styled.button<ButtonProps>`
-	padding: 0.5rem;
-	font-weight: 600;
-	font-size: 1rem;
-	border: 0;
-	background-color: ${({ theme, active }) => (active ? theme.colors.primary : 'inherit')};
-	color: ${({ theme, active }) => (active ? 'white' : 'inherit')};
-
-	:hover {
-		cursor: pointer;
-		color: ${({ theme }) => theme.colors.primaryHover};
 	}
 `;
 
