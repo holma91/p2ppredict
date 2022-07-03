@@ -30,7 +30,6 @@ const BasicChart = ({
 
 	// get data here, access to: asset, timespan
 	const pairPrices = getPrices();
-	console.log(pairPrices);
 
 	const pairId = '0x0ed7e52944161450477ee417de9cd3a859b14fd0';
 

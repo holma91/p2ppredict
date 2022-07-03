@@ -11,7 +11,9 @@ const fetcher = async ({ queryKey }: any) => {
 
 export default function Rquery() {
 	const [repo, setRepo] = useState('react-query');
-	const { isLoading, isError, error, data } = useQuery(['repoData', { repo: repo }], fetcher);
+	const { isLoading, isError, error, data } = useQuery(['repoData', { repo: repo }], fetcher, {
+		staleTime: Infinity,
+	});
 
 	if (isLoading) return 'Loading...';
 

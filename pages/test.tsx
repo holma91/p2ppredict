@@ -7,7 +7,7 @@ export default function Test() {
 	const [assetValue, setAssetValue] = useState('bitcoin');
 	const [timeWindowValue, setTimeWindowValue] = useState('24H');
 
-	const { prices, loading, error } = useFetchPrices(assetValue, 'usd', timeWindowValue);
+	const { prices, isLoading, isError } = useFetchPrices(assetValue, 'usd', timeWindowValue);
 	console.log(prices);
 
 	return (
@@ -27,7 +27,13 @@ export default function Test() {
 					<option value="1Y">1Y</option>
 				</select>
 			</div>
-			<PriceChartContainer height={375} width={500} chartHeight={240} />
+			{isError ? (
+				<p>error!</p>
+			) : isLoading ? (
+				<p>loading</p>
+			) : (
+				<PriceChartContainer height={375} width={500} chartHeight={240} />
+			)}
 			{/* <pre>{prices && JSON.parse(prices)}</pre> */}
 		</Container>
 	);

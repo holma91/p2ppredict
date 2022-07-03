@@ -1,4 +1,3 @@
-import useSWR, { Key, Fetcher } from 'swr';
 import { useQuery } from 'react-query';
 
 const secondsInADay = 60 * 24;
@@ -6,7 +5,10 @@ const secondsInAWeek = 60 * 24 * 7;
 const secondsInAMonth = 60 * 24 * 7 * 30;
 const secondsInAYear = 60 * 24 * 7 * 30 * 12;
 
-const priceFetcher = async (asset0: string, asset1: string, timespan: string) => {
+const priceFetcher = async ({ queryKey }: any) => {
+	console.log("aaaaahhhhh i'm fetchingggggg");
+
+	const [_key, { asset0, asset1, timespan }] = queryKey;
 	let subtractValue;
 	if (timespan === '1W') {
 		subtractValue = secondsInAWeek;
@@ -30,14 +32,14 @@ const priceFetcher = async (asset0: string, asset1: string, timespan: string) =>
 	return prices;
 };
 
-export const useFetchPrices = (asset0: Key, asset1: Key, timespan: Key) => {
-	const { data, error } = useSWR([asset0, asset1, timespan], priceFetcher);
-
-	const loading = !data && !error;
+export const useFetchPrices = (asset0: string, asset1: string, timespan: string) => {
+	const { isLoading, isError, data } = useQuery(['prices', { asset0, asset1, timespan }], priceFetcher, {
+		staleTime: Infinity,
+	});
 
 	return {
 		prices: data,
-		loading,
-		error,
+		isLoading,
+		isError,
 	};
 };
