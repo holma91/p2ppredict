@@ -1,4 +1,5 @@
 import useSWR, { Key, Fetcher } from 'swr';
+import { useQuery } from 'react-query';
 
 const secondsInADay = 60 * 24;
 const secondsInAWeek = 60 * 24 * 7;
