@@ -28,15 +28,17 @@ export default function Test() {
 			<div>
 				<label htmlFor="assets">Choose asset:</label>
 				<select value={asset0.symbol} name="assets" onChange={e => handleAssetChange(0, e.target.value)}>
-					<option value="bitcoin">btc</option>
-					<option value="ethereum">eth</option>
-					<option value="binancecoin">bnb</option>
+					<option value="btc">btc</option>
+					<option value="eth">eth</option>
+					<option value="bnb">bnb</option>
 				</select>
 			</div>
-			<PriceChartContainer height={375} width={500} chartHeight={240} asset0={asset0} asset1={asset1} />
+			<PriceChartContainer height={500} width={700} chartHeight={365} asset0={asset0} asset1={asset1} />
 		</Container>
 	);
 }
+
+// 375, 500, 240
 
 const Container = styled.div`
 	display: flex;

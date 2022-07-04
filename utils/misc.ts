@@ -2,7 +2,8 @@ export const timeWindowToNumber: { [key: string]: number } = {
 	'24H': 0,
 	'1W': 1,
 	'1M': 2,
-	'1Y': 3,
+	'3M': 3,
+	'1Y': 4,
 };
 
 export const symbolToCoingeckoId: { [key: string]: string } = {

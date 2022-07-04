@@ -41,7 +41,9 @@ const PriceChartContainer = ({ height, width, chartHeight, asset0, asset1 }: Pri
 					<div className="styledFlex-inner">
 						<img src={assetToImage[asset0.symbol]} alt="logo" />
 						{asset1.symbol !== 'usd' && <img src={assetToImage[asset1.symbol]} alt="logo" />}
-						<div className="chosen-assets">BTC/USD</div>
+						<div className="chosen-assets">
+							{asset0.symbol.toUpperCase()}/{asset1.symbol.toUpperCase()}
+						</div>
 					</div>
 					<div>
 						<ButtonMenu2>
@@ -54,6 +56,9 @@ const PriceChartContainer = ({ height, width, chartHeight, asset0, asset1 }: Pri
 							<Button active={timeWindow === '1M'} onClick={() => setTimeWindow('1M')}>
 								1M
 							</Button>
+							<Button active={timeWindow === '3M'} onClick={() => setTimeWindow('3M')}>
+								3M
+							</Button>
 							<Button active={timeWindow === '1Y'} onClick={() => setTimeWindow('1Y')}>
 								1Y
 							</Button>
@@ -64,9 +69,9 @@ const PriceChartContainer = ({ height, width, chartHeight, asset0, asset1 }: Pri
 					<div className="inner">
 						<div className="inner-inner">
 							<span className="price">{valueToDisplay && valueToDisplay.toFixed(2)}</span>
-							<span className="change">
-								+{changeValue.toFixed(2)} ({changePercentage})
-							</span>
+							<Change change={changeValue}>
+								{changeValue.toFixed(2)} ({changePercentage}%)
+							</Change>
 						</div>
 						<div className="date">{hoverDate || currentDate}</div>
 					</div>
@@ -84,6 +89,13 @@ const PriceChartContainer = ({ height, width, chartHeight, asset0, asset1 }: Pri
 		</ChartContainer>
 	);
 };
+
+const Change = styled.span<{ change: number }>`
+	font-size: 1.25rem;
+	font-weight: 600;
+	padding-bottom: 0.25rem;
+	color: ${({ theme, change }) => (change > 0 ? theme.colors.green : theme.colors.red)};
+`;
 
 const ChartContainer = styled.div<{ height: number; width: number }>`
 	display: flex;
@@ -105,7 +117,6 @@ const ButtonMenu2 = styled.div`
 	/* width: 100%; */
 	display: flex;
 	background-color: #47b5ff;
-	border: 1px solid ${({ theme }) => theme.colors.primary};
 `;
 
 type ButtonProps = {
@@ -122,16 +133,17 @@ const Button = styled.button<ButtonProps>`
 
 	:hover {
 		cursor: pointer;
-		color: ${({ theme }) => theme.colors.primaryHover};
+		color: ${({ theme, active }) => (active ? '' : theme.colors.primary)};
 	}
 `;
 
 const StyledPriceChart = styled.div`
+	color: ${({ theme }) => `${theme.text.primary}`};
 	width: 100%;
 	height: 100%;
 	border-radius: 0.2rem;
 	padding-top: 0.5rem;
-	background-color: ${({ theme }) => `${theme.colors.gray[10]}`};
+	background-color: ${({ theme }) => `${theme.colors.gray[200]}`};
 `;
 
 const StyledFlex = styled.div`
@@ -172,7 +184,7 @@ const StyledFlexV2 = styled.div`
 	.date {
 		font-size: 0.9rem;
 		font-weight: 400;
-		color: ${({ theme }) => theme.colors.primary};
+		color: ${({ theme }) => theme.text.secondary};
 	}
 
 	.inner-inner {
@@ -183,12 +195,6 @@ const StyledFlexV2 = styled.div`
 		.price {
 			font-size: 2.5rem;
 			font-weight: 600;
-		}
-
-		.change {
-			font-size: 1.25rem;
-			font-weight: 600;
-			padding-bottom: 0.25rem;
 		}
 	}
 `;

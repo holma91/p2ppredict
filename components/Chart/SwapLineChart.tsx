@@ -5,6 +5,7 @@ enum PairDataTimeWindowEnum {
 	DAY,
 	WEEK,
 	MONTH,
+	MONTHS,
 	YEAR,
 }
 
@@ -58,6 +59,10 @@ const dateFormattingByTimewindow: Record<PairDataTimeWindowEnum, Intl.DateTimeFo
 		day: '2-digit',
 	},
 	[PairDataTimeWindowEnum.MONTH]: {
+		month: 'short',
+		day: '2-digit',
+	},
+	[PairDataTimeWindowEnum.MONTHS]: {
 		month: 'short',
 		day: '2-digit',
 	},
