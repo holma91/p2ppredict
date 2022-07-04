@@ -16,7 +16,6 @@ type PriceChartContainerProps = {
 
 const PriceChartContainer = ({ height, width, chartHeight, asset0, asset1 }: PriceChartContainerProps) => {
 	const [timeWindow, setTimeWindow] = useState('24H');
-
 	const { prices = [], isLoading, isError } = useFetchPriceData(asset0.coingeckoId, asset1.coingeckoId, timeWindow);
 
 	const [hoverValue, setHoverValue] = useState<number | undefined>();
