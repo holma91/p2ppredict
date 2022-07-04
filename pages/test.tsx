@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import PriceChartContainer from '../components/Chart/PriceChartContainer';
-import { useFetchPrices } from '../hooks/useFetchPrices';
 import type { Token } from '../types';
 import { symbolToCoingeckoId } from '../utils/misc';
 

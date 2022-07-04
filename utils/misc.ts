@@ -6,6 +6,19 @@ export const timeWindowToNumber: { [key: string]: number } = {
 	'1Y': 4,
 };
 
+export const assets = [
+	'bitcoin',
+	'ethereum',
+	'binancecoin',
+	'avalanche-2',
+	'solana',
+	'chainlink',
+	'algorand',
+	'matic-network',
+	'tether',
+	'usd-coin',
+];
+
 export const symbolToCoingeckoId: { [key: string]: string } = {
 	btc: 'bitcoin',
 	eth: 'ethereum',

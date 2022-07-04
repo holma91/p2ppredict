@@ -1,12 +1,12 @@
 import type { NextPage } from 'next';
-import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import type { Token } from '../types';
 
-import { assetToImage } from '../utils/misc';
+import { assetToImage, assets, symbolToCoingeckoId } from '../utils/misc';
 import { mockOptions } from '../data/mockOptions';
 import PriceChartContainer from '../components/Chart/PriceChartContainer';
+import { useFetchPrices } from '../hooks/useFetchPrices';
 
 interface Props {
 	colored?: boolean;
@@ -22,6 +22,10 @@ const Taker: NextPage = () => {
 	const [asset0, setAsset0] = useState<Token>({ symbol: 'btc', coingeckoId: 'bitcoin' });
 	const [asset1, setAsset1] = useState<Token>({ symbol: 'usd', coingeckoId: 'usd' });
 
+	const { prices, isLoading, isError } = useFetchPrices(assets);
+
+	console.log(prices);
+
 	useEffect(() => {
 		const handleResizeWindow = () => setScreenWidth(window.innerWidth);
 		window.addEventListener('resize', handleResizeWindow);
@@ -30,8 +34,6 @@ const Taker: NextPage = () => {
 			window.removeEventListener('resize', handleResizeWindow);
 		};
 	}, []);
-
-	console.log(screenWidth);
 
 	let dimensions = { height: 375, width: 500, chartHeight: 240 };
 	if (screenWidth < 1100) {
@@ -72,7 +74,9 @@ const Taker: NextPage = () => {
 											<img src={assetToImage[option.asset]} alt="logo" />
 											<p>{option.asset.toUpperCase()}</p>
 										</div>
-										<p className="live-price">${option.current}</p>
+										<p className="live-price">
+											{isLoading ? '' : `$${prices[symbolToCoingeckoId[option.asset]].usd}`}
+										</p>
 									</AssetDiv>
 									<p>${option.strike}</p>
 									<p>{option.expiry}</p>
@@ -109,7 +113,9 @@ const Taker: NextPage = () => {
 											<img src={assetToImage[option.asset]} alt="logo" />
 											<p>{option.asset.toUpperCase()}</p>
 										</div>
-										<p className="live-price">${option.current}</p>
+										<p className="live-price">
+											{isLoading ? '' : `$${prices[symbolToCoingeckoId[option.asset]].usd}`}
+										</p>
 									</AssetDiv>
 									<p>${option.strike}</p>
 									<p>{option.expiry}</p>

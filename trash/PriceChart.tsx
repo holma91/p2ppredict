@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { useState, memo } from 'react';
 import { getTimeWindowChange } from '../components/Chart/utils/utils';
 import SwapLineChart from '../components/Chart/SwapLineChart';
-import { useFetchPrices } from '../hooks/useFetchPrices';
+import { useFetchPriceData } from '../hooks/useFetchPriceData';
 import { assetToImage, timeWindowToNumber } from '../utils/misc';
 
 type PriceChartProps = {
@@ -17,7 +17,7 @@ const PriceChart = ({ height, width, chartHeight, currentSwapPrice }: PriceChart
 	const [asset1, setAsset1] = useState('usd');
 	const [timeWindowValue, setTimeWindowValue] = useState('24H');
 
-	const { prices = [], isLoading, isError } = useFetchPrices(asset0, asset1, timeWindowValue);
+	const { prices = [], isLoading, isError } = useFetchPriceData(asset0, asset1, timeWindowValue);
 
 	const [hoverValue, setHoverValue] = useState<number | undefined>();
 	const [hoverDate, setHoverDate] = useState<string | undefined>();

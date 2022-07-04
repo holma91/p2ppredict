@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { getTimeWindowChange } from './utils/utils';
 import SwapLineChart from './SwapLineChart';
-import { useFetchPrices } from '../../hooks/useFetchPrices';
+import { useFetchPriceData } from '../../hooks/useFetchPriceData';
 import { assetToImage, timeWindowToNumber } from '../../utils/misc';
 import type { Token } from '../../types';
 
@@ -26,7 +26,7 @@ const currentDate = new Date().toLocaleString(locale, {
 const PriceChartContainer = ({ height, width, chartHeight, asset0, asset1 }: PriceChartContainerProps) => {
 	const [timeWindow, setTimeWindow] = useState('24H');
 
-	const { prices = [], isLoading, isError } = useFetchPrices(asset0.coingeckoId, asset1.coingeckoId, timeWindow);
+	const { prices = [], isLoading, isError } = useFetchPriceData(asset0.coingeckoId, asset1.coingeckoId, timeWindow);
 
 	const [hoverValue, setHoverValue] = useState<number | undefined>();
 	const [hoverDate, setHoverDate] = useState<string | undefined>();
