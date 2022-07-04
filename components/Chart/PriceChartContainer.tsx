@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { getTimeWindowChange } from './utils/utils';
 import SwapLineChart from './SwapLineChart';
@@ -14,6 +14,15 @@ type PriceChartContainerProps = {
 	asset1: Token;
 };
 
+const locale = 'en-US';
+const currentDate = new Date().toLocaleString(locale, {
+	year: 'numeric',
+	month: 'short',
+	day: '2-digit',
+	hour: '2-digit',
+	minute: '2-digit',
+});
+
 const PriceChartContainer = ({ height, width, chartHeight, asset0, asset1 }: PriceChartContainerProps) => {
 	const [timeWindow, setTimeWindow] = useState('24H');
 
@@ -24,15 +33,6 @@ const PriceChartContainer = ({ height, width, chartHeight, asset0, asset1 }: Pri
 	const valueToDisplay = hoverValue || (prices && prices[prices.length - 1]?.value);
 	const { changePercentage, changeValue } = getTimeWindowChange(prices);
 	const isChangePositive = changeValue >= 0;
-
-	const locale = 'en-US';
-	const currentDate = new Date().toLocaleString(locale, {
-		year: 'numeric',
-		month: 'short',
-		day: '2-digit',
-		hour: '2-digit',
-		minute: '2-digit',
-	});
 
 	return (
 		<ChartContainer height={height} width={width}>
@@ -56,9 +56,12 @@ const PriceChartContainer = ({ height, width, chartHeight, asset0, asset1 }: Pri
 							<Button active={timeWindow === '1M'} onClick={() => setTimeWindow('1M')}>
 								1M
 							</Button>
-							<Button active={timeWindow === '3M'} onClick={() => setTimeWindow('3M')}>
-								3M
-							</Button>
+							{width > 350 && (
+								<Button active={timeWindow === '3M'} onClick={() => setTimeWindow('3M')}>
+									3M
+								</Button>
+							)}
+
 							<Button active={timeWindow === '1Y'} onClick={() => setTimeWindow('1Y')}>
 								1Y
 							</Button>
@@ -69,9 +72,7 @@ const PriceChartContainer = ({ height, width, chartHeight, asset0, asset1 }: Pri
 					<div className="inner">
 						<div className="inner-inner">
 							<span className="price">{valueToDisplay && valueToDisplay.toFixed(2)}</span>
-							<Change change={changeValue}>
-								{changeValue.toFixed(2)} ({changePercentage}%)
-							</Change>
+							<Change change={changeValue}>({changePercentage}%)</Change>
 						</div>
 						<div className="date">{hoverDate || currentDate}</div>
 					</div>

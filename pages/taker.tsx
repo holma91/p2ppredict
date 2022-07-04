@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import type { Token } from '../types';
 
@@ -18,8 +18,28 @@ const Container = styled.div`
 `;
 
 const Taker: NextPage = () => {
+	const [screenWidth, setScreenWidth] = useState(0);
 	const [asset0, setAsset0] = useState<Token>({ symbol: 'btc', coingeckoId: 'bitcoin' });
 	const [asset1, setAsset1] = useState<Token>({ symbol: 'usd', coingeckoId: 'usd' });
+
+	useEffect(() => {
+		const handleResizeWindow = () => setScreenWidth(window.innerWidth);
+		window.addEventListener('resize', handleResizeWindow);
+		handleResizeWindow();
+		return () => {
+			window.removeEventListener('resize', handleResizeWindow);
+		};
+	}, []);
+
+	console.log(screenWidth);
+
+	let dimensions = { height: 375, width: 500, chartHeight: 240 };
+	if (screenWidth < 1100) {
+		dimensions.width = 350;
+	} else if (screenWidth < 1350) {
+		dimensions.width = 400;
+	}
+
 	return (
 		<Container>
 			<Left>
@@ -105,9 +125,9 @@ const Taker: NextPage = () => {
 			</Left>
 			<Right>
 				<PriceChartContainer
-					height={375}
-					width={500}
-					chartHeight={240}
+					height={dimensions.height}
+					width={dimensions.width}
+					chartHeight={dimensions.chartHeight}
 					asset0={asset0}
 					asset1={asset1}
 				></PriceChartContainer>
