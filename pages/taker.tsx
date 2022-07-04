@@ -7,6 +7,7 @@ import { assetToImage, assets, symbolToCoingeckoId } from '../utils/misc';
 import { mockOptions } from '../data/mockOptions';
 import PriceChartContainer from '../components/Chart/PriceChartContainer';
 import { useFetchPrices } from '../hooks/useFetchPrices';
+import { getWidth } from '../utils/helpers';
 
 interface Props {
 	colored?: boolean;
@@ -21,6 +22,7 @@ const Taker: NextPage = () => {
 	const [screenWidth, setScreenWidth] = useState(0);
 	const [asset0, setAsset0] = useState<Token>({ symbol: 'btc', coingeckoId: 'bitcoin' });
 	const [asset1, setAsset1] = useState<Token>({ symbol: 'usd', coingeckoId: 'usd' });
+	const [active, setActive] = useState(0);
 
 	const { prices, isLoading, isError } = useFetchPrices(assets);
 
@@ -36,11 +38,12 @@ const Taker: NextPage = () => {
 	}, []);
 
 	let dimensions = { height: 375, width: 500, chartHeight: 240 };
-	if (screenWidth < 1100) {
-		dimensions.width = 350;
-	} else if (screenWidth < 1350) {
-		dimensions.width = 400;
-	}
+	dimensions.width = getWidth(screenWidth);
+
+	const handleClick = (option: any) => {
+		setActive(option.id);
+		setAsset0({ symbol: option.asset, coingeckoId: symbolToCoingeckoId[option.asset] });
+	};
 
 	return (
 		<Container>
@@ -68,7 +71,7 @@ const Taker: NextPage = () => {
 					{mockOptions.slice(0, 3).map(option => {
 						return (
 							<MarketContainer key={option.id}>
-								<div className="market">
+								<Market isActive={active === option.id} onClick={() => handleClick(option)}>
 									<AssetDiv>
 										<div>
 											<img src={assetToImage[option.asset]} alt="logo" />
@@ -80,7 +83,7 @@ const Taker: NextPage = () => {
 									</AssetDiv>
 									<p>${option.strike}</p>
 									<p>{option.expiry}</p>
-								</div>
+								</Market>
 								<ChoiceDiv colored={true}>
 									<div>{option.over}</div>
 									<div>{option.under}</div>
@@ -107,7 +110,7 @@ const Taker: NextPage = () => {
 					{mockOptions.slice(3).map(option => {
 						return (
 							<MarketContainer key={option.id}>
-								<div className="market">
+								<Market isActive={active === option.id} onClick={() => handleClick(option)}>
 									<AssetDiv>
 										<div>
 											<img src={assetToImage[option.asset]} alt="logo" />
@@ -119,7 +122,7 @@ const Taker: NextPage = () => {
 									</AssetDiv>
 									<p>${option.strike}</p>
 									<p>{option.expiry}</p>
-								</div>
+								</Market>
 								<ChoiceDiv colored={true}>
 									<div>{option.over}</div>
 									<div>{option.under}</div>
@@ -242,20 +245,21 @@ const MarketContainer = styled.div`
 		font-size: ${({ theme }) => theme.typeScale.smallParagraph};
 		font-weight: 500;
 	}
+`;
 
-	.market {
-		padding: 0.65rem 1.4rem;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
+const Market = styled.div<{ isActive: boolean }>`
+	padding: 0.65rem 1.4rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: ${({ theme, isActive }) => (isActive ? theme.colors.primaryHover : '')};
 
-		p {
-			font-size: ${({ theme }) => theme.typeScale.smallParagraph};
-		}
-		:hover {
-			cursor: pointer;
-			background-color: ${({ theme }) => theme.colors.primaryHover};
-		}
+	p {
+		font-size: ${({ theme }) => theme.typeScale.smallParagraph};
+	}
+	:hover {
+		cursor: pointer;
+		background-color: ${({ theme }) => theme.colors.primaryHover};
 	}
 `;
 
