@@ -72,7 +72,6 @@ const dateFormattingByTimewindow: Record<PairDataTimeWindowEnum, Intl.DateTimeFo
  */
 const LineChart = ({ data, setHoverValue, setHoverDate, isChangePositive, timeWindow }: SwapLineChartProps) => {
 	const locale = 'en-US';
-	// const { theme } = useTheme();
 	const colors = getChartColors(isChangePositive);
 	const dateFormatting = dateFormattingByTimewindow[timeWindow];
 	const textDisabled = '#666171';

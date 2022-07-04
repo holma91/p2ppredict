@@ -1,24 +1,22 @@
 import { useQuery } from 'react-query';
 
-const secondsInADay = 60 * 24;
-const secondsInAWeek = 60 * 24 * 7;
-const secondsInAMonth = 60 * 24 * 7 * 30;
-const secondsInAYear = 60 * 24 * 7 * 30 * 12;
+const secondsInADay = 60 * 60 * 24;
+const secondsInAWeek = 60 * 60 * 24 * 7;
+const secondsInAMonth = 60 * 60 * 24 * 7 * 30;
+const secondsInAYear = 60 * 60 * 24 * 7 * 30 * 12;
+
+const timespanToSeconds: { [key: string]: number } = {
+	'1D': secondsInADay,
+	'1W': secondsInAWeek,
+	'1M': secondsInAMonth,
+	'1Y': secondsInAYear,
+};
 
 const priceFetcher = async ({ queryKey }: any) => {
 	console.log("aaaaahhhhh i'm fetchingggggg");
 
 	const [_key, { asset0, asset1, timespan }] = queryKey;
-	let subtractValue;
-	if (timespan === '1W') {
-		subtractValue = secondsInAWeek;
-	} else if (timespan === '1M') {
-		subtractValue = secondsInAMonth;
-	} else if (timespan === '1Y') {
-		subtractValue = secondsInAYear;
-	} else {
-		subtractValue = secondsInADay;
-	}
+	const subtractValue = timespanToSeconds[timespan];
 
 	const to = Math.floor(new Date().getTime() / 1000);
 	const from = to - subtractValue;

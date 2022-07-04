@@ -1,5 +1,4 @@
-export type Currency = {
-  decimals: number;
-  name: string;
-  symbol: string;
+export type Token = {
+	symbol: string;
+	coingeckoId: string;
 };

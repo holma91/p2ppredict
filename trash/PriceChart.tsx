@@ -1,36 +1,23 @@
 import styled from 'styled-components';
 import { useState, memo } from 'react';
-import { getTimeWindowChange } from './utils/utils';
-import SwapLineChart from './SwapLineChart';
-import { useFetchPrices } from '../../hooks/useFetchPrices';
-import { assetToImage, timeWindowToNumber } from '../../utils/misc';
+import { getTimeWindowChange } from '../components/Chart/utils/utils';
+import SwapLineChart from '../components/Chart/SwapLineChart';
+import { useFetchPrices } from '../hooks/useFetchPrices';
+import { assetToImage, timeWindowToNumber } from '../utils/misc';
 
 type PriceChartProps = {
 	height: number;
 	width: number;
 	chartHeight: number;
-	inputCurrency: string;
-	outputCurrency: string;
-	token0Address: string;
-	token1Address: string;
 	currentSwapPrice: any;
 };
 
-const PriceChart = ({
-	height,
-	width,
-	chartHeight,
-	inputCurrency,
-	outputCurrency,
-	token0Address,
-	token1Address,
-	currentSwapPrice,
-}: PriceChartProps) => {
-	const [asset0Value, setAsset0Value] = useState('bitcoin');
-	const [asset1Value, setAsset1Value] = useState('usd');
+const PriceChart = ({ height, width, chartHeight, currentSwapPrice }: PriceChartProps) => {
+	const [asset0, setAsset0] = useState('bitcoin');
+	const [asset1, setAsset1] = useState('usd');
 	const [timeWindowValue, setTimeWindowValue] = useState('24H');
 
-	const { prices = [], isLoading, isError } = useFetchPrices(asset0Value, asset1Value, timeWindowValue);
+	const { prices = [], isLoading, isError } = useFetchPrices(asset0, asset1, timeWindowValue);
 
 	const [hoverValue, setHoverValue] = useState<number | undefined>();
 	const [hoverDate, setHoverDate] = useState<string | undefined>();
@@ -54,7 +41,7 @@ const PriceChart = ({
 			<StyledFlex>
 				<div className="styledFlex-inner">
 					<img src={assetToImage['btc']} alt="logo" />
-					{asset1Value !== 'usd' && <img src={assetToImage[asset1Value]} alt="logo" />}
+					{asset1 !== 'usd' && <img src={assetToImage[asset1]} alt="logo" />}
 					<div className="chosen-assets">BTC/USD</div>
 				</div>
 				<div>

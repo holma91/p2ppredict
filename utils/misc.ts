@@ -5,6 +5,27 @@ export const timeWindowToNumber: { [key: string]: number } = {
 	'1Y': 3,
 };
 
+export const symbolToCoingeckoId: { [key: string]: string } = {
+	btc: 'bitcoin',
+	eth: 'ethereum',
+	bnb: 'binancecoin',
+	sol: 'solana',
+	usdt: 'tether',
+	usdc: 'usd-coin',
+	xrp: 'ripple',
+	dogecoin: 'dogecoin',
+	ada: 'cardano',
+	dot: 'polkadot',
+	dai: 'dai',
+	trx: 'tron',
+	avax: 'avalanche-2',
+	matic: 'matic-network',
+	link: 'chainlink',
+	algo: 'algorand',
+	atom: 'cosmos',
+	usd: 'usd',
+};
+
 export const assetToImage: { [key: string]: string } = {
 	btc: 'https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=022',
 	eth: 'https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=022',

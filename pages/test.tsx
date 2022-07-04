@@ -2,39 +2,38 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import PriceChartContainer from '../components/Chart/PriceChartContainer';
 import { useFetchPrices } from '../hooks/useFetchPrices';
+import type { Token } from '../types';
+import { symbolToCoingeckoId } from '../utils/misc';
 
 export default function Test() {
-	const [assetValue, setAssetValue] = useState('bitcoin');
-	const [timeWindowValue, setTimeWindowValue] = useState('24H');
+	const [asset0, setAsset0] = useState<Token>({ symbol: 'btc', coingeckoId: 'bitcoin' });
+	const [asset1, setAsset1] = useState<Token>({ symbol: 'usd', coingeckoId: 'usd' });
 
-	const { prices, isLoading, isError } = useFetchPrices(assetValue, 'usd', timeWindowValue);
-	console.log(prices);
+	const handleAssetChange = (assetNumber: number, value: string) => {
+		if (assetNumber === 0) {
+			setAsset0({
+				symbol: value,
+				coingeckoId: symbolToCoingeckoId[value],
+			});
+		} else if (assetNumber === 1) {
+			setAsset0({
+				symbol: value,
+				coingeckoId: symbolToCoingeckoId[value],
+			});
+		}
+	};
 
 	return (
 		<Container>
 			<div>
 				<label htmlFor="assets">Choose asset:</label>
-				<select value={assetValue} name="assets" onChange={e => setAssetValue(e.target.value)}>
+				<select value={asset0.symbol} name="assets" onChange={e => handleAssetChange(0, e.target.value)}>
 					<option value="bitcoin">btc</option>
 					<option value="ethereum">eth</option>
 					<option value="binancecoin">bnb</option>
 				</select>
-				<label htmlFor="timeWindows">Choose asset:</label>
-				<select value={timeWindowValue} name="timeWindows" onChange={e => setTimeWindowValue(e.target.value)}>
-					<option value="24H">24H</option>
-					<option value="1W">1W</option>
-					<option value="1M">1M</option>
-					<option value="1Y">1Y</option>
-				</select>
 			</div>
-			{isError ? (
-				<p>error!</p>
-			) : isLoading ? (
-				<p>loading</p>
-			) : (
-				<PriceChartContainer height={375} width={500} chartHeight={240} />
-			)}
-			{/* <pre>{prices && JSON.parse(prices)}</pre> */}
+			<PriceChartContainer height={375} width={500} chartHeight={240} asset0={asset0} asset1={asset1} />
 		</Container>
 	);
 }
