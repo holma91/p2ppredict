@@ -1,10 +1,37 @@
-left:
-  - all markets
+maker:
+
+
+A maker can:
+- create a market
+  - 2-way
+
+
+when a market is created:
+  - the maker receives two NFTs
+    - over side
+    - under side
+
+
+Example:
+Bob creates a market:
+  asset: SOL
+  strike: $30
+  expiry: 2023-01-01
+
+with collateral:
+  asset: ETH
+  amount: 1
+
+Bob sell the UNDER NFT to Alice:
+  price: 0.25 ETH
+
+under odds = collateral / price = 1 / 0.25 = 4.00
+over odds = collateral / price = 1 / 0.75 = 1.3333333333
+
+at 2023-01-01 and price is $32 -> Bob wins
+  - he receives
 
 
 
 
 
-right:
-  - chart
-  - markets for the chosen asset

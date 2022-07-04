@@ -14,15 +14,6 @@ type PriceChartContainerProps = {
 	asset1: Token;
 };
 
-const locale = 'en-US';
-const currentDate = new Date().toLocaleString(locale, {
-	year: 'numeric',
-	month: 'short',
-	day: '2-digit',
-	hour: '2-digit',
-	minute: '2-digit',
-});
-
 const PriceChartContainer = ({ height, width, chartHeight, asset0, asset1 }: PriceChartContainerProps) => {
 	const [timeWindow, setTimeWindow] = useState('24H');
 
@@ -33,6 +24,15 @@ const PriceChartContainer = ({ height, width, chartHeight, asset0, asset1 }: Pri
 	const valueToDisplay = hoverValue || (prices && prices[prices.length - 1]?.value);
 	const { changePercentage, changeValue } = getTimeWindowChange(prices);
 	const isChangePositive = changeValue >= 0;
+
+	const locale = 'en-US';
+	const currentDate = new Date().toLocaleString(locale, {
+		year: 'numeric',
+		month: 'short',
+		day: '2-digit',
+		hour: '2-digit',
+		minute: '2-digit',
+	});
 
 	return (
 		<ChartContainer height={height} width={width}>
