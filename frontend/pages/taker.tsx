@@ -164,11 +164,14 @@ const Taker: NextPage = () => {
 };
 
 const Banner = styled.div`
+	overflow-x: scroll;
+	top: 58.78px; // do something better
+	position: sticky;
 	background-color: ${({ theme }) => theme.colors.gray[300]};
 	display: flex;
 	align-items: center;
 	/* justify-content: space-between; */
-	padding: 0 1.2rem;
+	padding: 0.1rem 1.2rem;
 
 	.logo {
 		padding: 0.8rem;
