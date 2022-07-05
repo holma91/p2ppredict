@@ -3,6 +3,12 @@
     {
       "files": "*.sol",
       "options": {
+        "printWidth": 110
+      }
+    },
+    {
+      "files": "*.t.sol",
+      "options": {
         "printWidth": 140
       }
     }

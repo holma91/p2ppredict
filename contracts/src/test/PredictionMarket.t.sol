@@ -49,14 +49,16 @@ contract PredictionMarketTest is Test, PredictionMarket, ERC721Holder {
     }
 
     function testCanCreateMarket() public {
-        (uint256 overId, uint256 underId) = predictionMarket.createMarket{value: 1 ether}(
+        (uint256 marketId, uint256 overId, uint256 underId) = predictionMarket.createMarket{value: 1 ether}(
             address(ethUsdPriceFeed),
             1_000 * 10**8,
             1000,
             1 ether
         );
-        Market memory overPosition = predictionMarket.getMarket(overId);
-        Market memory underPosition = predictionMarket.getMarket(underId);
+        Market memory market = predictionMarket.getMarket(marketId);
+        assertEq(market.priceFeed, address(ethUsdPriceFeed));
+        Prediction memory overPosition = predictionMarket.getPrediction(overId);
+        Prediction memory underPosition = predictionMarket.getPrediction(underId);
         assertTrue(overPosition.over);
         assertFalse(underPosition.over);
 
@@ -65,7 +67,7 @@ contract PredictionMarketTest is Test, PredictionMarket, ERC721Holder {
     }
 
     function testWinnerCanExerciseMarket() public {
-        (uint256 overId, ) = predictionMarket.createMarket{value: 1 ether}(address(ethUsdPriceFeed), 1_000 * 10**8, 1000, 1 ether);
+        (, uint256 overId, ) = predictionMarket.createMarket{value: 1 ether}(address(ethUsdPriceFeed), 1_000 * 10**8, 1000, 1 ether);
         cheats.expectRevert("PredictionMarket: not at expiry yet");
         predictionMarket.exercise(overId);
 
@@ -77,7 +79,7 @@ contract PredictionMarketTest is Test, PredictionMarket, ERC721Holder {
     }
 
     function testCannotExerciseBeforeExpiry() public {
-        (, uint256 underId) = predictionMarket.createMarket{value: 1 ether}(address(ethUsdPriceFeed), 1_000 * 10**8, 1000, 1 ether);
+        (, , uint256 underId) = predictionMarket.createMarket{value: 1 ether}(address(ethUsdPriceFeed), 1_000 * 10**8, 1000, 1 ether);
         ethUsdPriceFeed.updateAnswer(900 * 10**8);
         cheats.warp(999);
         cheats.expectRevert("PredictionMarket: not at expiry yet");
@@ -85,7 +87,7 @@ contract PredictionMarketTest is Test, PredictionMarket, ERC721Holder {
     }
 
     function testLoserCannotExerciseMarket() public {
-        (, uint256 underId) = predictionMarket.createMarket{value: 1 ether}(address(ethUsdPriceFeed), 1_000 * 10**8, 1000, 1 ether);
+        (, , uint256 underId) = predictionMarket.createMarket{value: 1 ether}(address(ethUsdPriceFeed), 1_000 * 10**8, 1000, 1 ether);
         ethUsdPriceFeed.updateAnswer(1100 * 10**8);
         cheats.warp(1000);
         cheats.expectRevert("PredictionMarket: can't exercise a losing bet");
@@ -93,7 +95,7 @@ contract PredictionMarketTest is Test, PredictionMarket, ERC721Holder {
     }
 
     function testCannotExerciseMarketTwice() public {
-        (uint256 overId, ) = predictionMarket.createMarket{value: 1 ether}(address(ethUsdPriceFeed), 1_000 * 10**8, 1000, 1 ether);
+        (, uint256 overId, ) = predictionMarket.createMarket{value: 1 ether}(address(ethUsdPriceFeed), 1_000 * 10**8, 1000, 1 ether);
         ethUsdPriceFeed.updateAnswer(1100 * 10**8);
         cheats.warp(1000);
         predictionMarket.exercise(overId);

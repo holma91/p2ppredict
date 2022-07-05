@@ -1,0 +1,39 @@
+
+LISTEN ON PREDICTIONMARKET FOR CREATED MARKETS
+- save markets and predictions
+
+LISTEN ON EXCHANGE FOR ASKS:
+- save asks
+
+
+
+I want to show all markets on the screen
+1. send req to /markets
+2. send req to /asks
+3. compare collateral with ask value -> ODDS
+
+
+market = {
+  priceFeed,
+  strikePrice,
+  expiry,
+  collateral,
+  overPredictionId,
+  underPredictionId,
+}
+
+market -> 2x prediction = {
+  priceFeed,
+  strikePrice,
+  expiry,
+  collateral,
+  over,
+}
+
+ask = {
+  tokenId,
+  price,
+}
+
+ask connects to market via predictionId
+odds = collateral / price

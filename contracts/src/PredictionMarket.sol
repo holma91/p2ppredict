@@ -11,28 +11,54 @@ contract PredictionMarket is ERC721URIStorage {
     mapping(uint256 => Market) public marketById;
     uint256 public currentMarketId;
 
+    mapping(uint256 => Prediction) public predictionById;
+    uint256 public currentPredictionId;
+
     string baseSvg =
         "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMinYMin meet' viewBox='0 0 350 350'><style>.base { fill: white; font-family: serif; font-size: 24px; }</style><rect width='100%' height='100%' fill='black' />";
 
     string textStart = "<text x='50%' y='50%' class='base' dominant-baseline='middle' text-anchor='middle'>";
+
+    struct Prediction {
+        Market market;
+        bool over;
+    }
 
     struct Market {
         address priceFeed;
         int256 strikePrice;
         uint256 expiry;
         uint256 collateral;
-        bool over;
     }
+
+    event MarketCreated(
+        address priceFeed,
+        int256 strikePrice,
+        uint256 expiry,
+        uint256 collateral,
+        uint256 overPredictionId,
+        uint256 underPredictionId
+    );
 
     constructor() ERC721("p2ppredict", "p2p") {
         currentMarketId = 0;
+        currentPredictionId = 0;
     }
 
     function createURI(bool over) internal view returns (string memory) {
         string memory strike = "$30";
         string memory asset = "SOL";
         string memory direction = over ? "OVER" : "UNDER";
-        string memory finalSvg = string.concat(baseSvg, textStart, asset, " ", direction, " ", strike, "</text></svg>");
+        string memory finalSvg = string.concat(
+            baseSvg,
+            textStart,
+            asset,
+            " ",
+            direction,
+            " ",
+            strike,
+            "</text></svg>"
+        );
         string memory json = Base64.encode(
             bytes(
                 string.concat(
@@ -58,38 +84,62 @@ contract PredictionMarket is ERC721URIStorage {
         int256 strikePrice,
         uint256 expiry,
         uint256 collateral
-    ) public payable returns (uint256, uint256) {
+    )
+        public
+        payable
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
         require(collateral == msg.value, "wrong collateral amount");
-        Market memory overMarket = Market(priceFeed, strikePrice, expiry, collateral, true);
-        Market memory underMarket = Market(priceFeed, strikePrice, expiry, collateral, false);
+        Market memory market = Market(priceFeed, strikePrice, expiry, collateral);
+        marketById[currentMarketId++] = market;
 
-        marketById[currentMarketId] = overMarket;
-        _safeMint(msg.sender, currentMarketId); // OVER
-        _setTokenURI(currentMarketId++, createURI(true));
+        Prediction memory over = Prediction(market, true);
+        Prediction memory under = Prediction(market, false);
 
-        marketById[currentMarketId] = underMarket;
-        _safeMint(msg.sender, currentMarketId); // UNDER
-        _setTokenURI(currentMarketId++, createURI(false));
+        predictionById[currentPredictionId] = over;
+        _safeMint(msg.sender, currentPredictionId); // OVER
+        _setTokenURI(currentPredictionId++, createURI(true));
 
-        return (currentMarketId - 2, currentMarketId - 1);
+        predictionById[currentPredictionId] = under;
+        _safeMint(msg.sender, currentPredictionId); // UNDER
+        _setTokenURI(currentPredictionId++, createURI(false));
+
+        emit MarketCreated(
+            priceFeed,
+            strikePrice,
+            expiry,
+            collateral,
+            currentPredictionId - 2,
+            currentPredictionId - 1
+        );
+
+        return (currentMarketId - 1, currentPredictionId - 2, currentPredictionId - 1);
     }
 
     function exercise(uint256 id) public {
         require(ownerOf(id) == msg.sender, "PredictionMarket: not the correct owner");
 
-        Market memory market = marketById[id];
-        require(block.timestamp >= market.expiry, "PredictionMarket: not at expiry yet");
+        Prediction memory prediction = predictionById[id];
+        require(block.timestamp >= prediction.market.expiry, "PredictionMarket: not at expiry yet");
 
-        (, int256 price, , , ) = AggregatorV3Interface(market.priceFeed).latestRoundData();
-        if (market.over) {
-            require(price >= market.strikePrice, "PredictionMarket: can't exercise a losing bet");
+        (, int256 price, , , ) = AggregatorV3Interface(prediction.market.priceFeed).latestRoundData();
+        if (prediction.over) {
+            require(price >= prediction.market.strikePrice, "PredictionMarket: can't exercise a losing bet");
         } else {
-            require(price < market.strikePrice, "PredictionMarket: can't exercise a losing bet");
+            require(price < prediction.market.strikePrice, "PredictionMarket: can't exercise a losing bet");
         }
 
         _burn(id);
-        (bool sent, ) = msg.sender.call{value: market.collateral}("");
+        (bool sent, ) = msg.sender.call{value: prediction.market.collateral}("");
         require(sent, "failed ether transfer");
+    }
+
+    function getPrediction(uint256 id) public view returns (Prediction memory) {
+        return predictionById[id];
     }
 
     function getMarket(uint256 id) public view returns (Market memory) {
