@@ -1,0 +1,56 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea26469706673582212203474cc59dc42550dc17d609efde3b337eb7112cedc3ec8626dbb99c52b29869f64736f6c634300080d0033",
+    "sourceMap": "64:20:1:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x6080604052600080fdfea26469706673582212203474cc59dc42550dc17d609efde3b337eb7112cedc3ec8626dbb99c52b29869f64736f6c634300080d0033",
+    "sourceMap": "64:20:1:-:0;;;;;",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "/Users/alexander/dev/p2ppredict/contracts/src/Contract.sol",
+    "exportedSymbols": {
+      "Contract": [
+        1789
+      ]
+    },
+    "id": 1790,
+    "license": "UNLICENSED",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1788,
+        "literals": [
+          "solidity",
+          "0.8",
+          ".13"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "39:23:1"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "Contract",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 1789,
+        "linearizedBaseContracts": [
+          1789
+        ],
+        "name": "Contract",
+        "nameLocation": "73:8:1",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 1790,
+        "src": "64:20:1",
+        "usedErrors": []
+      }
+    ],
+    "src": "39:46:1"
+  }
+}
