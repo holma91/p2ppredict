@@ -74,6 +74,24 @@ contract PredictionMarket is ERC721URIStorage {
         return (currentMarketId - 2, currentMarketId - 1);
     }
 
+    function exercise(uint256 id) public {
+        require(ownerOf(id) == msg.sender, "PredictionMarket: not the correct owner");
+
+        Market memory market = marketById[id];
+        require(block.timestamp >= market.expiry, "PredictionMarket: not at expiry yet");
+
+        (, int256 price, , , ) = AggregatorV3Interface(market.priceFeed).latestRoundData();
+        if (market.over) {
+            require(price >= market.strikePrice, "PredictionMarket: can't exercise a losing bet");
+        } else {
+            require(price < market.strikePrice, "PredictionMarket: can't exercise a losing bet");
+        }
+
+        _burn(id);
+        (bool sent, ) = msg.sender.call{value: market.collateral}("");
+        require(sent, "failed ether transfer");
+    }
+
     function getMarket(uint256 id) public view returns (Market memory) {
         return marketById[id];
     }
