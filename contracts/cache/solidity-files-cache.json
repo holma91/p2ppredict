@@ -723,8 +723,8 @@
       }
     },
     "/Users/alexander/dev/p2ppredict/contracts/src/PredictionMarket.sol": {
-      "lastModificationDate": 1657004931818,
-      "contentHash": "edb583a0e6f7878c4bce6adb8ecf882a",
+      "lastModificationDate": 1657009317042,
+      "contentHash": "9fe81da9fbc8b2e7fbad78e0e98678b6",
       "sourceName": "src/PredictionMarket.sol",
       "solcConfig": {
         "settings": {
@@ -762,7 +762,8 @@
         "lib/openzeppelin-contracts/contracts/utils/Context.sol",
         "lib/openzeppelin-contracts/contracts/utils/Strings.sol",
         "lib/openzeppelin-contracts/contracts/utils/introspection/ERC165.sol",
-        "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol"
+        "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
+        "src/libraries/Base64.sol"
       ],
       "versionRequirement": "=0.8.13",
       "artifacts": {
@@ -771,9 +772,46 @@
         }
       }
     },
+    "/Users/alexander/dev/p2ppredict/contracts/src/libraries/Base64.sol": {
+      "lastModificationDate": 1657006685427,
+      "contentHash": "e8c3518c27a88e24c5f119ef108b8a11",
+      "sourceName": "src/libraries/Base64.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs"
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "london"
+        }
+      },
+      "imports": [],
+      "versionRequirement": "^0.8.0",
+      "artifacts": {
+        "Base64": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "Base64.sol/Base64.json"
+        }
+      }
+    },
     "/Users/alexander/dev/p2ppredict/contracts/src/test/PredictionMarket.t.sol": {
-      "lastModificationDate": 1657005742946,
-      "contentHash": "73e40c6bfc24a409a06b91ad43d6aba7",
+      "lastModificationDate": 1657008652454,
+      "contentHash": "db9234e0b91ee255f34babde0ebabfab",
       "sourceName": "src/test/PredictionMarket.t.sol",
       "solcConfig": {
         "settings": {
@@ -820,6 +858,7 @@
         "lib/openzeppelin-contracts/contracts/utils/introspection/ERC165.sol",
         "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
         "src/PredictionMarket.sol",
+        "src/libraries/Base64.sol",
         "src/test/mocks/MockV3Aggregator.sol"
       ],
       "versionRequirement": "=0.8.13",

@@ -62,5 +62,11 @@ contract PredictionMarketTest is Test, PredictionMarket, ERC721Holder {
 
         assertEq(address(this), predictionMarket.ownerOf(overId));
         assertEq(address(this), predictionMarket.ownerOf(underId));
+
+        string memory overURI = predictionMarket.tokenURI(overId);
+        emit log_string(overURI);
+
+        string memory underURI = predictionMarket.tokenURI(underId);
+        emit log_string(underURI);
     }
 }

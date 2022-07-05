@@ -2,3 +2,7 @@ every option has an id -> ERC721
 
 
 every option results in two ERC721
+
+a market has two ERC721s
+  - even id for OVER
+  - odd id for UNDER
