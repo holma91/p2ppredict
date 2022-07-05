@@ -13,6 +13,10 @@ interface Props {
 	colored?: boolean;
 }
 
+const OuterContainer = styled.div`
+	color: ${({ theme }) => theme.text.secondary};
+`;
+
 const Container = styled.div`
 	display: grid;
 	grid-template-columns: 8fr 5fr;
@@ -46,104 +50,151 @@ const Taker: NextPage = () => {
 	};
 
 	return (
-		<Container>
-			<Left>
-				<div className="header">
-					<h4>Markets</h4>
+		<OuterContainer>
+			<Banner>
+				<div className="all">
+					<p>ALL MARKETS</p>
 				</div>
-				<Overview>
-					<SectionHeader>
-						<div className="section-left">
-							<div className="top">
-								<h6>Expires: Today</h6>
-							</div>
-							<div className="bottom">
-								<p>ASSET</p>
-								<p>STRIKE</p>
-								<p>EXPIRY</p>
-							</div>
+				{Object.keys(assetToImage).map(symbol => {
+					return (
+						<div className="logo" key={symbol}>
+							<img src={assetToImage[symbol]} alt={`${symbol}-logo`} />
 						</div>
-						<ChoiceDiv>
-							<div>OVER</div>
-							<div>UNDER</div>
-						</ChoiceDiv>
-					</SectionHeader>
-					{mockOptions.slice(0, 3).map(option => {
-						return (
-							<MarketContainer key={option.id}>
-								<Market isActive={active === option.id} onClick={() => handleClick(option)}>
-									<AssetDiv>
-										<div>
-											<img src={assetToImage[option.asset]} alt="logo" />
-											<p>{option.asset.toUpperCase()}</p>
-										</div>
-										<p className="live-price">
-											{isLoading ? '' : `$${prices[symbolToCoingeckoId[option.asset]].usd}`}
-										</p>
-									</AssetDiv>
-									<p>${option.strike}</p>
-									<p>{option.expiry}</p>
-								</Market>
-								<ChoiceDiv colored={true}>
-									<div>{option.over}</div>
-									<div>{option.under}</div>
-								</ChoiceDiv>
-							</MarketContainer>
-						);
-					})}
-					<SectionHeader>
-						<div className="section-left">
-							<div className="top">
-								<h6>Expires: This Week</h6>
+					);
+				})}
+			</Banner>
+			<Container>
+				<Left>
+					{/* <div className="header">
+					<h4>All Markets</h4>
+				</div> */}
+					<Overview>
+						<SectionHeader>
+							<div className="section-left">
+								<div className="top">
+									<h6>Expires: Today</h6>
+								</div>
+								<div className="bottom">
+									<p>ASSET</p>
+									<p>STRIKE</p>
+									<p>EXPIRY</p>
+								</div>
 							</div>
-							<div className="bottom">
-								<p>ASSET</p>
-								<p>STRIKE</p>
-								<p>EXPIRY</p>
+							<ChoiceDiv>
+								<div>OVER</div>
+								<div>UNDER</div>
+							</ChoiceDiv>
+						</SectionHeader>
+						{mockOptions.slice(0, 3).map(option => {
+							return (
+								<MarketContainer key={option.id}>
+									<Market isActive={active === option.id} onClick={() => handleClick(option)}>
+										<AssetDiv>
+											<div>
+												<img src={assetToImage[option.asset]} alt="logo" />
+												<p>{option.asset.toUpperCase()}</p>
+											</div>
+											<p className="live-price">
+												{isLoading ? '' : `$${prices[symbolToCoingeckoId[option.asset]].usd}`}
+											</p>
+										</AssetDiv>
+										<p>${option.strike}</p>
+										<p>{option.expiry}</p>
+									</Market>
+									<ChoiceDiv colored={true}>
+										<div>{option.over}</div>
+										<div>{option.under}</div>
+									</ChoiceDiv>
+								</MarketContainer>
+							);
+						})}
+						<SectionHeader>
+							<div className="section-left">
+								<div className="top">
+									<h6>Expires: This Week</h6>
+								</div>
+								<div className="bottom">
+									<p>ASSET</p>
+									<p>STRIKE</p>
+									<p>EXPIRY</p>
+								</div>
 							</div>
-						</div>
-						<ChoiceDiv>
-							<div>OVER</div>
-							<div>UNDER</div>
-						</ChoiceDiv>
-					</SectionHeader>
-					{mockOptions.slice(3).map(option => {
-						return (
-							<MarketContainer key={option.id}>
-								<Market isActive={active === option.id} onClick={() => handleClick(option)}>
-									<AssetDiv>
-										<div>
-											<img src={assetToImage[option.asset]} alt="logo" />
-											<p>{option.asset.toUpperCase()}</p>
-										</div>
-										<p className="live-price">
-											{isLoading ? '' : `$${prices[symbolToCoingeckoId[option.asset]].usd}`}
-										</p>
-									</AssetDiv>
-									<p>${option.strike}</p>
-									<p>{option.expiry}</p>
-								</Market>
-								<ChoiceDiv colored={true}>
-									<div>{option.over}</div>
-									<div>{option.under}</div>
-								</ChoiceDiv>
-							</MarketContainer>
-						);
-					})}
-				</Overview>
-			</Left>
-			<Right>
-				<PriceChartContainer
-					height={dimensions.height}
-					width={dimensions.width}
-					chartHeight={dimensions.chartHeight}
-					asset0={asset0}
-					asset1={asset1}
-				></PriceChartContainer>
-			</Right>
-		</Container>
+							<ChoiceDiv>
+								<div>OVER</div>
+								<div>UNDER</div>
+							</ChoiceDiv>
+						</SectionHeader>
+						{mockOptions.slice(3).map(option => {
+							return (
+								<MarketContainer key={option.id}>
+									<Market isActive={active === option.id} onClick={() => handleClick(option)}>
+										<AssetDiv>
+											<div>
+												<img src={assetToImage[option.asset]} alt="logo" />
+												<p>{option.asset.toUpperCase()}</p>
+											</div>
+											<p className="live-price">
+												{isLoading ? '' : `$${prices[symbolToCoingeckoId[option.asset]].usd}`}
+											</p>
+										</AssetDiv>
+										<p>${option.strike}</p>
+										<p>{option.expiry}</p>
+									</Market>
+									<ChoiceDiv colored={true}>
+										<div>{option.over}</div>
+										<div>{option.under}</div>
+									</ChoiceDiv>
+								</MarketContainer>
+							);
+						})}
+					</Overview>
+				</Left>
+				<Right>
+					<PriceChartContainer
+						height={dimensions.height}
+						width={dimensions.width}
+						chartHeight={dimensions.chartHeight}
+						asset0={asset0}
+						asset1={asset1}
+					></PriceChartContainer>
+				</Right>
+			</Container>
+		</OuterContainer>
 	);
 };
+
+const Banner = styled.div`
+	background-color: ${({ theme }) => theme.colors.gray[300]};
+	display: flex;
+	align-items: center;
+	/* justify-content: space-between; */
+	padding: 0 1.2rem;
+
+	.logo {
+		padding: 0.8rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-bottom: 3px solid ${({ theme }) => theme.colors.gray[300]};
+
+		:hover {
+			cursor: pointer;
+			/* background-color: ${({ theme }) => theme.colors.gray[200]}; */
+			border-bottom: 3px solid ${({ theme }) => theme.colors.secondary};
+		}
+	}
+
+	.all {
+		p {
+			width: 108px;
+		}
+	}
+
+	img {
+		height: 28px;
+		width: 28px;
+	}
+`;
 
 const Right = styled.div`
 	height: 93vh;
@@ -153,8 +204,6 @@ const Right = styled.div`
 	justify-content: center;
 
 	background-color: ${({ theme }) => theme.colors.gray[300]};
-
-	padding-top: 2.7rem;
 `;
 
 const Left = styled.div`
@@ -164,6 +213,7 @@ const Left = styled.div`
 
 	.header {
 		padding: 0.65rem 1.4rem;
+		padding-top: 0.5rem;
 		display: flex;
 		justify-content: space-between;
 		background-color: ${({ theme }) => theme.colors.gray[300]};

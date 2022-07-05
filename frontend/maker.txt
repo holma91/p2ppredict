@@ -1,0 +1,30 @@
+A maker creates markets
+
+
+what a maker needs to do:
+  choose:
+    - asset
+    - strike
+    - expiry
+    - collateral
+
+
+what can be useful for a maker to see:
+  - chart for the chosen asset
+  - percentage rise necessary to hit strike (total and per day)
+  - countdown to expiry
+  - similar positions already existing
+
+
+when all above is done:
+maker has to choose if they wanna:
+    - create and list
+    - only create
+
+if both:
+  maker needs to choose:
+  - side
+  - odds
+
+if only create:
+  - create market, give a link to open positions page
