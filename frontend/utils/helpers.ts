@@ -3,9 +3,10 @@ export const getWidth = (screenWidth: number) => {
 	if (screenWidth < 1025) {
 		width = 350;
 	} else if (screenWidth < 1100) {
-		width = 375;
-	} else if (screenWidth < 1200) {
+		// width = 375;
 		width = 400;
+	} else if (screenWidth < 1200) {
+		width = 450;
 	} else if (screenWidth < 1300) {
 		width = 425;
 	} else if (screenWidth < 1400) {

@@ -19,10 +19,36 @@ const OuterContainer = styled.div`
 
 const Container = styled.div`
 	display: grid;
-	grid-template-columns: 8fr 5fr;
+	grid-template-columns: 8fr 6fr;
+`;
+
+const BannerDiv = styled.div<{ active: boolean }>`
+	padding: 0.8rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-bottom: 3px solid ${({ theme, active }) => (active ? theme.colors.secondary : theme.colors.gray[300])};
+
+	:hover {
+		cursor: pointer;
+		border-bottom: 3px solid ${({ theme }) => theme.colors.secondary};
+	}
+
+	img {
+		height: 28px;
+		width: 28px;
+	}
+
+	p {
+		display: flex;
+		align-items: center;
+		height: 28px;
+		width: 108px;
+	}
 `;
 
 const Taker: NextPage = () => {
+	const [bannerChoice, setBannerChoice] = useState('all');
 	const [screenWidth, setScreenWidth] = useState(0);
 	const [asset0, setAsset0] = useState<Token>({ symbol: 'btc', coingeckoId: 'bitcoin' });
 	const [asset1, setAsset1] = useState<Token>({ symbol: 'usd', coingeckoId: 'usd' });
@@ -52,22 +78,19 @@ const Taker: NextPage = () => {
 	return (
 		<OuterContainer>
 			<Banner>
-				<div className="all">
+				<BannerDiv active={bannerChoice === 'all'}>
 					<p>ALL MARKETS</p>
-				</div>
+				</BannerDiv>
 				{Object.keys(assetToImage).map(symbol => {
 					return (
-						<div className="logo" key={symbol}>
+						<BannerDiv active={bannerChoice === symbol} key={symbol}>
 							<img src={assetToImage[symbol]} alt={`${symbol}-logo`} />
-						</div>
+						</BannerDiv>
 					);
 				})}
 			</Banner>
 			<Container>
 				<Left>
-					{/* <div className="header">
-					<h4>All Markets</h4>
-				</div> */}
 					<Overview>
 						<SectionHeader>
 							<div className="section-left">
@@ -192,11 +215,6 @@ const Banner = styled.div`
 			width: 108px;
 		}
 	}
-
-	img {
-		height: 28px;
-		width: 28px;
-	}
 `;
 
 const Right = styled.div`
@@ -229,7 +247,7 @@ const Left = styled.div`
 
 const SectionHeader = styled.div`
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: 3fr 2fr;
 	background-color: ${({ theme }) => theme.colors.gray[100]};
 	h6 {
 		font-size: ${({ theme }) => theme.typeScale.smallParagraph};
@@ -292,7 +310,7 @@ const MarketContainer = styled.div`
 	display: grid;
 	justify-items: stretch;
 	align-items: stretch; //
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: 3fr 2fr;
 	background-color: ${({ theme }) => theme.colors.gray[200]};
 	h6 {
 		font-size: ${({ theme }) => theme.typeScale.smallParagraph};
