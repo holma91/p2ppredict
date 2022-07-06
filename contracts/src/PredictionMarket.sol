@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.13;
 
+import {Exchange} from "./Exchange.sol";
+
 import "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 import "openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
@@ -54,9 +56,9 @@ contract PredictionMarket is ERC721URIStorage {
         currentPredictionId = 0;
     }
 
-    function setExchangeAddress(address _exchangeAddress) public {
-        require(msg.sender == deployer, "Only deployer can change the exchange address");
-        exchangeAddress = _exchangeAddress;
+    function setExchangeAddress(address _exchange) public {
+        require(msg.sender == deployer, "Only deployer can change the prediction market address");
+        exchangeAddress = _exchange;
     }
 
     function createURI(bool over) internal view returns (string memory) {
@@ -93,12 +95,7 @@ contract PredictionMarket is ERC721URIStorage {
         return finalTokenUri;
     }
 
-    function createMarket(
-        address priceFeed,
-        int256 strikePrice,
-        uint256 expiry,
-        uint256 collateral
-    )
+    function createMarket(Market calldata market)
         public
         payable
         returns (
@@ -107,8 +104,7 @@ contract PredictionMarket is ERC721URIStorage {
             uint256
         )
     {
-        require(collateral == msg.value, "wrong collateral amount");
-        Market memory market = Market(priceFeed, strikePrice, expiry, collateral);
+        require(market.collateral == msg.value, "wrong collateral amount");
         marketById[currentMarketId++] = market;
 
         Prediction memory over = Prediction(market, true);
@@ -123,10 +119,10 @@ contract PredictionMarket is ERC721URIStorage {
         _setTokenURI(currentPredictionId++, createURI(false));
 
         emit MarketCreated(
-            priceFeed,
-            strikePrice,
-            expiry,
-            collateral,
+            market.priceFeed,
+            market.strikePrice,
+            market.expiry,
+            market.collateral,
             currentPredictionId - 2,
             currentPredictionId - 1
         );
@@ -135,10 +131,7 @@ contract PredictionMarket is ERC721URIStorage {
     }
 
     function createMarket(
-        address priceFeed,
-        int256 strikePrice,
-        uint256 expiry,
-        uint256 collateral,
+        Market calldata market,
         bool over,
         uint256 listPrice,
         uint256 endTime,
@@ -152,34 +145,29 @@ contract PredictionMarket is ERC721URIStorage {
             uint256
         )
     {
-        (uint256 marketId, uint256 overId, uint256 underId) = createMarket(
-            priceFeed,
-            strikePrice,
-            expiry,
-            collateral
-        );
+        (uint256 marketId, uint256 overId, uint256 underId) = createMarket(market);
 
         // odds = collateral / listPrice
 
-        // OrderTypes.MakerOrder memory makerAsk = OrderTypes.MakerOrder(
-        //     true,
-        //     msg.sender,
-        //     listPrice,
-        //     underId,
-        //     block.timestamp,
-        //     endTime,
-        //     priceFeed,
-        //     tresholdPrice
-        // );
+        OrderTypes.MakerOrder memory makerAsk = OrderTypes.MakerOrder(
+            true,
+            msg.sender,
+            listPrice,
+            underId,
+            block.timestamp,
+            endTime,
+            market.priceFeed,
+            tresholdPrice
+        );
 
-        // if (over) {
-        //     // list under prediction
-        //     IExchange(exchangeAddress).createMakerAsk(makerAsk);
-        // } else {
-        //     // list over prediction
-        //     makerAsk.tokenId = overId;
-        //     IExchange(exchangeAddress).createMakerAsk(makerAsk);
-        // }
+        if (over) {
+            // list under prediction
+            IExchange(exchangeAddress).createMakerAsk(makerAsk);
+        } else {
+            // list over prediction
+            makerAsk.tokenId = overId;
+            IExchange(exchangeAddress).createMakerAsk(makerAsk);
+        }
     }
 
     function exercise(uint256 id) public {

@@ -35,7 +35,7 @@ contract Exchange {
 
     function createMakerAsk(OrderTypes.MakerOrder calldata makerAsk) external {
         require(makerAsk.isOrderAsk, "order is not an ask");
-        require(msg.sender == makerAsk.signer, "maker must be the sender");
+        require(msg.sender == makerAsk.signer || msg.sender == predictionMarket, "maker must be the sender");
 
         makerAskById[makerAsk.tokenId] = makerAsk;
 
