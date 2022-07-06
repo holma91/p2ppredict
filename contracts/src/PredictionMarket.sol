@@ -6,8 +6,16 @@ import "openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721URIStorag
 import "chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 import {Base64} from "./libraries/Base64.sol";
+import {OrderTypes} from "./libraries/OrderTypesNew.sol";
+
+interface IExchange {
+    function createMakerAsk(OrderTypes.MakerOrder calldata makerAsk) external;
+}
 
 contract PredictionMarket is ERC721URIStorage {
+    address public deployer;
+    address public exchangeAddress;
+
     mapping(uint256 => Market) public marketById;
     uint256 public currentMarketId;
 
@@ -41,8 +49,14 @@ contract PredictionMarket is ERC721URIStorage {
     );
 
     constructor() ERC721("p2ppredict", "p2p") {
+        deployer = msg.sender;
         currentMarketId = 0;
         currentPredictionId = 0;
+    }
+
+    function setExchangeAddress(address _exchangeAddress) public {
+        require(msg.sender == deployer, "Only deployer can change the exchange address");
+        exchangeAddress = _exchangeAddress;
     }
 
     function createURI(bool over) internal view returns (string memory) {
@@ -118,6 +132,54 @@ contract PredictionMarket is ERC721URIStorage {
         );
 
         return (currentMarketId - 1, currentPredictionId - 2, currentPredictionId - 1);
+    }
+
+    function createMarket(
+        address priceFeed,
+        int256 strikePrice,
+        uint256 expiry,
+        uint256 collateral,
+        bool over,
+        uint256 listPrice,
+        uint256 endTime,
+        int256 tresholdPrice
+    )
+        public
+        payable
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        (uint256 marketId, uint256 overId, uint256 underId) = createMarket(
+            priceFeed,
+            strikePrice,
+            expiry,
+            collateral
+        );
+
+        // odds = collateral / listPrice
+
+        OrderTypes.MakerOrder memory makerAsk = OrderTypes.MakerOrder(
+            true,
+            msg.sender,
+            listPrice,
+            underId,
+            block.timestamp,
+            endTime,
+            priceFeed,
+            tresholdPrice
+        );
+
+        if (over) {
+            // list under prediction
+            IExchange(exchangeAddress).createMakerAsk(makerAsk);
+        } else {
+            // list over prediction
+            makerAsk.tokenId = overId;
+            IExchange(exchangeAddress).createMakerAsk(makerAsk);
+        }
     }
 
     function exercise(uint256 id) public {
