@@ -21,7 +21,7 @@ const MakerThing: NextPage = () => {
 					<div className="inner-size">
 						<img src={assetToImage['btc']} alt={`btc-logo`} />
 						<div className="input-div">
-							<input />
+							<input placeholder="1" />
 						</div>
 					</div>
 					<div className="inner-size">
@@ -29,10 +29,97 @@ const MakerThing: NextPage = () => {
 						<p>Option Size</p>
 					</div>
 				</SizeDiv>
+				<MultiDiv>
+					<div className="split">
+						<div className="first">
+							<input type="number" placeholder="20000" />
+							<p>Strike Price</p>
+						</div>
+						<div>
+							<input type="date " placeholder="2023-01-01" />
+							<p>Expiry</p>
+						</div>
+					</div>
+					<div className="mid">
+						<div>
+							<p>Breakeven</p>
+							<p>$1800</p>
+						</div>
+						<div>
+							<p>Option Price</p>
+							<p>$100</p>
+						</div>
+						<div>
+							<p>Side</p>
+							<p>CALL</p>
+						</div>
+						<div>
+							<p>IV</p>
+							<p>0</p>
+						</div>
+					</div>
+					<div className="split">
+						<div className="first">
+							<input type="number" placeholder="1.50" />
+							<p>Over Odds</p>
+						</div>
+						<div>
+							<input type="number" placeholder="3.00" />
+							<p>Under Odds</p>
+						</div>
+					</div>
+				</MultiDiv>
 			</Thing>
 		</Container>
 	);
 };
+
+const MultiDiv = styled.div`
+	border: 1px solid #262626;
+	border-radius: 1rem;
+	p {
+		font-size: ${({ theme }) => theme.typeScale.smallParagraph};
+	}
+
+	.split {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+
+		.first {
+			border-right: 1px solid #262626;
+		}
+		div {
+			padding: 0.8rem;
+			display: flex;
+			flex-direction: column;
+			gap: 0.6rem;
+
+			input {
+				color: ${({ theme }) => theme.text.secondary};
+
+				font-size: ${({ theme }) => theme.typeScale.paragraph};
+				background-color: inherit;
+				outline: none;
+				border: none;
+				width: 100%;
+				/* text-align: right; */
+			}
+		}
+	}
+
+	.mid {
+		border-top: 1px solid #262626;
+		border-bottom: 1px solid #262626;
+		padding: 0.8rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		div {
+			display: flex;
+			justify-content: space-between;
+		}
+	}
+`;
 
 const SizeDiv = styled.div`
 	width: 100%;
@@ -77,7 +164,6 @@ const SizeDiv = styled.div`
 
 const Header = styled.div`
 	display: flex;
-	margin-bottom: 1rem;
 `;
 
 const Thing = styled.div`
@@ -90,6 +176,7 @@ const Thing = styled.div`
 
 	display: flex;
 	flex-direction: column;
+	gap: 1rem;
 	border-radius: 15px;
 `;
 
