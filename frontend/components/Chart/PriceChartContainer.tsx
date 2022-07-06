@@ -7,9 +7,9 @@ import { assetToImage, timeWindowToNumber } from '../../utils/misc';
 import type { Token } from '../../types';
 
 type PriceChartContainerProps = {
-	height: number;
-	width: number;
-	chartHeight: number;
+	height: string;
+	width: string;
+	chartHeight: string;
 	asset0: Token;
 	asset1: Token;
 };
@@ -55,11 +55,11 @@ const PriceChartContainer = ({ height, width, chartHeight, asset0, asset1 }: Pri
 							<Button active={timeWindow === '1M'} onClick={() => setTimeWindow('1M')}>
 								1M
 							</Button>
-							{width > 350 && (
+							{/* {width > 350 && (
 								<Button active={timeWindow === '3M'} onClick={() => setTimeWindow('3M')}>
 									3M
 								</Button>
-							)}
+							)} */}
 
 							<Button active={timeWindow === '1Y'} onClick={() => setTimeWindow('1Y')}>
 								1Y
@@ -97,18 +97,14 @@ const Change = styled.span<{ change: number }>`
 	color: ${({ theme, change }) => (change > 0 ? theme.colors.green : theme.colors.red)};
 `;
 
-const ChartContainer = styled.div<{ height: number; width: number }>`
+const ChartContainer = styled.div<{ height: string; width: string }>`
 	display: flex;
-	height: ${({ height }) => height + 'px'};
-	width: ${({ width }) => width + 'px'};
+	height: ${({ height }) => height};
+	width: ${({ width }) => width};
 `;
 
-type BoxProps = {
-	height: number;
-};
-
-const Box = styled.div<BoxProps>`
-	height: ${({ height }) => height + 'px'};
+const Box = styled.div<{ height: string }>`
+	height: ${({ height }) => height};
 	width: 100%;
 	padding: 1rem;
 `;

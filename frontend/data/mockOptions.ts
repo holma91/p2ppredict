@@ -72,7 +72,7 @@ export const mockOptions = [
 		id: 7,
 	},
 	{
-		asset: 'algo',
+		asset: 'bnb',
 		current: '0.3221',
 		strike: '0.2500',
 		expiry: '07-20',

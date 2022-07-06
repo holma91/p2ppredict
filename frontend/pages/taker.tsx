@@ -49,26 +49,13 @@ const BannerDiv = styled.div<{ active: boolean }>`
 
 const Taker: NextPage = () => {
 	const [bannerChoice, setBannerChoice] = useState('all');
-	const [screenWidth, setScreenWidth] = useState(0);
 	const [asset0, setAsset0] = useState<Token>({ symbol: 'btc', coingeckoId: 'bitcoin' });
 	const [asset1, setAsset1] = useState<Token>({ symbol: 'usd', coingeckoId: 'usd' });
 	const [active, setActive] = useState(0);
 
 	const { prices, isLoading, isError } = useFetchPrices(assets);
 
-	console.log(prices);
-
-	useEffect(() => {
-		const handleResizeWindow = () => setScreenWidth(window.innerWidth);
-		window.addEventListener('resize', handleResizeWindow);
-		handleResizeWindow();
-		return () => {
-			window.removeEventListener('resize', handleResizeWindow);
-		};
-	}, []);
-
-	let dimensions = { height: 375, width: 500, chartHeight: 240 };
-	dimensions.width = getWidth(screenWidth);
+	let dimensions = { height: '375px', width: '100%', chartHeight: '240px' };
 
 	const handleClick = (option: any) => {
 		setActive(option.id);
@@ -218,6 +205,7 @@ const Banner = styled.div`
 `;
 
 const Right = styled.div`
+	padding: 0 1.75rem;
 	height: 93vh;
 	overflow-y: scroll;
 
