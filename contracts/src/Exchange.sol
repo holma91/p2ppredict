@@ -87,18 +87,15 @@ contract Exchange {
         );
     }
 
-    /**
-     * @notice Transfer ERC721 token
-     * @param from address of the sender
-     * @param to address of the recipient
-     * @param tokenId tokenId
-     */
     function transferNonFungibleToken(
         address from,
         address to,
         uint256 tokenId
     ) internal {
-        // https://docs.openzeppelin.com/contracts/2.x/api/token/erc721#IERC721-safeTransferFrom
         IERC721(predictionMarket).safeTransferFrom(from, to, tokenId);
+    }
+
+    function getMakerAsk(uint256 id) public view returns (OrderTypes.MakerOrder memory) {
+        return makerAskById[id];
     }
 }

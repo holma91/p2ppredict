@@ -287,6 +287,121 @@
         }
       }
     },
+    "/Users/alexander/dev/p2ppredict/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol": {
+      "lastModificationDate": 1657002558320,
+      "contentHash": "ad7c2d0af148c8f9f097d65deeb4da6b",
+      "sourceName": "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs"
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "london"
+        }
+      },
+      "imports": [],
+      "versionRequirement": "^0.8.0",
+      "artifacts": {
+        "IERC20": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "IERC20.sol/IERC20.json"
+        }
+      }
+    },
+    "/Users/alexander/dev/p2ppredict/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/extensions/draft-IERC20Permit.sol": {
+      "lastModificationDate": 1657002558321,
+      "contentHash": "fb77f144244b9ab12533aa6ce85ef8c5",
+      "sourceName": "lib/openzeppelin-contracts/contracts/token/ERC20/extensions/draft-IERC20Permit.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs"
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "london"
+        }
+      },
+      "imports": [],
+      "versionRequirement": "^0.8.0",
+      "artifacts": {
+        "IERC20Permit": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "draft-IERC20Permit.sol/IERC20Permit.json"
+        }
+      }
+    },
+    "/Users/alexander/dev/p2ppredict/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol": {
+      "lastModificationDate": 1657002558321,
+      "contentHash": "3a843b05b85a270e9455e3d2e804e633",
+      "sourceName": "lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs"
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "london"
+        }
+      },
+      "imports": [
+        "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC20/extensions/draft-IERC20Permit.sol",
+        "lib/openzeppelin-contracts/contracts/utils/Address.sol"
+      ],
+      "versionRequirement": "^0.8.0",
+      "artifacts": {
+        "SafeERC20": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "SafeERC20.sol/SafeERC20.json"
+        }
+      }
+    },
     "/Users/alexander/dev/p2ppredict/contracts/lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol": {
       "lastModificationDate": 1657002558322,
       "contentHash": "49f2c3051594e3650c43a8ad775e3847",
@@ -722,9 +837,55 @@
         }
       }
     },
+    "/Users/alexander/dev/p2ppredict/contracts/src/Exchange.sol": {
+      "lastModificationDate": 1657109432810,
+      "contentHash": "e8420f695f5ae393108dc61ebbcba7e5",
+      "sourceName": "src/Exchange.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs"
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "london"
+        }
+      },
+      "imports": [
+        "lib/chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC20/extensions/draft-IERC20Permit.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol",
+        "lib/openzeppelin-contracts/contracts/utils/Address.sol",
+        "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
+        "src/libraries/OrderTypesNew.sol"
+      ],
+      "versionRequirement": "=0.8.13",
+      "artifacts": {
+        "Exchange": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "Exchange.sol/Exchange.json"
+        }
+      }
+    },
     "/Users/alexander/dev/p2ppredict/contracts/src/PredictionMarket.sol": {
-      "lastModificationDate": 1657024987076,
-      "contentHash": "d2c8803bd17afdfa620e03a9317c6020",
+      "lastModificationDate": 1657107237054,
+      "contentHash": "b80b986a5a193311521bfe4ded1f63b7",
       "sourceName": "src/PredictionMarket.sol",
       "solcConfig": {
         "settings": {
@@ -763,12 +924,136 @@
         "lib/openzeppelin-contracts/contracts/utils/Strings.sol",
         "lib/openzeppelin-contracts/contracts/utils/introspection/ERC165.sol",
         "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
-        "src/libraries/Base64.sol"
+        "src/libraries/Base64.sol",
+        "src/libraries/OrderTypesNew.sol"
       ],
       "versionRequirement": "=0.8.13",
       "artifacts": {
+        "IExchange": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "PredictionMarket.sol/IExchange.json"
+        },
         "PredictionMarket": {
           "0.8.13+commit.abaa5c0e.Darwin.appleclang": "PredictionMarket.sol/PredictionMarket.json"
+        }
+      }
+    },
+    "/Users/alexander/dev/p2ppredict/contracts/src/SpeculateExchange.sol": {
+      "lastModificationDate": 1657092237124,
+      "contentHash": "350e581f3d5bba8048daa3d8b624399c",
+      "sourceName": "src/SpeculateExchange.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs"
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "london"
+        }
+      },
+      "imports": [
+        "lib/chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC20/extensions/draft-IERC20Permit.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+        "lib/openzeppelin-contracts/contracts/utils/Address.sol",
+        "src/interfaces/ITransferManagerNFT.sol",
+        "src/interfaces/ITransferSelectorNFT.sol",
+        "src/libraries/OrderTypes.sol"
+      ],
+      "versionRequirement": "^0.8.0",
+      "artifacts": {
+        "SpeculateExchange": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "SpeculateExchange.sol/SpeculateExchange.json"
+        }
+      }
+    },
+    "/Users/alexander/dev/p2ppredict/contracts/src/interfaces/ITransferManagerNFT.sol": {
+      "lastModificationDate": 1657088975289,
+      "contentHash": "7e12ce5fac1db88587da55fe9c353bc6",
+      "sourceName": "src/interfaces/ITransferManagerNFT.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs"
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "london"
+        }
+      },
+      "imports": [],
+      "versionRequirement": "=0.8.13",
+      "artifacts": {
+        "ITransferManagerNFT": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "ITransferManagerNFT.sol/ITransferManagerNFT.json"
+        }
+      }
+    },
+    "/Users/alexander/dev/p2ppredict/contracts/src/interfaces/ITransferSelectorNFT.sol": {
+      "lastModificationDate": 1657088968808,
+      "contentHash": "4d2706cfe4bda524b0f4f2c36ed48218",
+      "sourceName": "src/interfaces/ITransferSelectorNFT.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs"
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "london"
+        }
+      },
+      "imports": [],
+      "versionRequirement": "=0.8.13",
+      "artifacts": {
+        "ITransferSelectorNFT": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "ITransferSelectorNFT.sol/ITransferSelectorNFT.json"
         }
       }
     },
@@ -806,6 +1091,153 @@
       "artifacts": {
         "Base64": {
           "0.8.13+commit.abaa5c0e.Darwin.appleclang": "Base64.sol/Base64.json"
+        }
+      }
+    },
+    "/Users/alexander/dev/p2ppredict/contracts/src/libraries/OrderTypes.sol": {
+      "lastModificationDate": 1657092127495,
+      "contentHash": "aad5a5d98cae7954705be75d858b4d0c",
+      "sourceName": "src/libraries/OrderTypes.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs"
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "london"
+        }
+      },
+      "imports": [],
+      "versionRequirement": "=0.8.13",
+      "artifacts": {
+        "OrderTypes": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "OrderTypes.sol/OrderTypes.json"
+        }
+      }
+    },
+    "/Users/alexander/dev/p2ppredict/contracts/src/libraries/OrderTypesNew.sol": {
+      "lastModificationDate": 1657092163665,
+      "contentHash": "72d6acba7167067610a97889eb22b14e",
+      "sourceName": "src/libraries/OrderTypesNew.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs"
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "london"
+        }
+      },
+      "imports": [],
+      "versionRequirement": "=0.8.13",
+      "artifacts": {
+        "OrderTypes": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "OrderTypesNew.sol/OrderTypes.json"
+        }
+      }
+    },
+    "/Users/alexander/dev/p2ppredict/contracts/src/test/Exchange.t.sol": {
+      "lastModificationDate": 1657109843257,
+      "contentHash": "08e9f664ea819489a0f7c2296f6e2eb6",
+      "sourceName": "src/test/Exchange.t.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs"
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "london"
+        }
+      },
+      "imports": [
+        "lib/chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol",
+        "lib/ds-test/src/test.sol",
+        "lib/forge-std/src/Script.sol",
+        "lib/forge-std/src/Test.sol",
+        "lib/forge-std/src/Vm.sol",
+        "lib/forge-std/src/console.sol",
+        "lib/forge-std/src/console2.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC20/extensions/draft-IERC20Permit.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC721/IERC721Receiver.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC721/utils/ERC721Holder.sol",
+        "lib/openzeppelin-contracts/contracts/utils/Address.sol",
+        "lib/openzeppelin-contracts/contracts/utils/Context.sol",
+        "lib/openzeppelin-contracts/contracts/utils/Strings.sol",
+        "lib/openzeppelin-contracts/contracts/utils/introspection/ERC165.sol",
+        "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
+        "src/Exchange.sol",
+        "src/PredictionMarket.sol",
+        "src/libraries/Base64.sol",
+        "src/libraries/OrderTypesNew.sol",
+        "src/test/mocks/MockV3Aggregator.sol"
+      ],
+      "versionRequirement": "=0.8.13",
+      "artifacts": {
+        "CheatCodes": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "Exchange.t.sol/CheatCodes.json"
+        },
+        "ExchangeTest": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "Exchange.t.sol/ExchangeTest.json"
+        },
+        "MockCollection": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "Exchange.t.sol/MockCollection.json"
+        },
+        "Receiver": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "Exchange.t.sol/Receiver.json"
         }
       }
     },
@@ -859,6 +1291,7 @@
         "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
         "src/PredictionMarket.sol",
         "src/libraries/Base64.sol",
+        "src/libraries/OrderTypesNew.sol",
         "src/test/mocks/MockV3Aggregator.sol"
       ],
       "versionRequirement": "=0.8.13",

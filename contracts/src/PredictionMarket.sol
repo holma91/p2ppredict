@@ -161,25 +161,25 @@ contract PredictionMarket is ERC721URIStorage {
 
         // odds = collateral / listPrice
 
-        OrderTypes.MakerOrder memory makerAsk = OrderTypes.MakerOrder(
-            true,
-            msg.sender,
-            listPrice,
-            underId,
-            block.timestamp,
-            endTime,
-            priceFeed,
-            tresholdPrice
-        );
+        // OrderTypes.MakerOrder memory makerAsk = OrderTypes.MakerOrder(
+        //     true,
+        //     msg.sender,
+        //     listPrice,
+        //     underId,
+        //     block.timestamp,
+        //     endTime,
+        //     priceFeed,
+        //     tresholdPrice
+        // );
 
-        if (over) {
-            // list under prediction
-            IExchange(exchangeAddress).createMakerAsk(makerAsk);
-        } else {
-            // list over prediction
-            makerAsk.tokenId = overId;
-            IExchange(exchangeAddress).createMakerAsk(makerAsk);
-        }
+        // if (over) {
+        //     // list under prediction
+        //     IExchange(exchangeAddress).createMakerAsk(makerAsk);
+        // } else {
+        //     // list over prediction
+        //     makerAsk.tokenId = overId;
+        //     IExchange(exchangeAddress).createMakerAsk(makerAsk);
+        // }
     }
 
     function exercise(uint256 id) public {
