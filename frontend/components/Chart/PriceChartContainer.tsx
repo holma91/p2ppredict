@@ -3,20 +3,24 @@ import styled from 'styled-components';
 import { getTimeWindowChange } from './utils/utils';
 import SwapLineChart from './SwapLineChart';
 import { useFetchPriceData } from '../../hooks/useFetchPriceData';
-import { assetToImage, timeWindowToNumber } from '../../utils/misc';
+import { assetToImage, timeWindowToNumber, symbolToCoingeckoId } from '../../utils/misc';
 import type { Token } from '../../types';
 
 type PriceChartContainerProps = {
 	height: string;
 	width: string;
 	chartHeight: string;
-	asset0: Token;
+	asset0: string;
 	asset1: Token;
 };
 
 const PriceChartContainer = ({ height, width, chartHeight, asset0, asset1 }: PriceChartContainerProps) => {
 	const [timeWindow, setTimeWindow] = useState('24H');
-	const { prices = [], isLoading, isError } = useFetchPriceData(asset0.coingeckoId, asset1.coingeckoId, timeWindow);
+	const {
+		prices = [],
+		isLoading,
+		isError,
+	} = useFetchPriceData(symbolToCoingeckoId[asset0], asset1.coingeckoId, timeWindow);
 
 	const [hoverValue, setHoverValue] = useState<number | undefined>();
 	const [hoverDate, setHoverDate] = useState<string | undefined>();
@@ -38,10 +42,10 @@ const PriceChartContainer = ({ height, width, chartHeight, asset0, asset1 }: Pri
 			<StyledPriceChart>
 				<StyledFlex>
 					<div className="styledFlex-inner">
-						<img src={assetToImage[asset0.symbol]} alt="logo" />
+						<img src={assetToImage[asset0]} alt="logo" />
 						{asset1.symbol !== 'usd' && <img src={assetToImage[asset1.symbol]} alt="logo" />}
 						<div className="chosen-assets">
-							{asset0.symbol.toUpperCase()}/{asset1.symbol.toUpperCase()}
+							{asset0.toUpperCase()}/{asset1.symbol.toUpperCase()}
 						</div>
 					</div>
 					<div>

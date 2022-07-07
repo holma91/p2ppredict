@@ -2,6 +2,7 @@ import type { NextPage } from 'next';
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import type { Token } from '../types';
+import Banner from '../components/Banner';
 
 import { assetToImage, assets, symbolToCoingeckoId } from '../utils/misc';
 import { mockOptions } from '../data/mockOptions';
@@ -22,34 +23,9 @@ const Container = styled.div`
 	grid-template-columns: 8fr 6fr;
 `;
 
-const BannerDiv = styled.div<{ active: boolean }>`
-	padding: 0.8rem;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border-bottom: 3px solid ${({ theme, active }) => (active ? theme.colors.secondary : theme.colors.gray[300])};
-
-	:hover {
-		cursor: pointer;
-		border-bottom: 3px solid ${({ theme }) => theme.colors.secondary};
-	}
-
-	img {
-		height: 28px;
-		width: 28px;
-	}
-
-	p {
-		display: flex;
-		align-items: center;
-		height: 28px;
-		width: 108px;
-	}
-`;
-
 const Taker: NextPage = () => {
 	const [bannerChoice, setBannerChoice] = useState('all');
-	const [asset0, setAsset0] = useState<Token>({ symbol: 'btc', coingeckoId: 'bitcoin' });
+	const [asset0, setAsset0] = useState('btc');
 	const [asset1, setAsset1] = useState<Token>({ symbol: 'usd', coingeckoId: 'usd' });
 	const [active, setActive] = useState(0);
 
@@ -59,23 +35,12 @@ const Taker: NextPage = () => {
 
 	const handleClick = (option: any) => {
 		setActive(option.id);
-		setAsset0({ symbol: option.asset, coingeckoId: symbolToCoingeckoId[option.asset] });
+		setAsset0(option.asset);
 	};
 
 	return (
 		<OuterContainer>
-			<Banner>
-				<BannerDiv active={bannerChoice === 'all'}>
-					<p>ALL MARKETS</p>
-				</BannerDiv>
-				{Object.keys(assetToImage).map(symbol => {
-					return (
-						<BannerDiv active={bannerChoice === symbol} key={symbol}>
-							<img src={assetToImage[symbol]} alt={`${symbol}-logo`} />
-						</BannerDiv>
-					);
-				})}
-			</Banner>
+			<Banner showAll={true} bannerChoice={bannerChoice} fullWidth={true} setBannerChoice={setBannerChoice} />
 			<Container>
 				<Left>
 					<Overview>
@@ -172,37 +137,6 @@ const Taker: NextPage = () => {
 		</OuterContainer>
 	);
 };
-
-const Banner = styled.div`
-	overflow-x: scroll;
-	top: 58.78px; // do something better
-	position: sticky;
-	background-color: ${({ theme }) => theme.colors.gray[300]};
-	display: flex;
-	align-items: center;
-	/* justify-content: space-between; */
-	padding: 0.1rem 1.2rem;
-
-	.logo {
-		padding: 0.8rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-bottom: 3px solid ${({ theme }) => theme.colors.gray[300]};
-
-		:hover {
-			cursor: pointer;
-			/* background-color: ${({ theme }) => theme.colors.gray[200]}; */
-			border-bottom: 3px solid ${({ theme }) => theme.colors.secondary};
-		}
-	}
-
-	.all {
-		p {
-			width: 108px;
-		}
-	}
-`;
 
 const Right = styled.div`
 	padding: 0 1.75rem;

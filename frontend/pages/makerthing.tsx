@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 import type { NextPage } from 'next';
 import styled from 'styled-components';
 import Select, { NonceProvider, StylesConfig } from 'react-select';
@@ -15,6 +15,21 @@ const StyledChoice = styled.div`
 		width: 20px;
 	}
 `;
+
+const symbolToLabel: { [key: string]: JSX.Element } = {
+	btc: (
+		<StyledChoice>
+			<img src={assetToImage['btc']} alt="logo" />
+			<span>BTC</span>
+		</StyledChoice>
+	),
+	eth: (
+		<StyledChoice>
+			<img src={assetToImage['eth']} alt="logo" />
+			<span>ETH</span>
+		</StyledChoice>
+	),
+};
 
 const options = [
 	{
@@ -117,109 +132,114 @@ const customStyles = {
 	}),
 };
 
-const Container = styled.div`
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: 91vh;
-`;
-
 const StyledSelect = styled(Select)`
 	width: 100%;
 	background-color: #1e1e1e;
 	outline: none;
 `;
 
-const MakerThing: NextPage = () => {
+type MakerThingProps = {
+	asset: string;
+	setAsset: Dispatch<SetStateAction<string>>;
+};
+
+const MakerThing = ({ asset, setAsset }: MakerThingProps) => {
 	const [over, setOver] = useState(true);
 
 	const handleChange = (selectedOption: any) => {
 		console.log(selectedOption);
+		setAsset(selectedOption.value);
 	};
 
 	return (
-		<Container>
-			<Thing>
-				<Header>
-					<label>Asset:</label>
-					<StyledSelect options={options} styles={customStyles} onChange={handleChange} autoFocus={true} />
-				</Header>
-				<SizeDiv>
-					<div className="inner-size">
-						<img src={assetToImage['btc']} alt={`btc-logo`} />
-						<div className="input-div">
-							<input placeholder="1" />
-						</div>
+		<Thing>
+			<Header>
+				<label>Asset:</label>
+				<StyledSelect
+					defaultValue={{
+						label: symbolToLabel[asset],
+						value: asset,
+					}}
+					options={options}
+					styles={customStyles}
+					onChange={handleChange}
+				/>
+			</Header>
+			<SizeDiv>
+				<div className="inner-size">
+					<img src={assetToImage['eth']} alt={`eth-logo`} />
+					<div className="input-div">
+						<input placeholder="1" />
 					</div>
-					<div className="inner-size">
-						<p>available: 1.24</p>
-						<p>Position Size</p>
-					</div>
-				</SizeDiv>
-				<MultiDiv>
-					<div className="split">
-						<div className="first">
-							<input type="number" placeholder="20000" />
-							<p>Strike Price</p>
-						</div>
-						<div>
-							<input type="date " placeholder="2023-01-01" />
-							<p>Expiry</p>
-						</div>
-					</div>
-					<div className="mid">
-						<div>
-							<p>Percent to strike</p>
-							<p>23.44%</p>
-						</div>
-						<div>
-							<p>Countdown to expiry</p>
-							<p>200D</p>
-						</div>
-					</div>
-					<div className="split">
-						<div className="first">
-							<input type="number" placeholder="1.50" />
-							<p>Over Odds</p>
-						</div>
-						<div>
-							<input type="number" placeholder="3.00" />
-							<p>Under Odds</p>
-						</div>
-					</div>
-				</MultiDiv>
-				<ToggleDiv>
-					<CustomToggle over={over} onClick={() => setOver(!over)}>
-						{over && <p>OVER</p>}
-						<div className="ball"></div>
-						{!over && <p>UNDER</p>}
-					</CustomToggle>
-				</ToggleDiv>
-				<LimitOrderDiv>
-					<p>Invalidate order when BTC is over:</p>
-					<input type="number" />
-				</LimitOrderDiv>
-				<SummaryDiv>
-					<div>
-						<p>Depositing</p>
-						<p>1 ETH</p>
+				</div>
+				<div className="inner-size">
+					<p>available: 1.24</p>
+					<p>Position Size</p>
+				</div>
+			</SizeDiv>
+			<MultiDiv>
+				<div className="split">
+					<div className="first">
+						<input type="number" placeholder="20000" />
+						<p>Strike Price</p>
 					</div>
 					<div>
-						<p>Listing UNDER for</p>
-						<p>0.66 ETH</p>
+						<input type="date " placeholder="2023-01-01" />
+						<p>Expiry</p>
+					</div>
+				</div>
+				<div className="mid">
+					<div>
+						<p>Percent to strike</p>
+						<p>23.44%</p>
 					</div>
 					<div>
-						<p>Risk</p>
-						<p>0.33 ETH</p>
+						<p>Countdown to expiry</p>
+						<p>200D</p>
+					</div>
+				</div>
+				<div className="split">
+					<div className="first">
+						<input type="number" placeholder="1.50" />
+						<p>Over Odds</p>
 					</div>
 					<div>
-						<p>Payout</p>
-						<p>1 ETH</p>
+						<input type="number" placeholder="3.00" />
+						<p>Under Odds</p>
 					</div>
-					<Button>CREATE MARKET</Button>
-				</SummaryDiv>
-			</Thing>
-		</Container>
+				</div>
+			</MultiDiv>
+			<ToggleDiv>
+				<CustomToggle over={over} onClick={() => setOver(!over)}>
+					{over && <p>OVER</p>}
+					<div className="ball"></div>
+					{!over && <p>UNDER</p>}
+				</CustomToggle>
+			</ToggleDiv>
+			<LimitOrderDiv>
+				<p>Invalidate order when BTC is over:</p>
+				<input type="number" />
+			</LimitOrderDiv>
+			<SummaryDiv>
+				<div>
+					<p>Depositing</p>
+					<p>1 ETH</p>
+				</div>
+				<div>
+					<p>Listing UNDER for</p>
+					<p>0.66 ETH</p>
+				</div>
+				<div>
+					<p>Risk</p>
+					<p>0.33 ETH</p>
+				</div>
+				<div>
+					<p>Payout</p>
+					<p>1 ETH</p>
+				</div>
+				<Button>CREATE MARKET</Button>
+			</SummaryDiv>
+		</Thing>
 	);
 };
 
@@ -410,6 +430,7 @@ const Thing = styled.div`
 	flex-direction: column;
 	gap: 1rem;
 	border-radius: 15px;
+	border: 1px solid #262626;
 `;
 
 export default MakerThing;
