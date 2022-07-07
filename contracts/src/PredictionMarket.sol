@@ -168,6 +168,8 @@ contract PredictionMarket is ERC721URIStorage {
             makerAsk.tokenId = overId;
             IExchange(exchangeAddress).createMakerAsk(makerAsk);
         }
+
+        return (marketId, overId, underId);
     }
 
     function exercise(uint256 id) public {

@@ -3,6 +3,7 @@ pragma solidity 0.8.13;
 
 import {PredictionMarket} from "../PredictionMarket.sol";
 import {Exchange} from "../Exchange.sol";
+import {OrderTypes} from "../libraries/OrderTypesNew.sol";
 import "./mocks/MockV3Aggregator.sol";
 import "forge-std/Test.sol";
 import "openzeppelin-contracts/contracts/token/ERC721/utils/ERC721Holder.sol";
@@ -45,6 +46,7 @@ contract PredictionMarketTest is Test, PredictionMarket, ERC721Holder {
     function setUp() public {
         exchange = new Exchange();
         predictionMarket = new PredictionMarket();
+        exchange.setPredictionMarketAddress(address(predictionMarket));
         predictionMarket.setExchangeAddress(address(exchange));
 
         alice = address(0x1337);
@@ -107,19 +109,40 @@ contract PredictionMarketTest is Test, PredictionMarket, ERC721Holder {
         predictionMarket.exercise(overId);
     }
 
-    function testCanCreateMarketAndTakePosition() public {
-        // (, uint256 overId, uint256 underId) = predictionMarket.createMarket{value: 1 ether}(
-        //     address(ethUsdPriceFeed),
-        //     1_000 * 10**8,
-        //     1000,
-        //     1 ether,
-        //     true,
-        //     0.5 ether,
-        //     500,
-        //     975 * 10**8
-        // );
-        // assertTrue(predictionMarket.getPrediction(overId).over);
-        // assertFalse(predictionMarket.getPrediction(underId).over);
+    function testCanCreateMarketAndTakeOverPosition() public {
+        uint256 listPrice = 0.5 ether;
+        (, uint256 overId, uint256 underId) = predictionMarket.createMarket{value: 1 ether}(
+            ethMarket,
+            true,
+            listPrice,
+            500,
+            975 * 10**8
+        );
+        assertTrue(predictionMarket.getPrediction(overId).over);
+        assertFalse(predictionMarket.getPrediction(underId).over);
+
+        OrderTypes.MakerOrder memory makerAsk = exchange.getMakerAsk(underId);
+        assertEq(makerAsk.price, listPrice);
+
+        OrderTypes.MakerOrder memory makerAskFake = exchange.getMakerAsk(overId);
+        assertEq(makerAskFake.price, 0);
+    }
+
+    function testCanCreateMarketAndTakeUnderPosition() public {
+        uint256 listPrice = 0.75 ether;
+        (, uint256 overId, uint256 underId) = predictionMarket.createMarket{value: 1 ether}(
+            ethMarket,
+            false,
+            listPrice,
+            500,
+            975 * 10**8
+        );
+
+        OrderTypes.MakerOrder memory makerAsk = exchange.getMakerAsk(overId);
+        assertEq(makerAsk.price, listPrice);
+
+        OrderTypes.MakerOrder memory makerAskFake = exchange.getMakerAsk(underId);
+        assertEq(makerAskFake.price, 0);
     }
 
     receive() external payable {}

@@ -9,7 +9,7 @@
     {
       "files": "*.t.sol",
       "options": {
-        "printWidth": 140
+        "printWidth": 120
       }
     }
   ]
