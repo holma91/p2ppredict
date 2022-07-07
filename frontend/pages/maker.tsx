@@ -10,13 +10,25 @@ import { symbolToCoingeckoId } from '../utils/misc';
 const Container = styled.div`
 	display: grid;
 	grid-template-columns: 5fr 2fr;
+
+	@media (max-width: 1300px) {
+		grid-template-columns: 4fr 2fr;
+	}
+
+	@media (max-width: 1000px) {
+		grid-template-columns: 3fr 2fr;
+	}
+
+	@media (max-width: 900px) {
+		grid-template-columns: 0fr 1fr;
+	}
 `;
 
 const Maker: NextPage = () => {
 	const [asset, setAsset] = useState('btc');
 	const asset1 = { symbol: 'usd', coingeckoId: 'usd' };
 
-	const dimensions = { height: '87%', width: '100%', chartHeight: '77%' };
+	const dimensions = { height: '87%', width: '100%', chartHeight: 'calc(100% - 125px)' };
 
 	return (
 		<>
@@ -56,6 +68,7 @@ const Right = styled.div`
 
 	display: flex;
 	justify-content: center;
+	align-items: center;
 
 	background-color: ${({ theme }) => theme.colors.gray[300]};
 `;

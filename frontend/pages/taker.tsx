@@ -21,6 +21,10 @@ const OuterContainer = styled.div`
 const Container = styled.div`
 	display: grid;
 	grid-template-columns: 8fr 6fr;
+
+	@media (max-width: 900px) {
+		grid-template-columns: 100% 0;
+	}
 `;
 
 const Taker: NextPage = () => {
@@ -147,6 +151,9 @@ const Right = styled.div`
 	justify-content: center;
 
 	background-color: ${({ theme }) => theme.colors.gray[300]};
+	@media (max-width: 900px) {
+		display: none;
+	}
 `;
 
 const Left = styled.div`
