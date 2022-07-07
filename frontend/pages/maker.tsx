@@ -9,7 +9,7 @@ const Container = styled.div`
 `;
 
 const Maker: NextPage = () => {
-	const dimensions = { height: '800px', width: '100%', chartHeight: '83%' };
+	const dimensions = { height: '650px', width: '100%', chartHeight: '83%' };
 	const asset0 = { symbol: 'btc', coingeckoId: 'bitcoin' };
 	const asset1 = { symbol: 'usd', coingeckoId: 'usd' };
 	return (
