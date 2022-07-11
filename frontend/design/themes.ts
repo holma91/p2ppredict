@@ -74,6 +74,18 @@ const neutral = {
 	600: '#000000',
 };
 
+type Theme = {
+	colors: object;
+	text: object;
+	background: {
+		primary: string;
+		secondary: string;
+		tertiary: string;
+	};
+	typeScale: object;
+	font: object;
+};
+
 export const bet365Theme: DefaultTheme = {
 	colors: {
 		primary: bet365Green,
@@ -112,7 +124,7 @@ export const blueTheme: DefaultTheme = {
 	typeScale: typeScale,
 };
 
-export const blackTheme: DefaultTheme = {
+export const blackTheme: Theme = {
 	colors: {
 		primary: '#5158BB',
 		primaryHover: darkerGray.hover,
@@ -125,6 +137,11 @@ export const blackTheme: DefaultTheme = {
 	text: {
 		primary: bet365Text[100],
 		secondary: bet365Text[200],
+	},
+	background: {
+		primary: '#151515',
+		secondary: '#202020',
+		tertiary: '#262626',
 	},
 	font: {
 		primary: primaryFont,

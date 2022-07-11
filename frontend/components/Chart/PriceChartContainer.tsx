@@ -143,7 +143,7 @@ const StyledPriceChart = styled.div`
 	height: 100%;
 	border-radius: 0.2rem;
 	padding-top: 0.5rem;
-	background-color: ${({ theme }) => `${theme.colors.gray[200]}`};
+	background-color: ${({ theme }) => `${theme.background.tertiary}`};
 `;
 
 const StyledFlex = styled.div`

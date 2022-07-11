@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { PrimaryButton, SecondaryButton } from './Buttons';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 interface ActorProps {
 	isActive: boolean;
@@ -24,11 +25,6 @@ const Header = () => {
 						<a>create markets</a>
 					</Actor>
 				</Link>
-				<Link href="/positions">
-					<Actor isActive={page === 'positions'}>
-						<a>open positions</a>
-					</Actor>
-				</Link>
 				<Link href="/taker">
 					<Actor isActive={page === 'taker'}>
 						<a>trade</a>
@@ -36,14 +32,12 @@ const Header = () => {
 				</Link>
 			</MenuContainer>
 			<ButtonContainer>
-				<Link href="/positions">
-					<a className="signUp">sign up</a>
-				</Link>
-				<Link href="/positions">
+				{/* <Link href="/positions">
 					<PrimaryButton>
-						<a className="logIn">log in</a>
+						<a className="logIn">connect</a>
 					</PrimaryButton>
-				</Link>
+				</Link> */}
+				<ConnectButton />
 			</ButtonContainer>
 		</HeaderContainer>
 	);
@@ -83,6 +77,8 @@ const HeaderContainer = styled.div`
 
 const Title = styled.div`
 	padding: 0.9rem 1.3rem;
+	display: flex;
+	align-items: center;
 
 	a {
 		color: white;

@@ -6,6 +6,8 @@ import makeAnimated from 'react-select/animated';
 import { FaToggleOn } from 'react-icons/fa';
 import { assetToImage } from '../utils/misc';
 
+import { blackTheme } from '../design/themes';
+
 const StyledChoice = styled.div`
 	display: flex;
 	align-items: center;
@@ -93,11 +95,11 @@ const customStyles = {
 		...provided,
 		// borderBottom: '2px solid grey',
 		color: state.isSelected ? 'grey' : 'white',
-		backgroundColor: '#1e1e1e',
+		backgroundColor: blackTheme.background.primary,
 		// backgroundColor: state.isSelected ? 'grey' : 'black',
 		':hover': {
 			cursor: 'pointer',
-			backgroundColor: state.isSelected ? '' : '#262626',
+			backgroundColor: state.isSelected ? '' : blackTheme.background.tertiary,
 		},
 	}),
 	input: (provided: any) => ({
@@ -107,7 +109,7 @@ const customStyles = {
 	control: (provided: any) => ({
 		...provided,
 		margin: 0,
-		backgroundColor: '#1e1e1e',
+		backgroundColor: blackTheme.background.tertiary,
 		border: 0,
 		outline: 'none',
 		// This line disable the blue border
@@ -120,21 +122,21 @@ const customStyles = {
 	}),
 	menuList: (provided: any) => ({
 		...provided,
-		backgroundColor: '#1e1e1e',
+		backgroundColor: blackTheme.background.primary,
 		paddingTop: 0,
 		paddingBottom: 0,
-		border: '1px solid #262626',
+		border: `1px solid ${blackTheme.background.tertiary}`,
 		// height: '100px',
 	}),
 	indicatorSeparator: (provided: any) => ({
 		...provided,
-		backgroundColor: '#262626',
+		backgroundColor: blackTheme.background.tertiary,
 	}),
 };
 
 const StyledSelect = styled(Select)`
 	width: 100%;
-	background-color: #1e1e1e;
+	background-color: ${({ theme }) => theme.background.primary};
 	outline: none;
 `;
 
@@ -255,7 +257,7 @@ const Button = styled.button`
 `;
 
 const SummaryDiv = styled.div`
-	background-color: #262626;
+	background-color: ${({ theme }) => theme.background.tertiary};
 	display: flex;
 	flex-direction: column;
 	border-radius: 1rem;
@@ -282,7 +284,7 @@ const LimitOrderDiv = styled.div`
 		color: ${({ theme }) => theme.text.secondary};
 
 		font-size: ${({ theme }) => theme.typeScale.paragraph};
-		background-color: #1e1e1e;
+		background-color: ${({ theme }) => theme.background.tertiary};
 		outline: none;
 		border: none;
 		width: 100%;
@@ -311,7 +313,7 @@ const CustomToggle = styled.div<{ over: boolean }>`
 	}
 
 	.ball {
-		background-color: black;
+		background-color: ${({ theme }) => theme.background.primary};
 		height: 33px;
 		width: 33px;
 		border-radius: 100%;
@@ -325,7 +327,7 @@ const ToggleDiv = styled.div`
 `;
 
 const MultiDiv = styled.div`
-	border: 1px solid #262626;
+	border: 1px solid ${({ theme }) => theme.background.tertiary};
 	border-radius: 1rem;
 	p {
 		font-size: ${({ theme }) => theme.typeScale.smallParagraph};
@@ -358,8 +360,8 @@ const MultiDiv = styled.div`
 	}
 
 	.mid {
-		border-top: 1px solid #262626;
-		border-bottom: 1px solid #262626;
+		border-top: 1px solid ${({ theme }) => theme.background.primary};
+		border-bottom: 1px solid ${({ theme }) => theme.background.primary};
 		padding: 0.8rem;
 		display: flex;
 		flex-direction: column;
@@ -377,7 +379,7 @@ const SizeDiv = styled.div`
 	flex-direction: column;
 	justify-content: space-between;
 	border-radius: 1rem;
-	background-color: #1e1e1e;
+	background-color: ${({ theme }) => theme.background.tertiary};
 	padding: 1rem 1.25rem;
 	gap: 1rem;
 
@@ -419,7 +421,7 @@ const Header = styled.div`
 `;
 
 const Thing = styled.div`
-	background-color: #151515;
+	background-color: ${({ theme }) => theme.background.primary};
 
 	color: ${({ theme }) => theme.text.secondary};
 	padding: 1rem;
@@ -430,7 +432,7 @@ const Thing = styled.div`
 	flex-direction: column;
 	gap: 1rem;
 	border-radius: 15px;
-	border: 1px solid #262626;
+	border: 2px solid ${({ theme }) => theme.background.tertiary};
 `;
 
 export default MakerThing;

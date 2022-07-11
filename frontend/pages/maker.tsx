@@ -56,7 +56,8 @@ const Left = styled.div`
 	flex-direction: column;
 	padding: 0.5rem 1rem;
 	height: calc(100vh - 58.78px);
-	background-color: ${({ theme }) => theme.colors.gray[300]};
+	background-color: ${({ theme }) => theme.background.primary};
+
 	overflow-y: scroll;
 	color: ${({ theme }) => theme.text.secondary};
 `;
@@ -68,9 +69,9 @@ const Right = styled.div`
 
 	display: flex;
 	justify-content: center;
-	align-items: center;
+	/* align-items: center; */
 
-	background-color: ${({ theme }) => theme.colors.gray[300]};
+	background-color: ${({ theme }) => theme.background.primary};
 `;
 
 export default Maker;
