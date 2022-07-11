@@ -1,4 +1,4 @@
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import type { NextPage } from 'next';
 import styled from 'styled-components';
 import Select, { NonceProvider, StylesConfig } from 'react-select';
@@ -147,6 +147,54 @@ type MakerThingProps = {
 
 const MakerThing = ({ asset, setAsset }: MakerThingProps) => {
 	const [over, setOver] = useState(true);
+	const [positionSize, setPositionSize] = useState('1');
+	const [strikePrice, setStrikePrice] = useState('0');
+	const [expiry, setExpiry] = useState('2023-01-01');
+	const [overOdds, setOverOdds] = useState('2');
+	const [underOdds, setUnderOdds] = useState('2');
+	// asset
+	// position size: max size
+	// strike price: >= 0
+	// expiry: fwd in time
+	// over: >= 1
+	// under: >= 1
+	// side
+	// limit price:
+
+	const handlePositionSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		// check that position is not too large
+		setPositionSize(e.target.value);
+	};
+
+	const handleStrikePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setStrikePrice(e.target.value);
+	};
+
+	const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setExpiry(e.target.value);
+	};
+
+	const handleOverOddsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (e.target.value === '' || e.target.value.slice(e.target.value.length - 1) === '.') {
+			setOverOdds(e.target.value);
+			return;
+		}
+		let overOdds = parseFloat(e.target.value);
+		setOverOdds(overOdds.toString());
+		let underOdds = 1 / (1 - 1 / overOdds);
+		setUnderOdds(underOdds.toFixed(4));
+	};
+
+	const handleUnderOddsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (e.target.value === '' || e.target.value.slice(e.target.value.length - 1) === '.') {
+			setUnderOdds(e.target.value);
+			return;
+		}
+		let underOdds = parseFloat(e.target.value);
+		setUnderOdds(underOdds.toString());
+		let overOdds = 1 / (1 - 1 / underOdds);
+		setOverOdds(overOdds.toFixed(4));
+	};
 
 	const handleChange = (selectedOption: any) => {
 		console.log(selectedOption);
@@ -165,13 +213,15 @@ const MakerThing = ({ asset, setAsset }: MakerThingProps) => {
 					options={options}
 					styles={customStyles}
 					onChange={handleChange}
+					instanceId="yo"
+					autoFocus={true}
 				/>
 			</Header>
 			<SizeDiv>
 				<div className="inner-size">
 					<img src={assetToImage['eth']} alt={`eth-logo`} />
 					<div className="input-div">
-						<input placeholder="1" />
+						<input type="number" value={positionSize} onChange={handlePositionSizeChange} />
 					</div>
 				</div>
 				<div className="inner-size">
@@ -182,11 +232,11 @@ const MakerThing = ({ asset, setAsset }: MakerThingProps) => {
 			<MultiDiv>
 				<div className="split">
 					<div className="first">
-						<input type="number" placeholder="20000" />
+						<input type="number" value={strikePrice} onChange={handleStrikePriceChange} />
 						<p>Strike Price</p>
 					</div>
 					<div>
-						<input type="date " placeholder="2023-01-01" />
+						<input type="date " value={expiry} onChange={handleExpiryChange} />
 						<p>Expiry</p>
 					</div>
 				</div>
@@ -202,11 +252,11 @@ const MakerThing = ({ asset, setAsset }: MakerThingProps) => {
 				</div>
 				<div className="split">
 					<div className="first">
-						<input type="number" placeholder="1.50" />
+						<input type="string" value={overOdds} onChange={handleOverOddsChange} name="over" />
 						<p>Over Odds</p>
 					</div>
 					<div>
-						<input type="number" placeholder="3.00" />
+						<input type="string" value={underOdds} onChange={handleUnderOddsChange} name="under" />
 						<p>Under Odds</p>
 					</div>
 				</div>
