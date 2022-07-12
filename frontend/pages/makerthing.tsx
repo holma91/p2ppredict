@@ -534,8 +534,8 @@ const MultiDiv = styled.div`
 	}
 
 	.mid {
-		border-top: 1px solid ${({ theme }) => theme.background.primary};
-		border-bottom: 1px solid ${({ theme }) => theme.background.primary};
+		border-top: 1px solid ${({ theme }) => theme.background.tertiary};
+		border-bottom: 1px solid ${({ theme }) => theme.background.tertiary};
 		padding: 0.8rem;
 		display: flex;
 		flex-direction: column;

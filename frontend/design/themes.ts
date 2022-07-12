@@ -81,6 +81,9 @@ type Theme = {
 		primary: string;
 		secondary: string;
 		tertiary: string;
+		quaternary?: string;
+		quinary?: string;
+		senary?: string;
 	};
 	typeScale: object;
 	font: object;
@@ -142,6 +145,9 @@ export const blackTheme: Theme = {
 		primary: '#151515',
 		secondary: '#202020',
 		tertiary: '#262626',
+		quaternary: '#353535',
+		quinary: '#444444',
+		senary: '#606060',
 	},
 	font: {
 		primary: primaryFont,

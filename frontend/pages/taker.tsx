@@ -9,6 +9,7 @@ import { mockOptions } from '../data/mockOptions';
 import PriceChartContainer from '../components/Chart/PriceChartContainer';
 import { useFetchPrices } from '../hooks/useFetchPrices';
 import { getWidth } from '../utils/helpers';
+import OrderBook from '../components/OrderBook';
 
 interface Props {
 	colored?: boolean;
@@ -136,6 +137,7 @@ const Taker: NextPage = () => {
 						asset0={asset0}
 						asset1={asset1}
 					></PriceChartContainer>
+					<OrderBook></OrderBook>
 				</Right>
 			</Container>
 		</OuterContainer>
@@ -148,7 +150,9 @@ const Right = styled.div`
 	overflow-y: scroll;
 
 	display: flex;
-	justify-content: center;
+	flex-direction: column;
+	align-items: center;
+	gap: 2rem;
 
 	background-color: ${({ theme }) => theme.colors.gray[300]};
 	@media (max-width: 900px) {
