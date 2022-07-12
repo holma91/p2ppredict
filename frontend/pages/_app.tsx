@@ -13,7 +13,7 @@ import { blackTheme, bet365Theme, blueTheme, GlobalStyle } from '../design/theme
 import Layout from '../components/Layout';
 
 const { chains, provider } = configureChains(
-	[chain.mainnet, chain.rinkeby, chain.polygon],
+	[chain.mainnet, chain.rinkeby, chain.polygon, chain.polygonMumbai],
 	[alchemyProvider({ alchemyId: process.env.ALCHEMY_ID }), publicProvider()]
 );
 

@@ -91,7 +91,7 @@ const Title = styled.div`
 `;
 
 const ButtonContainer = styled.div`
-	padding: 0.9rem 1.3rem;
+	padding: 0rem 1.3rem;
 
 	display: flex;
 	gap: 0.9rem;

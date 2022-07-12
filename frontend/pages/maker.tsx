@@ -68,6 +68,7 @@ const Right = styled.div`
 	overflow-y: scroll;
 
 	display: flex;
+	/* flex-direction: column; */
 	justify-content: center;
 	/* align-items: center; */
 

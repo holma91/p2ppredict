@@ -1,12 +1,17 @@
 import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import type { NextPage } from 'next';
+import Link from 'next/link';
 import styled from 'styled-components';
-import Select, { NonceProvider, StylesConfig } from 'react-select';
-import makeAnimated from 'react-select/animated';
-import { FaToggleOn } from 'react-icons/fa';
+import Select from 'react-select';
 import { assetToImage } from '../utils/misc';
-
+import PredictionMarket from '../../contracts/out/PredictionMarket.sol/PredictionMarket.json';
 import { blackTheme } from '../design/themes';
+import { useContractWrite, useWaitForTransaction, useContractEvent } from 'wagmi';
+import { rinkeby } from '../utils/addresses';
+import { markAssetError } from 'next/dist/client/route-loader';
+import { ethers } from 'ethers';
+import { Spinner } from '../components/Spinner';
+import { BiLinkExternal } from 'react-icons/bi';
 
 const StyledChoice = styled.div`
 	display: flex;
@@ -147,19 +152,39 @@ type MakerThingProps = {
 
 const MakerThing = ({ asset, setAsset }: MakerThingProps) => {
 	const [over, setOver] = useState(true);
-	const [positionSize, setPositionSize] = useState('1');
+	const [positionSize, setPositionSize] = useState('0.001');
 	const [strikePrice, setStrikePrice] = useState('0');
 	const [expiry, setExpiry] = useState('2023-01-01');
 	const [overOdds, setOverOdds] = useState('2');
 	const [underOdds, setUnderOdds] = useState('2');
-	// asset
-	// position size: max size
-	// strike price: >= 0
-	// expiry: fwd in time
-	// over: >= 1
-	// under: >= 1
-	// side
-	// limit price:
+	const [limitOrder, setLimitOrder] = useState('0');
+
+	const [createdMarketId, setCreatedMarketId] = useState(null);
+
+	const createMarketFunc = useContractWrite({
+		addressOrName: rinkeby.predictionMarket,
+		contractInterface: PredictionMarket.abi,
+		functionName: 'createMarketWithPosition',
+	});
+
+	const waitForCreateMarketFunc = useWaitForTransaction({
+		hash: createMarketFunc.data?.hash,
+		onSuccess(data) {
+			console.log(data);
+		},
+	});
+
+	useContractEvent({
+		addressOrName: rinkeby.predictionMarket,
+		contractInterface: PredictionMarket.abi,
+		eventName: 'MarketCreated',
+		listener: ([priceFeed, strikePrice, expiry, collateral, overPredictionId, underPredictionId]) => {
+			setCreatedMarketId(overPredictionId.toString());
+			setTimeout(() => {
+				setCreatedMarketId(null);
+			}, 20000);
+		},
+	});
 
 	const handlePositionSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		// check that position is not too large
@@ -196,114 +221,213 @@ const MakerThing = ({ asset, setAsset }: MakerThingProps) => {
 		setOverOdds(overOdds.toFixed(4));
 	};
 
+	const handleLimitOrderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const regex = new RegExp('^[0-9]+$');
+		console.log(e.target.value.slice(e.target.value.length - 1));
+		console.log(regex.test(e.target.value.slice(e.target.value.length - 1)));
+
+		if (
+			!regex.test(e.target.value.slice(e.target.value.length - 1)) &&
+			e.target.value.slice(e.target.value.length - 1) !== '.'
+		) {
+			return;
+		}
+		setLimitOrder(e.target.value);
+	};
+
 	const handleChange = (selectedOption: any) => {
-		console.log(selectedOption);
 		setAsset(selectedOption.value);
 	};
 
+	const createMarket = async () => {
+		const ETH_USD_DECIMALS = 8;
+		const market = {
+			priceFeed: '0x8A753747A1Fa494EC906cE90E9f37563A8AF630e',
+			strikePrice: ethers.utils.parseUnits(strikePrice, ETH_USD_DECIMALS),
+			expiry: ethers.BigNumber.from(new Date(expiry).getTime() / 1000),
+			collateral: ethers.utils.parseUnits(positionSize, 18),
+		};
+		// odds = collateral / price <=> price = collateral / odds
+		let listPrice;
+		const scaleFactor = 4;
+		if (over) {
+			let scaledUnderOdds = ethers.utils.parseUnits(underOdds, scaleFactor);
+			listPrice = market.collateral.div(scaledUnderOdds).mul(10 ** scaleFactor);
+		} else {
+			let scaledOverOdds = ethers.utils.parseUnits(overOdds, scaleFactor);
+			listPrice = market.collateral.div(scaledOverOdds).mul(10 ** scaleFactor);
+		}
+		console.log(ethers.utils.formatEther(listPrice));
+		let tresholdPrice = ethers.utils.parseUnits(limitOrder, ETH_USD_DECIMALS);
+		let endTimestamp = 1000000000000000;
+
+		createMarketFunc.write({
+			args: [market, over, listPrice, endTimestamp, tresholdPrice],
+			overrides: {
+				value: market.collateral,
+			},
+		});
+	};
+
 	return (
-		<Thing>
-			<Header>
-				<label>Asset:</label>
-				<StyledSelect
-					defaultValue={{
-						label: symbolToLabel[asset],
-						value: asset,
-					}}
-					options={options}
-					styles={customStyles}
-					onChange={handleChange}
-					instanceId="yo"
-					autoFocus={true}
-				/>
-			</Header>
-			<SizeDiv>
-				<div className="inner-size">
-					<img src={assetToImage['eth']} alt={`eth-logo`} />
-					<div className="input-div">
-						<input type="number" value={positionSize} onChange={handlePositionSizeChange} />
+		<Container>
+			{createdMarketId ? (
+				<NewMarket>
+					<Link href={`/markets/${createdMarketId}`}>
+						<a target="_blank">
+							View Newly Created Market <BiLinkExternal></BiLinkExternal>
+						</a>
+					</Link>
+				</NewMarket>
+			) : null}
+			<Thing>
+				<Header>
+					<label>Asset:</label>
+					<StyledSelect
+						defaultValue={{
+							label: symbolToLabel[asset],
+							value: asset,
+						}}
+						options={options}
+						styles={customStyles}
+						onChange={handleChange}
+						instanceId="yo"
+						autoFocus={true}
+					/>
+				</Header>
+				<SizeDiv>
+					<div className="inner-size">
+						<img src={assetToImage['eth']} alt={`eth-logo`} />
+						<div className="input-div">
+							<input type="number" value={positionSize} onChange={handlePositionSizeChange} />
+						</div>
 					</div>
-				</div>
-				<div className="inner-size">
-					<p>available: 1.24</p>
-					<p>Position Size</p>
-				</div>
-			</SizeDiv>
-			<MultiDiv>
-				<div className="split">
-					<div className="first">
-						<input type="number" value={strikePrice} onChange={handleStrikePriceChange} />
-						<p>Strike Price</p>
+					<div className="inner-size">
+						<p>available: 1.24</p>
+						<p>Position Size</p>
+					</div>
+				</SizeDiv>
+				<MultiDiv>
+					<div className="split">
+						<div className="first">
+							<input type="number" value={strikePrice} onChange={handleStrikePriceChange} />
+							<p>Strike Price</p>
+						</div>
+						<div>
+							<input type="date " value={expiry} onChange={handleExpiryChange} />
+							<p>Expiry</p>
+						</div>
+					</div>
+					<div className="mid">
+						<div>
+							<p>Percent to strike</p>
+							<p>23.44%</p>
+						</div>
+						<div>
+							<p>Countdown to expiry</p>
+							<p>200D</p>
+						</div>
+					</div>
+					<div className="split">
+						<div className="first">
+							<input type="string" value={overOdds} onChange={handleOverOddsChange} name="over" />
+							<p>Over Odds</p>
+						</div>
+						<div>
+							<input type="string" value={underOdds} onChange={handleUnderOddsChange} name="under" />
+							<p>Under Odds</p>
+						</div>
+					</div>
+				</MultiDiv>
+				<ToggleDiv>
+					<CustomToggle over={over} onClick={() => setOver(!over)}>
+						{over && <p>OVER</p>}
+						<div className="ball"></div>
+						{!over && <p>UNDER</p>}
+					</CustomToggle>
+				</ToggleDiv>
+				<LimitOrderDiv>
+					<p>
+						Invalidate order if {asset.toUpperCase()} goes {over ? 'under' : 'over'}:
+					</p>
+					<input type="string" value={limitOrder} onChange={handleLimitOrderChange} />
+				</LimitOrderDiv>
+				<SummaryDiv>
+					<div>
+						<p>Depositing</p>
+						<p>{positionSize} ETH</p>
 					</div>
 					<div>
-						<input type="date " value={expiry} onChange={handleExpiryChange} />
-						<p>Expiry</p>
-					</div>
-				</div>
-				<div className="mid">
-					<div>
-						<p>Percent to strike</p>
-						<p>23.44%</p>
+						<p>Listing {over ? 'UNDER' : 'OVER'} for</p>
+						<p>
+							{over
+								? `${(parseFloat(positionSize) / parseFloat(underOdds)).toFixed(4)} ETH`
+								: `${(parseFloat(positionSize) / parseFloat(overOdds)).toFixed(4)} ETH`}
+						</p>
 					</div>
 					<div>
-						<p>Countdown to expiry</p>
-						<p>200D</p>
-					</div>
-				</div>
-				<div className="split">
-					<div className="first">
-						<input type="string" value={overOdds} onChange={handleOverOddsChange} name="over" />
-						<p>Over Odds</p>
+						<p>Risk</p>
+						<p>
+							{over
+								? `${(
+										parseFloat(positionSize) -
+										parseFloat(positionSize) / parseFloat(underOdds)
+								  ).toFixed(4)} ETH`
+								: `${(
+										parseFloat(positionSize) -
+										parseFloat(positionSize) / parseFloat(overOdds)
+								  ).toFixed(4)} ETH`}
+						</p>
 					</div>
 					<div>
-						<input type="string" value={underOdds} onChange={handleUnderOddsChange} name="under" />
-						<p>Under Odds</p>
+						<p>Payout</p>
+						<p>
+							{over
+								? `${parseFloat(positionSize)} + ${(
+										parseFloat(positionSize) / parseFloat(underOdds)
+								  ).toFixed(4)} ETH`
+								: `${parseFloat(positionSize)} + ${(
+										parseFloat(positionSize) / parseFloat(overOdds)
+								  ).toFixed(4)} ETH`}
+						</p>
 					</div>
-				</div>
-			</MultiDiv>
-			<ToggleDiv>
-				<CustomToggle over={over} onClick={() => setOver(!over)}>
-					{over && <p>OVER</p>}
-					<div className="ball"></div>
-					{!over && <p>UNDER</p>}
-				</CustomToggle>
-			</ToggleDiv>
-			<LimitOrderDiv>
-				<p>Invalidate order when BTC is over:</p>
-				<input type="number" />
-			</LimitOrderDiv>
-			<SummaryDiv>
-				<div>
-					<p>Depositing</p>
-					<p>1 ETH</p>
-				</div>
-				<div>
-					<p>Listing UNDER for</p>
-					<p>0.66 ETH</p>
-				</div>
-				<div>
-					<p>Risk</p>
-					<p>0.33 ETH</p>
-				</div>
-				<div>
-					<p>Payout</p>
-					<p>1 ETH</p>
-				</div>
-				<Button>CREATE MARKET</Button>
-			</SummaryDiv>
-		</Thing>
+					{createMarketFunc.isLoading ? (
+						<Button l={true} type="button">
+							<Spinner />
+						</Button>
+					) : waitForCreateMarketFunc.isLoading ? (
+						<Button l={true} type="button">
+							<Spinner />
+						</Button>
+					) : (
+						<Button type="button" l={false} onClick={createMarket}>
+							CREATE MARKET
+						</Button>
+					)}
+				</SummaryDiv>
+			</Thing>
+		</Container>
 	);
 };
 
-const Button = styled.button`
+const Container = styled.div`
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+`;
+
+const Button = styled.button<{ l: boolean }>`
 	margin-top: 0.5rem;
-	padding: 0.75rem;
+	padding: ${({ l: loading }) => (loading ? '0.5rem 0.75rem' : '0.75rem')};
 	outline: none;
 	border: none;
 	border-radius: 0.2rem;
 	color: ${({ theme }) => theme.text.secondary};
 	background-color: ${({ theme }) => theme.colors.primary};
 	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 `;
 
 const SummaryDiv = styled.div`
@@ -476,13 +600,35 @@ const Thing = styled.div`
 	color: ${({ theme }) => theme.text.secondary};
 	padding: 1rem;
 	width: 400px;
-	height: 750px;
+	/* height: 750px; */
 
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
 	border-radius: 15px;
 	border: 2px solid ${({ theme }) => theme.background.tertiary};
+`;
+
+const NewMarket = styled.div`
+	background-color: ${({ theme }) => theme.background.primary};
+	width: 100%;
+	height: 150px;
+	border-radius: 0.5rem;
+	padding: 1rem;
+	color: ${({ theme }) => theme.text.secondary};
+	a {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 3px;
+		font-weight: 500;
+		:hover {
+			color: ${({ theme }) => theme.text.primary};
+		}
+	}
+	svg {
+		width: 22px;
+	}
 `;
 
 export default MakerThing;
