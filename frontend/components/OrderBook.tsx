@@ -1,17 +1,26 @@
 import styled from 'styled-components';
 import { assetToImage } from '../utils/misc';
 
-export default function OrderBook() {
-	const asset0 = 'eth';
+type OrderBookProps = {
+	market: any;
+	asset: string;
+};
+
+export default function OrderBook({ market, asset }: OrderBookProps) {
+	console.log(market);
+
 	return (
 		<Container>
 			<Header>
 				<Asset>
-					<img src={assetToImage[asset0]} alt="logo" />
-					<p>ETH/USD</p>
+					<img src={assetToImage[market.asset]} alt="logo" />
+					<p>{market.asset.toUpperCase()}/USD</p>
 				</Asset>
 				<div>
-					<p>At 2023-01-01, will the price of ETH be over or under $1000?</p>
+					<p>
+						At {market.expiry}, will the price of {market.asset.toUpperCase()} be over or under $
+						{market.strike}?
+					</p>
 				</div>
 			</Header>
 			<OverUnder>

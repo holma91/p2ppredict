@@ -5,7 +5,7 @@ import type { Token } from '../types';
 import Banner from '../components/Banner';
 
 import { assetToImage, assets, symbolToCoingeckoId } from '../utils/misc';
-import { mockOptions } from '../data/mockOptions';
+import { markets, allMarkets, btcMarkets } from '../data/mockMarkets';
 import PriceChartContainer from '../components/Chart/PriceChartContainer';
 import { useFetchPrices } from '../hooks/useFetchPrices';
 import { getWidth } from '../utils/helpers';
@@ -33,6 +33,7 @@ const Taker: NextPage = () => {
 	const [asset0, setAsset0] = useState('btc');
 	const [asset1, setAsset1] = useState<Token>({ symbol: 'usd', coingeckoId: 'usd' });
 	const [active, setActive] = useState(0);
+	const [activeMarkets, setActiveMarkets] = useState('all');
 
 	const { prices, isLoading, isError } = useFetchPrices(assets);
 
@@ -45,7 +46,13 @@ const Taker: NextPage = () => {
 
 	return (
 		<OuterContainer>
-			<Banner showAll={true} bannerChoice={bannerChoice} fullWidth={true} setBannerChoice={setBannerChoice} />
+			<Banner
+				showAll={true}
+				bannerChoice={bannerChoice}
+				fullWidth={true}
+				setBannerChoice={setBannerChoice}
+				setActive={setActive}
+			/>
 			<Container>
 				<Left>
 					<Overview>
@@ -65,25 +72,25 @@ const Taker: NextPage = () => {
 								<div>UNDER</div>
 							</ChoiceDiv>
 						</SectionHeader>
-						{mockOptions.slice(0, 3).map(option => {
+						{markets[bannerChoice].slice(0, 3).map((market: any) => {
 							return (
-								<MarketContainer key={option.id}>
-									<Market isActive={active === option.id} onClick={() => handleClick(option)}>
+								<MarketContainer key={market.id}>
+									<Market isActive={active === market.id} onClick={() => handleClick(market)}>
 										<AssetDiv>
 											<div>
-												<img src={assetToImage[option.asset]} alt="logo" />
-												<p>{option.asset.toUpperCase()}</p>
+												<img src={assetToImage[market.asset]} alt="logo" />
+												<p>{market.asset.toUpperCase()}</p>
 											</div>
 											<p className="live-price">
-												{isLoading ? '' : `$${prices[symbolToCoingeckoId[option.asset]].usd}`}
+												{isLoading ? '' : `$${prices[symbolToCoingeckoId[market.asset]].usd}`}
 											</p>
 										</AssetDiv>
-										<p>${option.strike}</p>
-										<p>{option.expiry}</p>
+										<p>${market.strike}</p>
+										<p>{market.expiry}</p>
 									</Market>
 									<ChoiceDiv colored={true}>
-										<div>{option.over}</div>
-										<div>{option.under}</div>
+										<div>{market.over}</div>
+										<div>{market.under}</div>
 									</ChoiceDiv>
 								</MarketContainer>
 							);
@@ -104,25 +111,25 @@ const Taker: NextPage = () => {
 								<div>UNDER</div>
 							</ChoiceDiv>
 						</SectionHeader>
-						{mockOptions.slice(3).map(option => {
+						{markets[bannerChoice].slice(3).map((market: any) => {
 							return (
-								<MarketContainer key={option.id}>
-									<Market isActive={active === option.id} onClick={() => handleClick(option)}>
+								<MarketContainer key={market.id}>
+									<Market isActive={active === market.id} onClick={() => handleClick(market)}>
 										<AssetDiv>
 											<div>
-												<img src={assetToImage[option.asset]} alt="logo" />
-												<p>{option.asset.toUpperCase()}</p>
+												<img src={assetToImage[market.asset]} alt="logo" />
+												<p>{market.asset.toUpperCase()}</p>
 											</div>
 											<p className="live-price">
-												{isLoading ? '' : `$${prices[symbolToCoingeckoId[option.asset]].usd}`}
+												{isLoading ? '' : `$${prices[symbolToCoingeckoId[market.asset]].usd}`}
 											</p>
 										</AssetDiv>
-										<p>${option.strike}</p>
-										<p>{option.expiry}</p>
+										<p>${market.strike}</p>
+										<p>{market.expiry}</p>
 									</Market>
 									<ChoiceDiv colored={true}>
-										<div>{option.over}</div>
-										<div>{option.under}</div>
+										<div>{market.over}</div>
+										<div>{market.under}</div>
 									</ChoiceDiv>
 								</MarketContainer>
 							);
@@ -134,10 +141,10 @@ const Taker: NextPage = () => {
 						height={dimensions.height}
 						width={dimensions.width}
 						chartHeight={dimensions.chartHeight}
-						asset0={asset0}
+						asset0={markets[bannerChoice][active].asset}
 						asset1={asset1}
 					></PriceChartContainer>
-					<OrderBook></OrderBook>
+					<OrderBook market={markets[bannerChoice][active]} asset={asset0}></OrderBook>
 				</Right>
 			</Container>
 		</OuterContainer>
@@ -164,6 +171,7 @@ const Left = styled.div`
 	height: 93vh;
 	overflow-y: scroll;
 	color: ${({ theme }) => theme.text.secondary};
+	background-color: ${({ theme }) => theme.background.primary};
 
 	.header {
 		padding: 0.65rem 1.4rem;

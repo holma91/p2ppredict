@@ -7,12 +7,19 @@ export default function Banner({
 	showAll,
 	fullWidth,
 	setBannerChoice,
+	setActive,
 }: {
 	bannerChoice: string;
 	showAll: boolean;
 	fullWidth: boolean;
 	setBannerChoice: Dispatch<SetStateAction<string>>;
+	setActive: Dispatch<SetStateAction<number>>;
 }) {
+	const handleBannerChange = (symbol: string) => {
+		setActive(0);
+		setBannerChoice(symbol);
+	};
+
 	return (
 		<Container fullWidth={fullWidth}>
 			{showAll && (
@@ -22,7 +29,7 @@ export default function Banner({
 			)}
 			{Object.keys(assetToImage).map(symbol => {
 				return (
-					<BannerDiv active={bannerChoice === symbol} key={symbol} onClick={() => setBannerChoice(symbol)}>
+					<BannerDiv active={bannerChoice === symbol} key={symbol} onClick={() => handleBannerChange(symbol)}>
 						<img src={assetToImage[symbol]} alt={`${symbol}-logo`} />
 					</BannerDiv>
 				);
