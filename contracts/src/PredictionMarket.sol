@@ -130,7 +130,7 @@ contract PredictionMarket is ERC721URIStorage {
         return (currentMarketId - 1, currentPredictionId - 2, currentPredictionId - 1);
     }
 
-    function createMarket(
+    function createMarketWithPosition(
         Market calldata market,
         bool over,
         uint256 listPrice,

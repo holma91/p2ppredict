@@ -111,7 +111,7 @@ contract PredictionMarketTest is Test, PredictionMarket, ERC721Holder {
 
     function testCanCreateMarketAndTakeOverPosition() public {
         uint256 listPrice = 0.5 ether;
-        (, uint256 overId, uint256 underId) = predictionMarket.createMarket{value: 1 ether}(
+        (, uint256 overId, uint256 underId) = predictionMarket.createMarketWithPosition{value: 1 ether}(
             ethMarket,
             true,
             listPrice,
@@ -130,7 +130,7 @@ contract PredictionMarketTest is Test, PredictionMarket, ERC721Holder {
 
     function testCanCreateMarketAndTakeUnderPosition() public {
         uint256 listPrice = 0.75 ether;
-        (, uint256 overId, uint256 underId) = predictionMarket.createMarket{value: 1 ether}(
+        (, uint256 overId, uint256 underId) = predictionMarket.createMarketWithPosition{value: 1 ether}(
             ethMarket,
             false,
             listPrice,
