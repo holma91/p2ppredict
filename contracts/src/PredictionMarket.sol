@@ -14,7 +14,8 @@ interface IExchange {
     function createMakerAsk(
         OrderTypes.MakerOrder calldata makerAsk,
         int256 strikePrice,
-        uint256 expiry
+        uint256 expiry,
+        uint256 marketId
     ) external;
 }
 
@@ -168,11 +169,11 @@ contract PredictionMarket is ERC721URIStorage {
 
         if (over) {
             // list under prediction
-            IExchange(exchangeAddress).createMakerAsk(makerAsk, market.strikePrice, market.expiry);
+            IExchange(exchangeAddress).createMakerAsk(makerAsk, market.strikePrice, market.expiry, marketId);
         } else {
             // list over prediction
             makerAsk.tokenId = overId;
-            IExchange(exchangeAddress).createMakerAsk(makerAsk, market.strikePrice, market.expiry);
+            IExchange(exchangeAddress).createMakerAsk(makerAsk, market.strikePrice, market.expiry, marketId);
         }
 
         return (marketId, overId, underId);

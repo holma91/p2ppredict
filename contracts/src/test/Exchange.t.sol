@@ -93,18 +93,19 @@ contract ExchangeTest is Test {
 
     function testCanCreateMakerAsk() public {
         cheats.prank(alice);
-        exchange.createMakerAsk(aliceMakerAsk, 0, 0);
+        exchange.createMakerAsk(aliceMakerAsk, 0, 0, 0);
         OrderTypes.MakerOrder memory makerAsk = exchange.getMakerAsk(aliceNftId);
         assertEq(makerAsk.tokenId, aliceNftId);
     }
 
     function testCanOverrideMakerAsk() public {
         cheats.startPrank(alice);
-        exchange.createMakerAsk(aliceMakerAsk, 0, 0);
+        exchange.createMakerAsk(aliceMakerAsk, 0, 0, 0);
         OrderTypes.MakerOrder memory makerAsk = exchange.getMakerAsk(aliceNftId);
         assertEq(makerAsk.price, 1 ether);
         exchange.createMakerAsk(
             OrderTypes.MakerOrder(true, alice, 5 ether, aliceNftId, 0, 1000, address(ethUsdPriceFeed), 1_200 * 10**8),
+            0,
             0,
             0
         );
@@ -114,7 +115,7 @@ contract ExchangeTest is Test {
 
     function testCanMatchAskWithBid() public {
         cheats.prank(alice);
-        exchange.createMakerAsk(aliceMakerAsk, 0, 0);
+        exchange.createMakerAsk(aliceMakerAsk, 0, 0, 0);
 
         OrderTypes.TakerOrder memory takerBid = OrderTypes.TakerOrder(false, bob, 1 ether, aliceNftId);
         uint256 aliceBefore = alice.balance;
