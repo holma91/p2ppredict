@@ -30,3 +30,37 @@ over odds = collateral / price = 1 / 0.75 = 1.3333333333
 
 at 2023-01-01 and price is $32 -> Bob wins
   - he receives
+
+
+Market1 = {
+  ETH
+  $1000 in 10D
+  2.00
+  0.01 ETH
+}
+
+Prediction1 = {
+  Market1
+  over
+}
+
+
+-> market
+
+-> makerAsk
+
+get all markets? /markets
+get markets by id? /markets/:marketId
+get markets for asset? /markets?asset
+
+
+marketId = {
+  market
+  over: [
+    makerAsks...
+  ]
+  under: [
+    makerAsks...
+  ]
+}
+

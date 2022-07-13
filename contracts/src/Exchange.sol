@@ -16,10 +16,10 @@ contract Exchange {
         address indexed signer,
         uint256 indexed tokenId,
         uint256 price,
-        uint256 startTime,
-        uint256 endTime,
         address priceFeed,
-        int256 tresholdPrice
+        int256 tresholdPrice,
+        int256 strikePrice,
+        uint256 expiry
     );
 
     event TakerBid(address indexed taker, address indexed maker, uint256 indexed tokenId, uint256 price);
@@ -33,7 +33,11 @@ contract Exchange {
         predictionMarket = _predictionMarket;
     }
 
-    function createMakerAsk(OrderTypes.MakerOrder calldata makerAsk) external {
+    function createMakerAsk(
+        OrderTypes.MakerOrder calldata makerAsk,
+        int256 strikePrice,
+        uint256 expiry
+    ) external {
         require(makerAsk.isOrderAsk, "order is not an ask");
         require(msg.sender == makerAsk.signer || msg.sender == predictionMarket, "maker must be the sender");
 
@@ -43,10 +47,10 @@ contract Exchange {
             makerAsk.signer,
             makerAsk.tokenId,
             makerAsk.price,
-            makerAsk.startTime,
-            makerAsk.endTime,
             makerAsk.priceFeed,
-            makerAsk.tresholdPrice
+            makerAsk.tresholdPrice,
+            strikePrice,
+            expiry
         );
     }
 

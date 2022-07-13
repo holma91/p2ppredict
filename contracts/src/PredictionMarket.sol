@@ -11,7 +11,11 @@ import {Base64} from "./libraries/Base64.sol";
 import {OrderTypes} from "./libraries/OrderTypesNew.sol";
 
 interface IExchange {
-    function createMakerAsk(OrderTypes.MakerOrder calldata makerAsk) external;
+    function createMakerAsk(
+        OrderTypes.MakerOrder calldata makerAsk,
+        int256 strikePrice,
+        uint256 expiry
+    ) external;
 }
 
 contract PredictionMarket is ERC721URIStorage {
@@ -46,6 +50,7 @@ contract PredictionMarket is ERC721URIStorage {
         int256 strikePrice,
         uint256 expiry,
         uint256 collateral,
+        uint256 marketId,
         uint256 overPredictionId,
         uint256 underPredictionId
     );
@@ -123,6 +128,7 @@ contract PredictionMarket is ERC721URIStorage {
             market.strikePrice,
             market.expiry,
             market.collateral,
+            currentMarketId - 1,
             currentPredictionId - 2,
             currentPredictionId - 1
         );
@@ -162,11 +168,11 @@ contract PredictionMarket is ERC721URIStorage {
 
         if (over) {
             // list under prediction
-            IExchange(exchangeAddress).createMakerAsk(makerAsk);
+            IExchange(exchangeAddress).createMakerAsk(makerAsk, market.strikePrice, market.expiry);
         } else {
             // list over prediction
             makerAsk.tokenId = overId;
-            IExchange(exchangeAddress).createMakerAsk(makerAsk);
+            IExchange(exchangeAddress).createMakerAsk(makerAsk, market.strikePrice, market.expiry);
         }
 
         return (marketId, overId, underId);
