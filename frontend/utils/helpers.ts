@@ -29,3 +29,18 @@ export const getWidth = (screenWidth: number) => {
 
 	return width;
 };
+
+export const formatDate = (timestamp: string) => {
+	var a = new Date(parseInt(timestamp) * 1000);
+	let year = a.getFullYear();
+	let month = (a.getMonth() + 1).toString();
+	if (month.length == 1) {
+		month = '0' + month;
+	}
+	var date = a.getDate().toString();
+	if (date.length == 1) {
+		date = '0' + date;
+	}
+	var time = year + '-' + month + '-' + date;
+	return time;
+};

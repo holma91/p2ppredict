@@ -129,7 +129,7 @@ export const blueTheme: DefaultTheme = {
 
 export const blackTheme: Theme = {
 	colors: {
-		primary: '#5158BB',
+		primary: '#08B2E3',
 		primaryHover: darkerGray.hover,
 		secondary: '#EDF7F6',
 		tertiary: '#47B5FF',
