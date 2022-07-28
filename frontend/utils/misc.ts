@@ -40,6 +40,7 @@ export const assetToName: { [key: string]: string } = {
 	snx: 'Synthetix',
 	yfi: 'Yearn',
 	crv: 'Curve',
+	link: 'Chainlink',
 };
 
 export const symbolToCoingeckoId: { [key: string]: string } = {
@@ -134,27 +135,22 @@ export const priceFeedToSymbol: { [key: string]: { [key: string]: string } } = {
 };
 
 export const assetToImage: { [key: string]: string } = {
-	trx: 'https://cryptologos.cc/logos/tron-trx-logo.svg?v=022',
 	btc: 'https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=022',
-	jst: 'https://cryptologos.cc/logos/just-jst-logo.svg?v=022',
 	eth: 'https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=022',
-	btt: 'https://cryptologos.cc/logos/bittorrent-bttold-logo.svg?v=022',
-	win: 'https://assets.coingecko.com/coins/images/9129/small/WinK.png?1564624891',
-	sun: 'https://assets.coingecko.com/coins/images/12424/small/RSFOmQ.png?1624024337',
-	usdt: 'https://cryptologos.cc/logos/tether-usdt-logo.svg?v=022',
-	usdc: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=022',
-	nft: 'https://assets.coingecko.com/coins/images/15687/small/apenft.jpg?1621562368',
+	matic: 'https://cryptologos.cc/logos/polygon-matic-logo.svg?v=022',
 	sol: 'https://cryptologos.cc/logos/solana-sol-logo.svg?v=022',
 	avax: 'https://cryptologos.cc/logos/avalanche-avax-logo.svg?v=022',
 	dot: 'https://cryptologos.cc/logos/polkadot-new-dot-logo.svg?v=022',
-	matic: 'https://cryptologos.cc/logos/polygon-matic-logo.svg?v=022',
 	link: 'https://cryptologos.cc/logos/chainlink-link-logo.svg?v=022',
+	usdt: 'https://cryptologos.cc/logos/tether-usdt-logo.svg?v=022',
+	usdc: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=022',
 	atom: 'https://cryptologos.cc/logos/cosmos-atom-logo.svg?v=022',
 	bnb: 'https://cryptologos.cc/logos/bnb-bnb-logo.svg?v=022',
 	ada: 'https://cryptologos.cc/logos/cardano-ada-logo.svg?v=022',
 	doge: 'https://cryptologos.cc/logos/dogecoin-doge-logo.svg?v=022',
 	// near: 'https://cryptologos.cc/logos/near-protocol-near-logo.svg?v=022',
 	uni: 'https://cryptologos.cc/logos/uniswap-uni-logo.svg?v=022',
+	trx: 'https://cryptologos.cc/logos/tron-trx-logo.svg?v=022',
 	ftm: 'https://cryptologos.cc/logos/fantom-ftm-logo.svg?v=022',
 	icp: 'https://cryptologos.cc/logos/internet-computer-icp-logo.svg?v=022',
 	xmr: 'https://cryptologos.cc/logos/monero-xmr-logo.svg?v=022',

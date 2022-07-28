@@ -2,6 +2,7 @@ import type { NextPage } from 'next';
 import { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { FiExternalLink } from 'react-icons/fi';
+import { useContractRead } from 'wagmi';
 
 import type { Token } from '../types';
 import Banner from '../components/Banner';
@@ -12,8 +13,10 @@ import PriceChartContainer from '../components/Chart/PriceChartContainer';
 import { useFetchPrices } from '../hooks/useFetchPrices';
 import { formatDate } from '../utils/helpers';
 import OrderBook from '../components/OrderBook';
-import { useFetchMarkets } from '../hooks/useFetchMarkets';
-import { TronWebContext, TronWebFallbackContext } from './_app';
+// import { useFetchMarkets } from '../hooks/useFetchMarkets';
+// import { TronWebContext, TronWebFallbackContext } from './_app';
+import PredictionMarket from '../../contracts/out/PredictionMarket.sol/PredictionMarket.json';
+import Exchange from '../../contracts/out/Exchange.sol/Exchange.json';
 import { useRouter } from 'next/router';
 
 interface Props {
@@ -33,22 +36,38 @@ const Container = styled.div`
 	}
 `;
 
+// fetch markets
+
 const Taker: NextPage = () => {
 	const router = useRouter();
 	let { asset } = router.query;
 	asset = asset as string; // I promise
-	const tronWeb = useContext(TronWebContext);
-	const tronWebFallback = useContext(TronWebFallbackContext);
+	// const tronWeb = useContext(TronWebContext);
+	// const tronWebFallback = useContext(TronWebFallbackContext);
 	const [asset0, setAsset0] = useState(asset ? asset : 'trx');
 	const [asset1, setAsset1] = useState<Token>({
 		symbol: 'usd',
 		coingeckoId: 'usd',
 	});
 	const [active, setActive] = useState(0);
-	const { markets, isLoading: isl, isError: ise } = useFetchMarkets(asset0, tronWeb, tronWebFallback);
 	const { prices, isLoading, isError } = useFetchPrices(assets);
 	const [txHash, setTxHash] = useState('');
 	const [buyInfo, setBuyInfo] = useState({ asset: '', price: '', side: '' });
+	// const { markets, isLoading: isl, isError: ise } = useFetchMarkets(asset0, tronWeb, tronWebFallback);
+
+	const { data: predictions } = useContractRead({
+		addressOrName: '',
+		contractInterface: PredictionMarket.abi,
+		functionName: 'getPredictionsByFeed',
+	});
+
+	const { data: makerAsks } = useContractRead({
+		addressOrName: '',
+		contractInterface: PredictionMarket.abi,
+		functionName: 'getPredictionsByFeed',
+	});
+
+	let markets = allMarkets;
 
 	let dimensions = { height: '375px', width: '100%', chartHeight: '240px' };
 
@@ -101,7 +120,8 @@ const Taker: NextPage = () => {
 									<div>UNDER</div>
 								</ChoiceDiv>
 							</SectionHeader>
-							{markets &&
+							{!true &&
+								markets &&
 								Object.values(markets).map((market: any) => {
 									return (
 										<MarketContainer
@@ -149,13 +169,13 @@ const Taker: NextPage = () => {
 							asset0={asset0 === 'all' ? allMarkets[0].asset : asset0}
 							asset1={asset1}
 						></PriceChartContainer>
-						{markets && (
+						{/* {markets && (
 							<OrderBook
 								market={Object.values(markets)[active]}
 								setTxHash={setTxHash}
 								setBuyInfo={setBuyInfo}
 							></OrderBook>
-						)}
+						)} */}
 					</Right>
 				</Container>
 			</OuterContainer>

@@ -37,6 +37,15 @@ const PriceChartContainer = ({ height, width, chartHeight, asset0, asset1 }: Pri
 		minute: '2-digit',
 	});
 
+	const formatPrice = (price: number) => {
+		let priceStr = price.toFixed(20);
+		let processedPrice = priceStr.slice(0, 7);
+		if (processedPrice[processedPrice.length - 1] === '.') {
+			processedPrice += price.toFixed(20).slice(7, 8);
+		}
+		return parseFloat(processedPrice) === 0 ? price : processedPrice;
+	};
+
 	return (
 		<ChartContainer height={height} width={width}>
 			<StyledPriceChart>
@@ -74,7 +83,7 @@ const PriceChartContainer = ({ height, width, chartHeight, asset0, asset1 }: Pri
 				<StyledFlexV2>
 					<div className="inner">
 						<div className="inner-inner">
-							<span className="price">{valueToDisplay && valueToDisplay.toFixed(2)}</span>
+							<span className="price">{valueToDisplay && formatPrice(valueToDisplay)}</span>
 							<Change change={changeValue}>({changePercentage}%)</Change>
 						</div>
 						<div className="date">{hoverDate || currentDate}</div>
@@ -105,6 +114,8 @@ const ChartContainer = styled.div<{ height: string; width: string }>`
 	display: flex;
 	height: ${({ height }) => height};
 	width: ${({ width }) => width};
+	border: 1px solid ${({ theme }) => theme.background.quaternary};
+	border-radius: 0.5rem;
 `;
 
 const Box = styled.div<{ height: string }>`
@@ -116,7 +127,7 @@ const Box = styled.div<{ height: string }>`
 const ButtonMenu2 = styled.div`
 	/* width: 100%; */
 	display: flex;
-	background-color: #47b5ff;
+	background-color: ${({ theme }) => theme.background.secondary};
 `;
 
 type ButtonProps = {
@@ -141,9 +152,9 @@ const StyledPriceChart = styled.div`
 	color: ${({ theme }) => `${theme.text.primary}`};
 	width: 100%;
 	height: 100%;
-	border-radius: 0.2rem;
+	border-radius: 0.5rem;
 	padding-top: 0.5rem;
-	background-color: ${({ theme }) => `${theme.background.tertiary}`};
+	background-color: ${({ theme }) => `${theme.background.primary}`};
 `;
 
 const StyledFlex = styled.div`

@@ -168,8 +168,8 @@ const Home: NextPage = () => {
 							<a href="https://chain.link" target="_blank" rel="noreferrer">
 								Chainlink
 							</a>
-							, a decentralized oracle network on Tron. For example, here is the MATIC/USD pricefeed on
-							Polygon mainnet:{' '}
+							, a decentralized oracle network. For example, here is the MATIC/USD pricefeed on Polygon
+							mainnet:{' '}
 							<a
 								href="https://data.chain.link/polygon/mainnet/crypto-usd/matic-usd"
 								target="_blank"
@@ -205,9 +205,12 @@ const Home: NextPage = () => {
 
 const Boxes = styled.div`
 	display: grid;
-	grid-template-columns: 1fr 1fr 1fr 1fr;
+	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 	gap: 1rem;
 
+	@media (max-width: 1750px) {
+		grid-template-columns: 1fr 1fr 1fr 1fr;
+	}
 	@media (max-width: 1050px) {
 		grid-template-columns: 1fr 1fr 1fr;
 	}
@@ -335,6 +338,7 @@ const Left = styled.div`
 
 	@media (max-width: 1540px) {
 		padding-top: 0;
+		padding-left: 0;
 		width: 700px;
 		align-items: center;
 		justify-content: center;

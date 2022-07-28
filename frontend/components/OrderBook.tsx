@@ -1,73 +1,110 @@
 import styled from 'styled-components';
-import { assetToImage } from '../utils/misc';
+import { assetToImage, priceFeedToSymbol } from '../utils/misc';
+import Exchange from '../../contracts/out/Exchange.sol/Exchange.json';
+import { nile } from '../../contracts/scripts/addresses';
+import { Dispatch, SetStateAction, useContext } from 'react';
+// import { TronWebContext } from '../pages/_app';
+import { formatDate } from '../utils/helpers';
 
 type OrderBookProps = {
 	market: any;
-	asset: string;
+	setTxHash: Dispatch<SetStateAction<string>>;
+	setBuyInfo: Dispatch<SetStateAction<any>>;
 };
 
-export default function OrderBook({ market, asset }: OrderBookProps) {
-	console.log(market);
+export default function OrderBook({ market, setTxHash, setBuyInfo }: OrderBookProps) {
+	// const tronWeb = useContext(TronWebContext);
 
+	const formatOdds = (odds: string) => {
+		return parseFloat(odds).toFixed(2);
+	};
+
+	const handleBuy = async (prediction: any, side: string) => {
+		if (!tronWeb || !tronWeb.defaultAddress) {
+			return;
+		}
+
+		let exchange = await tronWeb.contract(Exchange.abi, nile.exchange);
+
+		const takerBid = {
+			taker: tronWeb.defaultAddress.base58,
+			price: prediction.price,
+			collection: nile.predictionMarket,
+			tokenId: prediction.id,
+		};
+
+		let result;
+		try {
+			result = await exchange.matchAskWithTakerBid(Object.values(takerBid)).send({
+				feeLimit: 200_000_000,
+				callValue: takerBid.price,
+				shouldPollResponse: false,
+			});
+		} catch (e) {
+			console.log(e);
+			return;
+		}
+
+		setTxHash(result);
+		setBuyInfo({
+			asset: prediction.asset,
+			side,
+			price: tronWeb.fromSun(takerBid.price),
+		});
+
+		// refetching
+
+		setTimeout(() => {
+			setTxHash('');
+			setBuyInfo({ asset: '', price: '', side: '' });
+		}, 20000);
+	};
 	return (
 		<Container>
-			<Header>
-				<Asset>
-					<img src={assetToImage[market.asset]} alt="logo" />
-					<p>{market.asset.toUpperCase()}/USD</p>
-				</Asset>
-				<div>
-					<p>
-						At {market.expiry}, will the price of {market.asset.toUpperCase()} be over or under $
-						{market.strike}?
-					</p>
-				</div>
-			</Header>
-			<OverUnder>
-				<Direction>
-					<p>OVER</p>
-					<div>
-						<p>1.32 ETH</p>
-						<p>2.00</p>
-					</div>
-					<div>
-						<p>1.10 ETH</p>
-						<p>1.96</p>
-					</div>
-					<div>
-						<p>1.15 ETH</p>
-						<p>1.94</p>
-					</div>
-					<div>
-						<p>0.15 ETH</p>
-						<p>1.84</p>
-					</div>
-					<div>
-						<p>0.67 ETH</p>
-						<p>1.82</p>
-					</div>
-				</Direction>
-				<Direction>
-					<p>UNDER</p>
-					<div>
-						<p>1.32 ETH</p>
-						<p>2.00</p>
-					</div>
-					<div>
-						<p>1.10 ETH</p>
-						<p>1.99</p>
-					</div>
-					<div>
-						<p>1.10 ETH</p>
-						<p>1.96</p>
-					</div>
-					<div>
-						<p>1.15 ETH</p>
-						<p>1.94</p>
-					</div>
-				</Direction>
-			</OverUnder>
-			<Orders></Orders>
+			{market && (
+				<>
+					<Header>
+						<Asset>
+							<img src={assetToImage[market.asset]} alt="logo" />
+							<p>{market.asset.toUpperCase()}/USD</p>
+						</Asset>
+						<div className="price">
+							Oracle price: ${market.latestAnswer} <span>(go to mainnet for real prices)</span>
+						</div>
+						<div className="summary">
+							<p>
+								At {formatDate(market.expiry)}, will the price of {market.asset.toUpperCase()} be over
+								or under ${market.strike}?
+							</p>
+						</div>
+					</Header>
+					<OverUnder>
+						<Direction>
+							<p>OVER</p>
+							{market.over.map((prediction: any) => {
+								return (
+									<div key={prediction.id} onClick={() => handleBuy(prediction, 'OVER')}>
+										<p>{TronWeb.fromSun(prediction.price)} TRX</p>
+										<p>{formatOdds(prediction.odds.toString())}</p>
+									</div>
+								);
+							})}
+						</Direction>
+						<Direction>
+							<p>UNDER</p>
+							{market.under.map((prediction: any) => {
+								return (
+									<div key={prediction.id} onClick={() => handleBuy(prediction, 'UNDER')}>
+										<p>{TronWeb.fromSun(prediction.price)} TRX</p>
+										<p>{formatOdds(prediction.odds.toString())}</p>
+									</div>
+								);
+							})}
+						</Direction>
+					</OverUnder>
+					<Orders></Orders>
+				</>
+			)}
 		</Container>
 	);
 }
@@ -100,7 +137,7 @@ const Direction = styled.div`
 
 	div {
 		padding: 0.5rem;
-		border: 1px solid ${({ theme }) => theme.background.senary};
+		border: 2px solid ${({ theme }) => theme.background.senary};
 		border-radius: 0.25rem;
 		width: 100%;
 		display: flex;
@@ -110,7 +147,7 @@ const Direction = styled.div`
 		:hover {
 			cursor: pointer;
 			color: ${({ theme }) => theme.text.primary};
-			border: 1px solid ${({ theme }) => theme.colors.primary};
+			border: 2px solid ${({ theme }) => theme.colors.primary};
 		}
 	}
 `;
@@ -147,7 +184,7 @@ const Container = styled.div`
 	flex-direction: column;
 	gap: 0.75rem;
 	border: 1px solid ${({ theme }) => theme.background.tertiary};
-	background-color: ${({ theme }) => theme.background.tertiary};
+	background-color: ${({ theme }) => theme.background.secondary};
 	padding: 1rem;
 	border-radius: 0.5rem; ;
 `;
@@ -158,4 +195,14 @@ const Header = styled.div`
 	gap: 1rem;
 	/* justify-content: space-between; */
 	/* align-items: center; */
+	.price {
+		font-weight: 500;
+		span {
+			font-weight: 400;
+			font-size: 0.85rem;
+		}
+	}
+	.summary {
+		line-height: 1.5;
+	}
 `;

@@ -75,7 +75,15 @@ const neutral = {
 };
 
 type Theme = {
-	colors: object;
+	colors: {
+		primary: string;
+		primaryHover: string;
+		secondary: string;
+		tertiary: string;
+		gray?: object;
+		red?: string;
+		green?: string;
+	};
 	text: object;
 	background: {
 		primary: string;
@@ -134,8 +142,6 @@ export const blackTheme: Theme = {
 		secondary: '#EDF7F6',
 		tertiary: '#47B5FF',
 		gray: darkerGray,
-		green: '#31D0AA',
-		red: '#ED4B9E',
 	},
 	text: {
 		primary: bet365Text[100],

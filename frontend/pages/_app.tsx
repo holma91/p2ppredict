@@ -38,8 +38,8 @@ function MyApp({ Component, pageProps }: AppProps) {
 				<WagmiConfig client={wagmiClient}>
 					<RainbowKitProvider
 						chains={chains}
-						theme={midnightTheme({
-							accentColor: '#7b3fe4',
+						theme={darkTheme({
+							accentColor: blackTheme.colors.primary,
 							accentColorForeground: 'white',
 							borderRadius: 'small',
 							fontStack: 'system',
@@ -50,7 +50,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 						</Layout>
 					</RainbowKitProvider>
 				</WagmiConfig>
-				<ReactQueryDevtools initialIsOpen={false} />
+				{/* <ReactQueryDevtools initialIsOpen={false} /> */}
 			</QueryClientProvider>
 		</ThemeProvider>
 	);

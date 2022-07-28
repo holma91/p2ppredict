@@ -31,12 +31,17 @@ const Header = () => {
 			<MenuContainer>
 				<Link href="/create">
 					<Actor isActive={page === 'create'}>
-						<a>create markets</a>
+						<a>create</a>
 					</Actor>
 				</Link>
 				<Link href="/trade">
 					<Actor isActive={page === 'trade'}>
 						<a>trade</a>
+					</Actor>
+				</Link>
+				<Link href="/positions">
+					<Actor isActive={page === 'positions'}>
+						<a>positions</a>
 					</Actor>
 				</Link>
 			</MenuContainer>
@@ -46,7 +51,14 @@ const Header = () => {
 						<a className="logIn">connect</a>
 					</PrimaryButton>
 				</Link> */}
-				<ConnectButton />
+				<ConnectButton
+					accountStatus={{
+						smallScreen: 'avatar',
+						largeScreen: 'address',
+					}}
+					showBalance={{ smallScreen: false, largeScreen: true }}
+					chainStatus={{ smallScreen: 'icon', largeScreen: 'full' }}
+				/>
 			</ButtonContainer>
 		</HeaderContainer>
 	);
@@ -55,6 +67,10 @@ const Header = () => {
 const MenuContainer = styled.div`
 	display: flex;
 	align-items: stretch;
+	margin-left: 7rem;
+	@media (max-width: 1540px) {
+		margin-left: 0;
+	}
 `;
 
 const Actor = styled.div<ActorProps>`
