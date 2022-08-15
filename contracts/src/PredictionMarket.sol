@@ -8,15 +8,12 @@ import "openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721URIStorag
 import "chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 import {Base64} from "./libraries/Base64.sol";
-import {OrderTypes} from "./libraries/OrderTypesNew.sol";
+import {OrderTypes} from "./libraries/OrderTypes.sol";
+
+import {WinkLinkAggregator} from "./interfaces/WinkLinkAggregator.sol";
 
 interface IExchange {
-    function createMakerAsk(
-        OrderTypes.MakerOrder calldata makerAsk,
-        int256 strikePrice,
-        uint256 expiry,
-        uint256 marketId
-    ) external;
+    function createMakerAsk(OrderTypes.MakerOrder calldata makerAsk) external;
 }
 
 contract PredictionMarket is ERC721URIStorage {
@@ -29,6 +26,9 @@ contract PredictionMarket is ERC721URIStorage {
     mapping(uint256 => Prediction) public predictionById;
     uint256 public currentPredictionId;
 
+    // mapping(address => Prediction[]) public predictionsByAccount;
+    // mapping(address => Prediction[]) public predictionsByPriceFeed;
+
     string baseSvg =
         "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMinYMin meet' viewBox='0 0 350 350'><style>.base { fill: white; font-family: serif; font-size: 24px; }</style><rect width='100%' height='100%' fill='black' />";
 
@@ -37,6 +37,7 @@ contract PredictionMarket is ERC721URIStorage {
     struct Prediction {
         Market market;
         bool over;
+        uint256 id;
     }
 
     struct Market {
@@ -113,13 +114,12 @@ contract PredictionMarket is ERC721URIStorage {
         require(market.collateral == msg.value, "wrong collateral amount");
         marketById[currentMarketId++] = market;
 
-        Prediction memory over = Prediction(market, true);
-        Prediction memory under = Prediction(market, false);
-
+        Prediction memory over = Prediction(market, true, currentPredictionId);
         predictionById[currentPredictionId] = over;
         _safeMint(msg.sender, currentPredictionId); // OVER
         _setTokenURI(currentPredictionId++, createURI(true));
 
+        Prediction memory under = Prediction(market, false, currentPredictionId);
         predictionById[currentPredictionId] = under;
         _safeMint(msg.sender, currentPredictionId); // UNDER
         _setTokenURI(currentPredictionId++, createURI(false));
@@ -157,8 +157,8 @@ contract PredictionMarket is ERC721URIStorage {
         // odds = collateral / listPrice
 
         OrderTypes.MakerOrder memory makerAsk = OrderTypes.MakerOrder(
-            true,
             msg.sender,
+            address(this),
             listPrice,
             underId,
             block.timestamp,
@@ -169,11 +169,11 @@ contract PredictionMarket is ERC721URIStorage {
 
         if (over) {
             // list under prediction
-            IExchange(exchangeAddress).createMakerAsk(makerAsk, market.strikePrice, market.expiry, marketId);
+            Exchange(exchangeAddress).createMakerAsk(makerAsk);
         } else {
             // list over prediction
             makerAsk.tokenId = overId;
-            IExchange(exchangeAddress).createMakerAsk(makerAsk, market.strikePrice, market.expiry, marketId);
+            Exchange(exchangeAddress).createMakerAsk(makerAsk);
         }
 
         return (marketId, overId, underId);
@@ -181,18 +181,24 @@ contract PredictionMarket is ERC721URIStorage {
 
     function exercise(uint256 id) public {
         require(ownerOf(id) == msg.sender, "PredictionMarket: not the correct owner");
+        require(predictionById[id].market.priceFeed != address(0), "Market is dead");
 
         Prediction memory prediction = predictionById[id];
         require(block.timestamp >= prediction.market.expiry, "PredictionMarket: not at expiry yet");
 
-        (, int256 price, , , ) = AggregatorV3Interface(prediction.market.priceFeed).latestRoundData();
+        int256 price = WinkLinkAggregator(prediction.market.priceFeed).latestAnswer();
         if (prediction.over) {
             require(price >= prediction.market.strikePrice, "PredictionMarket: can't exercise a losing bet");
         } else {
             require(price < prediction.market.strikePrice, "PredictionMarket: can't exercise a losing bet");
         }
 
-        _burn(id);
+        delete predictionById[id];
+        if (prediction.over) {
+            delete predictionById[id + 1];
+        } else {
+            delete predictionById[id - 1];
+        }
         (bool sent, ) = msg.sender.call{value: prediction.market.collateral}("");
         require(sent, "failed ether transfer");
     }
@@ -203,5 +209,59 @@ contract PredictionMarket is ERC721URIStorage {
 
     function getMarket(uint256 id) public view returns (Market memory) {
         return marketById[id];
+    }
+
+    function getPredictions() public view returns (Prediction[] memory) {
+        Prediction[] memory predictions = new Prediction[](currentPredictionId);
+        for (uint256 i = 0; i < currentPredictionId; i++) {
+            predictions[i] = predictionById[i];
+        }
+        return predictions;
+    }
+
+    function getPredictionsByAccount(address account)
+        public
+        view
+        returns (Prediction[] memory, int256[] memory)
+    {
+        uint256 userCount = 0;
+        for (uint256 i = 0; i < currentPredictionId; i++) {
+            if (ownerOf(i) == account && predictionById[i].market.priceFeed != address(0)) {
+                userCount++;
+            }
+        }
+
+        Prediction[] memory predictions = new Prediction[](userCount);
+        int256[] memory latestPrices = new int256[](userCount);
+        uint256 j = 0;
+        for (uint256 i = 0; i < currentPredictionId; i++) {
+            if (ownerOf(i) == account && predictionById[i].market.priceFeed != address(0)) {
+                latestPrices[j] = WinkLinkAggregator(predictionById[i].market.priceFeed).latestAnswer();
+                predictions[j++] = predictionById[i];
+            }
+        }
+
+        return (predictions, latestPrices);
+    }
+
+    function getPredictionsByFeed(address feed) public view returns (Prediction[] memory, int256) {
+        uint256 feedCount = 0;
+        for (uint256 i = 0; i < currentPredictionId; i++) {
+            if (predictionById[i].market.priceFeed == feed) {
+                feedCount++;
+            }
+        }
+
+        Prediction[] memory predictions = new Prediction[](feedCount);
+        uint256 j = 0;
+        for (uint256 i = 0; i < currentPredictionId; i++) {
+            if (predictionById[i].market.priceFeed == feed) {
+                predictions[j++] = predictionById[i];
+            }
+        }
+
+        int256 latestPrice = WinkLinkAggregator(feed).latestAnswer();
+
+        return (predictions, latestPrice);
     }
 }
