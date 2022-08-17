@@ -103,9 +103,9 @@ export const useFetchMarkets = (
 	const { address, isConnecting, isDisconnected } = useAccount();
 	const { isLoading, isError, data } = useQuery(
 		['markets', asset, address],
-		() => fetcher(asset, address as string, fallbackProvider),
+		() => fetcher(asset, address ? (address as string) : '0x0', fallbackProvider),
 		{
-			enabled: !!fallbackProvider && !!address,
+			enabled: !!fallbackProvider,
 		}
 	);
 
