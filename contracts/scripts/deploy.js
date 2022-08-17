@@ -1,10 +1,10 @@
 const ethers = require("ethers");
 const PredictionMarket = require("../out/PredictionMarket.sol/PredictionMarket.json");
 const Exchange = require("../out/Exchange.sol/Exchange.json");
-require("dotenv").config();
+require("dotenv").config("");
 
 const main = async () => {
-  const provider = new ethers.providers.JsonRpcProvider(process.env.rinkeby);
+  const provider = new ethers.providers.JsonRpcProvider(process.env.mumbai);
   const wallet = new ethers.Wallet(process.env.pk1, provider);
   const pmFactory = new ethers.ContractFactory(
     PredictionMarket.abi,
@@ -12,7 +12,7 @@ const main = async () => {
     wallet
   );
 
-  const predictionMarket = await pmFactory.deploy();
+  let predictionMarket = await pmFactory.deploy();
   await predictionMarket.deployed();
   console.log("predictionMarket deployed at:", predictionMarket.address);
 
@@ -37,6 +37,26 @@ const main = async () => {
   );
   await setPredictionMarketTx.wait();
   console.log("prediction market address set");
+
+  // SET APPROVALS
+
+  let approvalTx = await predictionMarket.setApprovalForAll(
+    exchange.address,
+    true
+  );
+  await approvalTx.wait();
+  console.log("acc1 approval set");
+
+  predictionMarket = predictionMarket.connect(process.env.pk2);
+
+  approvalTx = await predictionMarket.setApprovalForAll(exchange.address, true);
+  await approvalTx.wait();
+  console.log("acc2 approval set");
+
+  predictionMarket = predictionMarket.connect(process.env.pk2);
+  approvalTx = await predictionMarket.setApprovalForAll(exchange.address, true);
+  await approvalTx.wait();
+  console.log("acc3 approval set");
 };
 
 const runMain = async () => {

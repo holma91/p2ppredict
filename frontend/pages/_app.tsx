@@ -17,7 +17,7 @@ import { ethers } from 'ethers';
 export const FallbackProviderContext = createContext<any>('');
 
 const { chains, provider } = configureChains(
-	[chain.polygon, chain.polygonMumbai],
+	[chain.rinkeby, chain.polygon, chain.polygonMumbai],
 	[alchemyProvider({ alchemyId: process.env.ALCHEMY_ID }), publicProvider()]
 );
 

@@ -83,24 +83,13 @@ export const symbolToPriceFeed: { [key: string]: { [key: string]: string } } = {
 		link: '0xd8bD0a1cB028a31AA859A21A3758685a95dE4623',
 		matic: '0x7794ee502922e2b723432DDD852B3C30A911F021',
 	},
-	nile: {
-		trx: 'TAL6RWymPLepKsLGCzWPUTKQQcWFsuHfNE',
-		btc: 'TYY5GdNvHN8NVY6MYtgEPwx15pyUmLEw5J',
-		jst: 'TYr8nvS9BUbi9eLXNQpUMbxdvwYpoWn3ho',
-		sun: 'TWWjBHU3KkuV65rTVkA4UrCrGwBRTXs3KK',
-		win: 'TGPDYFAcFx8ZXf7sGTLwbvsDh8FdEnsNyN',
-	},
-	mainnet: {
-		trx: 'TXwZqjjw4HtphG4tAm5i1j1fGHuXmYKeeP',
-		btc: 'TTzPaLxJMy8nwXe9NRfHopHW4KyUeavLdF',
-		eth: 'TZCPyp7fWW3xnQ6gv5LG9v7S7VYbr4h2H1',
-		sun: 'TAKUV2gwwmAG7fCtwSW9VwSrGnPikuuw5p',
-		jst: 'TPMkqBh7kU16Zmv9EAtm6vfWYrTax4Aucb',
-		win: 'TQU2nPFvemv6hbtmJ48Z749a7VcAmacV4D',
-		nft: 'TS15kJyth5F7vAE5bpzAUumEGFDsnYkEGF',
-		usdc: 'THL5y573nNXkHbHY8ZkZNLPZTMXdkq9aFr',
-		usdt: 'TYWY6L4mECH2Gtiq3sg4zY4fvD1XZpwGrb',
-		btt: 'TM2CEasFpeREBtLWgkzMqASkn5mvtf12He',
+	mumbai: {
+		btc: '0x007A22900a3B98143368Bd5906f8E17e9867581b',
+		eth: '0x0715A7794a1dc8e42615F059dD6e406A6594651A',
+		matic: '0xd0D5e3DB44DE05E9F294BB0a3bEEaF030DE24Ada',
+		usdc: '0x572dDec9087154dC5dfBB1546Bb62713147e0Ab0',
+		usdt: '0x92C09849638959196E976289418e5973CC96d645',
+		dai: '0x0FCAa9c899EC5A91eBc3D5Dd869De833b06fB046',
 	},
 };
 
@@ -113,24 +102,13 @@ export const priceFeedToSymbol: { [key: string]: { [key: string]: string } } = {
 		'0xd8bD0a1cB028a31AA859A21A3758685a95dE4623': 'link',
 		'0x7794ee502922e2b723432DDD852B3C30A911F021': 'matic',
 	},
-	nile: {
-		TAL6RWymPLepKsLGCzWPUTKQQcWFsuHfNE: 'trx',
-		TYY5GdNvHN8NVY6MYtgEPwx15pyUmLEw5J: 'btc',
-		TWWjBHU3KkuV65rTVkA4UrCrGwBRTXs3KK: 'sun',
-		TGPDYFAcFx8ZXf7sGTLwbvsDh8FdEnsNyN: 'win',
-		TYr8nvS9BUbi9eLXNQpUMbxdvwYpoWn3ho: 'jst',
-	},
-	mainnet: {
-		TXwZqjjw4HtphG4tAm5i1j1fGHuXmYKeeP: 'trx',
-		TTzPaLxJMy8nwXe9NRfHopHW4KyUeavLdF: 'btc',
-		TZCPyp7fWW3xnQ6gv5LG9v7S7VYbr4h2H1: 'eth',
-		TAKUV2gwwmAG7fCtwSW9VwSrGnPikuuw5p: 'sun',
-		TPMkqBh7kU16Zmv9EAtm6vfWYrTax4Aucb: 'jst',
-		TQU2nPFvemv6hbtmJ48Z749a7VcAmacV4D: 'win',
-		TS15kJyth5F7vAE5bpzAUumEGFDsnYkEGF: 'nft',
-		THL5y573nNXkHbHY8ZkZNLPZTMXdkq9aFr: 'usdc',
-		TYWY6L4mECH2Gtiq3sg4zY4fvD1XZpwGrb: 'usdt',
-		TM2CEasFpeREBtLWgkzMqASkn5mvtf12He: 'btt',
+	mumbai: {
+		'0x007A22900a3B98143368Bd5906f8E17e9867581b': 'btc',
+		'0x0715A7794a1dc8e42615F059dD6e406A6594651A': 'eth',
+		'0xd0D5e3DB44DE05E9F294BB0a3bEEaF030DE24Ada': 'matic',
+		'0x572dDec9087154dC5dfBB1546Bb62713147e0Ab0': 'usdc',
+		'0x92C09849638959196E976289418e5973CC96d645': 'usdt',
+		'0x0FCAa9c899EC5A91eBc3D5Dd869De833b06fB046': 'dai',
 	},
 };
 

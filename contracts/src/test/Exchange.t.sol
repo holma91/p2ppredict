@@ -98,28 +98,15 @@ contract ExchangeTest is Test, Exchange {
 
         exchange.setPredictionMarketAddress(address(predictionMarket));
 
-        ethMarket = PredictionMarket.Market(
-            address(ethUsdPriceFeed),
-            1_000 * 10**8,
-            1000,
-            1 ether
-        );
+        ethMarket = PredictionMarket.Market(address(ethUsdPriceFeed), 1_000 * 10**8, 1000, 1 ether);
 
-        btcMarket = PredictionMarket.Market(
-            address(btcUsdPriceFeed),
-            23_000 * 10**8,
-            1000,
-            2 ether
-        );
+        btcMarket = PredictionMarket.Market(address(btcUsdPriceFeed), 23_000 * 10**8, 1000, 2 ether);
 
         cheats.prank(alice);
-        (aliceMarketId, aliceOverId, aliceUnderId) = predictionMarket
-            .createMarket{value: 1 ether}(ethMarket);
+        (aliceMarketId, aliceOverId, aliceUnderId) = predictionMarket.createMarket{value: 1 ether}(ethMarket);
 
         cheats.prank(bob);
-        (bobMarketId, bobOverId, bobUnderId) = predictionMarket.createMarket{
-            value: 2 ether
-        }(btcMarket);
+        (bobMarketId, bobOverId, bobUnderId) = predictionMarket.createMarket{value: 2 ether}(btcMarket);
 
         aliceOverMakerAsk = OrderTypes.MakerOrder(
             alice,
@@ -169,23 +156,17 @@ contract ExchangeTest is Test, Exchange {
     function testCanCreateMakerAsk() public {
         cheats.startPrank(alice);
         exchange.createMakerAsk(aliceOverMakerAsk);
-        OrderTypes.MakerOrder memory makerAskOver = exchange.getMakerAsk(
-            aliceOverId
-        );
+        OrderTypes.MakerOrder memory makerAskOver = exchange.getMakerAsk(aliceOverId);
         assertEq(makerAskOver.tokenId, aliceOverId);
         exchange.createMakerAsk(aliceUnderMakerAsk);
-        OrderTypes.MakerOrder memory makerAskUnder = exchange.getMakerAsk(
-            aliceUnderId
-        );
+        OrderTypes.MakerOrder memory makerAskUnder = exchange.getMakerAsk(aliceUnderId);
         assertEq(makerAskUnder.tokenId, aliceUnderId);
     }
 
     function testCanOverrideMakerAsk() public {
         cheats.startPrank(alice);
         exchange.createMakerAsk(aliceOverMakerAsk);
-        OrderTypes.MakerOrder memory makerAsk = exchange.getMakerAsk(
-            aliceOverMakerAsk.tokenId
-        );
+        OrderTypes.MakerOrder memory makerAsk = exchange.getMakerAsk(aliceOverMakerAsk.tokenId);
         assertEq(makerAsk.price, 1 ether);
         exchange.createMakerAsk(
             OrderTypes.MakerOrder(
@@ -199,9 +180,7 @@ contract ExchangeTest is Test, Exchange {
                 1_200 * 10**8
             )
         );
-        OrderTypes.MakerOrder memory newMakerAsk = exchange.getMakerAsk(
-            aliceOverMakerAsk.tokenId
-        );
+        OrderTypes.MakerOrder memory newMakerAsk = exchange.getMakerAsk(aliceOverMakerAsk.tokenId);
         assertEq(newMakerAsk.price, 5 ether);
     }
 
@@ -232,19 +211,12 @@ contract ExchangeTest is Test, Exchange {
         exchange.createMakerAsk(bobOverMakerAsk);
         exchange.createMakerAsk(bobUnderMakerAsk);
 
-        assertEq(
-            exchange.makerAskUpperLimitByFeed(address(ethUsdPriceFeed)),
-            1
-        );
-        assertEq(
-            exchange.makerAskUpperLimitByFeed(address(btcUsdPriceFeed)),
-            3
-        );
+        assertEq(exchange.makerAskUpperLimitByFeed(address(ethUsdPriceFeed)), 1);
+        assertEq(exchange.makerAskUpperLimitByFeed(address(btcUsdPriceFeed)), 3);
 
-        (
-            uint256[2][] memory ethMakerAsks,
-            address[] memory ethSigners
-        ) = exchange.getMakerAsksByFeed(address(ethUsdPriceFeed));
+        (uint256[2][] memory ethMakerAsks, address[] memory ethSigners) = exchange.getMakerAsksByFeed(
+            address(ethUsdPriceFeed)
+        );
         assertEq(ethMakerAsks.length, 2);
         assertEq(ethMakerAsks[0][0], aliceOverId);
         assertEq(ethMakerAsks[0][1], 1 ether);
@@ -253,10 +225,9 @@ contract ExchangeTest is Test, Exchange {
         assertEq(ethMakerAsks[1][1], 2 ether);
         assertEq(ethSigners[1], alice);
 
-        (
-            uint256[2][] memory btcMakerAsks,
-            address[] memory btcSigners
-        ) = exchange.getMakerAsksByFeed(address(btcUsdPriceFeed));
+        (uint256[2][] memory btcMakerAsks, address[] memory btcSigners) = exchange.getMakerAsksByFeed(
+            address(btcUsdPriceFeed)
+        );
         assertEq(btcMakerAsks.length, 2);
         assertEq(btcMakerAsks[0][0], bobOverId);
         assertEq(btcMakerAsks[0][1], 3 ether);
@@ -266,13 +237,9 @@ contract ExchangeTest is Test, Exchange {
         btcMarket.strikePrice = 24_000 * 10**8;
         predictionMarket.createMarket{value: 2 ether}(btcMarket);
         btcMarket.strikePrice = 25_000 * 10**8;
-        (, uint256 bobOverId3, ) = predictionMarket.createMarket{
-            value: 2 ether
-        }(btcMarket);
+        (, uint256 bobOverId3, ) = predictionMarket.createMarket{value: 2 ether}(btcMarket);
 
-        (btcMakerAsks, ) = exchange.getMakerAsksByFeed(
-            address(btcUsdPriceFeed)
-        );
+        (btcMakerAsks, ) = exchange.getMakerAsksByFeed(address(btcUsdPriceFeed));
         assertEq(btcMakerAsks.length, 2);
 
         exchange.createMakerAsk(
@@ -288,9 +255,7 @@ contract ExchangeTest is Test, Exchange {
             )
         );
 
-        (btcMakerAsks, btcSigners) = exchange.getMakerAsksByFeed(
-            address(btcUsdPriceFeed)
-        );
+        (btcMakerAsks, btcSigners) = exchange.getMakerAsksByFeed(address(btcUsdPriceFeed));
         assertEq(btcMakerAsks.length, 3);
         assertEq(btcMakerAsks[0][0], bobOverId);
         assertEq(btcMakerAsks[0][1], 3 ether);
@@ -315,9 +280,7 @@ contract ExchangeTest is Test, Exchange {
         assertEq(exchange.makerAskUpperLimitByAccount(alice), 1);
         assertEq(exchange.makerAskUpperLimitByAccount(bob), 3);
 
-        uint256[2][] memory aliceMakerAsks = exchange.getMakerAsksByAccount(
-            alice
-        );
+        uint256[2][] memory aliceMakerAsks = exchange.getMakerAsksByAccount(alice);
         assertEq(aliceMakerAsks.length, 2);
         assertEq(aliceMakerAsks[0][0], aliceOverId);
         assertEq(aliceMakerAsks[0][1], 1 ether);
@@ -334,9 +297,7 @@ contract ExchangeTest is Test, Exchange {
         btcMarket.strikePrice = 24_000 * 10**8;
         predictionMarket.createMarket{value: 2 ether}(btcMarket);
         btcMarket.strikePrice = 25_000 * 10**8;
-        (, uint256 bobOverId3, ) = predictionMarket.createMarket{
-            value: 2 ether
-        }(btcMarket);
+        (, uint256 bobOverId3, ) = predictionMarket.createMarket{value: 2 ether}(btcMarket);
 
         exchange.createMakerAsk(
             OrderTypes.MakerOrder(
@@ -366,9 +327,7 @@ contract ExchangeTest is Test, Exchange {
     function testCanOverrideMakerAskAndGetByFeed() public {
         cheats.startPrank(alice);
         exchange.createMakerAsk(aliceOverMakerAsk);
-        OrderTypes.MakerOrder memory makerAsk = exchange.getMakerAsk(
-            aliceOverMakerAsk.tokenId
-        );
+        OrderTypes.MakerOrder memory makerAsk = exchange.getMakerAsk(aliceOverMakerAsk.tokenId);
         assertEq(makerAsk.price, 1 ether);
         exchange.createMakerAsk(
             OrderTypes.MakerOrder(
@@ -382,14 +341,10 @@ contract ExchangeTest is Test, Exchange {
                 1_200 * 10**8
             )
         );
-        OrderTypes.MakerOrder memory newMakerAsk = exchange.getMakerAsk(
-            aliceOverMakerAsk.tokenId
-        );
+        OrderTypes.MakerOrder memory newMakerAsk = exchange.getMakerAsk(aliceOverMakerAsk.tokenId);
         assertEq(newMakerAsk.price, 5 ether);
 
-        (uint256[2][] memory ethMakerAsks, ) = exchange.getMakerAsksByFeed(
-            address(ethUsdPriceFeed)
-        );
+        (uint256[2][] memory ethMakerAsks, ) = exchange.getMakerAsksByFeed(address(ethUsdPriceFeed));
         assertEq(ethMakerAsks.length, 1);
     }
 
@@ -414,36 +369,18 @@ contract ExchangeTest is Test, Exchange {
     }
 
     function testCanGetUpperLimit() public {
-        assertEq(
-            exchange.makerAskUpperLimitByFeed(address(ethUsdPriceFeed)),
-            0
-        );
-        assertEq(
-            exchange.makerAskUpperLimitByFeed(address(btcUsdPriceFeed)),
-            0
-        );
+        assertEq(exchange.makerAskUpperLimitByFeed(address(ethUsdPriceFeed)), 0);
+        assertEq(exchange.makerAskUpperLimitByFeed(address(btcUsdPriceFeed)), 0);
 
         cheats.prank(alice);
         exchange.createMakerAsk(aliceOverMakerAsk); // id 0
-        assertEq(
-            exchange.makerAskUpperLimitByFeed(address(ethUsdPriceFeed)),
-            0
-        );
-        assertEq(
-            exchange.makerAskUpperLimitByFeed(address(btcUsdPriceFeed)),
-            0
-        );
+        assertEq(exchange.makerAskUpperLimitByFeed(address(ethUsdPriceFeed)), 0);
+        assertEq(exchange.makerAskUpperLimitByFeed(address(btcUsdPriceFeed)), 0);
 
         cheats.prank(bob);
         exchange.createMakerAsk(bobOverMakerAsk); // id 2
-        assertEq(
-            exchange.makerAskUpperLimitByFeed(address(ethUsdPriceFeed)),
-            0
-        );
-        assertEq(
-            exchange.makerAskUpperLimitByFeed(address(btcUsdPriceFeed)),
-            2
-        );
+        assertEq(exchange.makerAskUpperLimitByFeed(address(ethUsdPriceFeed)), 0);
+        assertEq(exchange.makerAskUpperLimitByFeed(address(btcUsdPriceFeed)), 2);
     }
 }
 

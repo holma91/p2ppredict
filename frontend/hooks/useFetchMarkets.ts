@@ -1,40 +1,39 @@
 import { useQuery } from 'react-query';
 import { priceFeedToSymbol, symbolToCoingeckoId, symbolToPriceFeed } from '../utils/misc';
-// import { nile, mainnet } from '../../contracts/scripts/addresses';
+import { mumbai } from '../../contracts/scripts/addresses';
 import PredictionMarket from '../../contracts/out/PredictionMarket.sol/PredictionMarket.json';
 import Exchange from '../../contracts/out/Exchange.sol/Exchange.json';
 import { ethers } from 'ethers';
+import { useAccount } from 'wagmi';
 
 const fetcher = async (asset: string, activeAddress: string, fallbackProvider: ethers.providers.JsonRpcProvider) => {
 	console.log(fallbackProvider);
-	// set up market and exchange
-	// get predictions and makerasks
-	//
-	return;
+	const priceFeed = symbolToPriceFeed.mumbai[asset];
 
-	const priceFeed = symbolToPriceFeed.mainnet[asset];
 	if (!priceFeed) {
 		console.log('pricefeed for ', asset, ' not available');
 		return '';
 	}
+	// set up market and exchange
+	let predictionMarket = new ethers.Contract(mumbai.predictionMarket, PredictionMarket.abi, fallbackProvider);
+	let exchange = new ethers.Contract(mumbai.exchange, Exchange.abi, fallbackProvider);
+	console.log(predictionMarket);
 
-	let predictionMarket = await tronWeb.contract(PredictionMarket.abi, mainnet.predictionMarket);
-	let exchange = await tronWeb.contract(Exchange.abi, mainnet.exchange);
+	// get predictions and makerasks
+	const [predictions, latestAnswer] = await predictionMarket.getPredictionsByFeed(priceFeed);
 
-	const [predictions, latestAnswer] = await predictionMarket.getPredictionsByFeed(priceFeed).call();
-
-	const [makerAsks, signers] = await exchange.getMakerAsksByFeed(priceFeed).call();
+	const [makerAsks, signers] = await exchange.getMakerAsksByFeed(priceFeed);
 
 	const listPriceById: { [key: string]: any } = {};
 	for (let i = 0; i < makerAsks.length; i++) {
-		if (address === tronWeb.address.fromHex(signers[i])) {
+		console.log(activeAddress.toLowerCase(), signers[i].toLowerCase());
+		console.log(activeAddress.toLowerCase() === signers[i].toLowerCase());
+
+		if (activeAddress.toLowerCase() === signers[i].toLowerCase()) {
 			continue;
 		}
 		listPriceById[makerAsks[i][0].toString()] = makerAsks[i][1];
 	}
-	// for (const ask of makerAsks) {
-	//   listPriceById[ask[0].toString()] = ask[1];
-	// }
 
 	let markets: { [key: string]: any } = {};
 	let count = 0;
@@ -44,15 +43,16 @@ const fetcher = async (asset: string, activeAddress: string, fallbackProvider: e
 		if (!price) continue;
 
 		let marketInfo = prediction.market;
-		let market = priceFeedToSymbol.mainnet[tronWeb.address.fromHex(marketInfo.priceFeed)];
+		let market = priceFeedToSymbol.mumbai[marketInfo.priceFeed];
 		let key = `${marketInfo.priceFeed.toString()}:${marketInfo.strikePrice.toString()}:${marketInfo.expiry.toString()}`;
 		if (!(key in markets)) {
 			markets[key] = {
 				asset: asset,
-				strike: tronWeb.fromSun(marketInfo.strikePrice).toString(),
+				strike: ethers.utils.formatUnits(marketInfo.strikePrice, 8).toString(),
+				// strike: tronWeb.fromSun(marketInfo.strikePrice).toString(),
 				expiry: marketInfo.expiry.toString(),
 				id: count++,
-				latestAnswer: tronWeb.fromSun(latestAnswer.toString()),
+				latestAnswer: ethers.utils.formatUnits(latestAnswer, 8).toString(),
 				over: [],
 				under: [],
 			};
@@ -61,11 +61,12 @@ const fetcher = async (asset: string, activeAddress: string, fallbackProvider: e
 		// odds = collateral / price
 		// use fromSun to scale down
 
-		let odds = tronWeb.fromSun(
+		let odds = ethers.utils.formatUnits(
 			prediction.market.collateral
-				.mul(10 ** 6)
+				.mul(10 ** 8)
 				.div(price)
-				.toString()
+				.toString(),
+			8
 		);
 
 		if (prediction.over) {
@@ -91,14 +92,7 @@ const fetcher = async (asset: string, activeAddress: string, fallbackProvider: e
 		}
 	}
 
-	// get all asset predictions from pm
-	// get all makerAsks from e
-	// match together into
-
-	// match every ask with a prediction
-
 	return markets;
-	// return allMarkets[asset];
 };
 
 export const useFetchMarkets = (
@@ -106,11 +100,12 @@ export const useFetchMarkets = (
 	activeAddress: string,
 	fallbackProvider: ethers.providers.JsonRpcProvider
 ) => {
+	const { address, isConnecting, isDisconnected } = useAccount();
 	const { isLoading, isError, data } = useQuery(
-		['markets', asset],
-		() => fetcher(asset, activeAddress, fallbackProvider),
+		['markets', asset, address],
+		() => fetcher(asset, address as string, fallbackProvider),
 		{
-			enabled: !!fallbackProvider && !!activeAddress,
+			enabled: !!fallbackProvider && !!address,
 		}
 	);
 

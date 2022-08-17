@@ -46,7 +46,7 @@ const Taker: NextPage = () => {
 	asset = asset as string; // I promise
 	// const tronWeb = useContext(TronWebContext);
 	const fallbackProvider: ethers.providers.JsonRpcProvider = useContext(FallbackProviderContext);
-	const [asset0, setAsset0] = useState(asset ? asset : 'trx');
+	const [asset0, setAsset0] = useState(asset ? asset : 'btc');
 	const [asset1, setAsset1] = useState<Token>({
 		symbol: 'usd',
 		coingeckoId: 'usd',
@@ -61,6 +61,8 @@ const Taker: NextPage = () => {
 		isError: ise,
 	} = useFetchMarkets(asset0, '0xdcb9048D6bb9C31e60af7595ef597ADC642B9cB6', fallbackProvider);
 
+	console.log('markets:', markets);
+
 	const { data: predictions } = useContractRead({
 		addressOrName: '',
 		contractInterface: PredictionMarket.abi,
@@ -73,7 +75,7 @@ const Taker: NextPage = () => {
 		functionName: 'getPredictionsByFeed',
 	});
 
-	markets = allMarkets;
+	// markets = allMarkets;
 
 	let dimensions = { height: '375px', width: '100%', chartHeight: '240px' };
 
@@ -126,7 +128,7 @@ const Taker: NextPage = () => {
 									<div>UNDER</div>
 								</ChoiceDiv>
 							</SectionHeader>
-							{!true &&
+							{true &&
 								markets &&
 								Object.values(markets).map((market: any) => {
 									return (
