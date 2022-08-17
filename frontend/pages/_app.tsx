@@ -11,9 +11,13 @@ import { publicProvider } from 'wagmi/providers/public';
 
 import { blackTheme, bet365Theme, blueTheme, GlobalStyle } from '../design/themes';
 import Layout from '../components/Layout';
+import { createContext, useEffect, useState } from 'react';
+import { ethers } from 'ethers';
+
+export const FallbackProviderContext = createContext<any>('');
 
 const { chains, provider } = configureChains(
-	[chain.mainnet, chain.rinkeby, chain.polygon, chain.polygonMumbai],
+	[chain.polygon, chain.polygonMumbai],
 	[alchemyProvider({ alchemyId: process.env.ALCHEMY_ID }), publicProvider()]
 );
 
@@ -31,6 +35,11 @@ const wagmiClient = createClient({
 const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
+	const [fallbackProvider, setFallbackProvider] = useState(new ethers.providers.JsonRpcProvider(process.env.mumbai));
+	// useEffect(() => {
+	// 	const provider = new ethers.providers.JsonRpcProvider(process.env.mumbai);
+	// 	setFallbackProvider(provider);
+	// }, []);
 	return (
 		<ThemeProvider theme={blackTheme}>
 			<GlobalStyle />
@@ -45,9 +54,11 @@ function MyApp({ Component, pageProps }: AppProps) {
 							fontStack: 'system',
 						})}
 					>
-						<Layout>
-							<Component {...pageProps} />
-						</Layout>
+						<FallbackProviderContext.Provider value={fallbackProvider}>
+							<Layout>
+								<Component {...pageProps} />
+							</Layout>
+						</FallbackProviderContext.Provider>
 					</RainbowKitProvider>
 				</WagmiConfig>
 				{/* <ReactQueryDevtools initialIsOpen={false} /> */}

@@ -14,10 +14,12 @@ import { useFetchPrices } from '../hooks/useFetchPrices';
 import { formatDate } from '../utils/helpers';
 import OrderBook from '../components/OrderBook';
 // import { useFetchMarkets } from '../hooks/useFetchMarkets';
-// import { TronWebContext, TronWebFallbackContext } from './_app';
+import { FallbackProviderContext } from './_app';
 import PredictionMarket from '../../contracts/out/PredictionMarket.sol/PredictionMarket.json';
 import Exchange from '../../contracts/out/Exchange.sol/Exchange.json';
 import { useRouter } from 'next/router';
+import { ethers } from 'ethers';
+import { useFetchMarkets } from '../hooks/useFetchMarkets';
 
 interface Props {
 	colored?: boolean;
@@ -43,7 +45,7 @@ const Taker: NextPage = () => {
 	let { asset } = router.query;
 	asset = asset as string; // I promise
 	// const tronWeb = useContext(TronWebContext);
-	// const tronWebFallback = useContext(TronWebFallbackContext);
+	const fallbackProvider: ethers.providers.JsonRpcProvider = useContext(FallbackProviderContext);
 	const [asset0, setAsset0] = useState(asset ? asset : 'trx');
 	const [asset1, setAsset1] = useState<Token>({
 		symbol: 'usd',
@@ -53,7 +55,11 @@ const Taker: NextPage = () => {
 	const { prices, isLoading, isError } = useFetchPrices(assets);
 	const [txHash, setTxHash] = useState('');
 	const [buyInfo, setBuyInfo] = useState({ asset: '', price: '', side: '' });
-	// const { markets, isLoading: isl, isError: ise } = useFetchMarkets(asset0, tronWeb, tronWebFallback);
+	let {
+		markets,
+		isLoading: isl,
+		isError: ise,
+	} = useFetchMarkets(asset0, '0xdcb9048D6bb9C31e60af7595ef597ADC642B9cB6', fallbackProvider);
 
 	const { data: predictions } = useContractRead({
 		addressOrName: '',
@@ -67,7 +73,7 @@ const Taker: NextPage = () => {
 		functionName: 'getPredictionsByFeed',
 	});
 
-	let markets = allMarkets;
+	markets = allMarkets;
 
 	let dimensions = { height: '375px', width: '100%', chartHeight: '240px' };
 
