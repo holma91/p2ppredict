@@ -10,8 +10,9 @@ import { ethers } from 'ethers';
 import { Spinner } from './Spinner';
 import { BiLinkExternal } from 'react-icons/bi';
 import { FallbackProviderContext, TronWebContext, TronWebFallbackContext } from '../pages/_app';
-import { nile } from '../../contracts/scripts/addresses';
+import { mumbai, nile } from '../../contracts/scripts/addresses';
 import { useQuery } from 'react-query';
+import { useAccount, useContractRead, useContractWrite, usePrepareContractWrite } from 'wagmi';
 
 const StyledChoice = styled.div`
 	display: flex;
@@ -46,11 +47,11 @@ const symbolToLabel: { [key: string]: JSX.Element } = {
 
 const options = [
 	{
-		value: 'trx',
+		value: 'matic',
 		label: (
 			<StyledChoice>
-				<img src={assetToImage['trx']} alt="logo" />
-				<span>TRX</span>
+				<img src={assetToImage['matic']} alt="logo" />
+				<span>MATIC</span>
 			</StyledChoice>
 		),
 	},
@@ -63,50 +64,12 @@ const options = [
 			</StyledChoice>
 		),
 	},
-
-	{
-		value: 'jst',
-		label: (
-			<StyledChoice>
-				<img src={assetToImage['jst']} alt="logo" />
-				<span>JST</span>
-			</StyledChoice>
-		),
-	},
 	{
 		value: 'eth',
 		label: (
 			<StyledChoice>
 				<img src={assetToImage['eth']} alt="logo" />
 				<span>ETH</span>
-			</StyledChoice>
-		),
-	},
-
-	{
-		value: 'sun',
-		label: (
-			<StyledChoice>
-				<img src={assetToImage['sun']} alt="logo" />
-				<span>SUN</span>
-			</StyledChoice>
-		),
-	},
-	{
-		value: 'nft',
-		label: (
-			<StyledChoice>
-				<img src={assetToImage['nft']} alt="logo" />
-				<span>NFT</span>
-			</StyledChoice>
-		),
-	},
-	{
-		value: 'win',
-		label: (
-			<StyledChoice>
-				<img src={assetToImage['win']} alt="logo" />
-				<span>WIN</span>
 			</StyledChoice>
 		),
 	},
@@ -210,14 +173,33 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 	const [approvalButtonLoading, setApprovalButtonLoading] = useState(false);
 
 	// write isApproved with wagmi
-	//
-	// const { data: isApproved, refetch: refetchIsApproved } = useQuery(
-	// 	['isApproved'],
-	// 	() => isApprovedFetcher(tronWeb),
-	// 	{
-	// 		enabled: !!tronWeb,
-	// 	}
-	// );
+
+	const { address, isConnecting, isDisconnected } = useAccount();
+
+	const { data: isApprovedForAll, refetch: refetchIsApprovedForAll } = useContractRead({
+		addressOrName: mumbai.predictionMarket,
+		contractInterface: PredictionMarket.abi,
+		functionName: 'isApprovedForAll',
+		args: [address, mumbai.exchange],
+		enabled: !!address,
+	});
+
+	console.log('isApprovedForAll:', isApprovedForAll);
+
+	const { config } = usePrepareContractWrite({
+		addressOrName: mumbai.predictionMarket,
+		contractInterface: PredictionMarket.abi,
+		functionName: 'setApprovalForAll',
+		args: [mumbai.exchange, true],
+	});
+
+	const { data, isLoading, isSuccess, write } = useContractWrite({
+		...config,
+		onSuccess(data) {
+			console.log('Success', data);
+			refetchIsApprovedForAll(); // does not work?
+		},
+	});
 
 	const handlePositionSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		// check that position is not too large
@@ -386,7 +368,7 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 							label: symbolToLabel[asset],
 							value: asset,
 						}}
-						options={options.slice(0, 3)}
+						options={options}
 						styles={customStyles}
 						onChange={handleChange}
 						instanceId="yo"
@@ -395,7 +377,7 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 				</Header>
 				<SizeDiv>
 					<div className="inner-size">
-						<img src={assetToImage['trx']} alt={`eth-logo`} />
+						<img src={assetToImage['matic']} alt={`matic-logo`} />
 						<div className="input-div">
 							<input type="number" value={positionSize} onChange={handlePositionSizeChange} />
 						</div>
@@ -416,16 +398,6 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 							<p>Expiry</p>
 						</div>
 					</div>
-					{/* <div className="mid">
-            <div>
-              <p>Percent to strike</p>
-              <p>23.44%</p>
-            </div>
-            <div>
-              <p>Countdown to expiry</p>
-              <p>200D</p>
-            </div>
-          </div> */}
 					<div className="split">
 						<div className="first">
 							<input type="string" value={overOdds} onChange={handleOverOddsChange} name="over" />
@@ -459,8 +431,8 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 						<p>Listing {over ? 'UNDER' : 'OVER'} for</p>
 						<p>
 							{over
-								? `${(parseFloat(positionSize) / parseFloat(underOdds)).toFixed(4)} TRX`
-								: `${(parseFloat(positionSize) / parseFloat(overOdds)).toFixed(4)} TRX`}
+								? `${(parseFloat(positionSize) / parseFloat(underOdds)).toFixed(4)} MATIC`
+								: `${(parseFloat(positionSize) / parseFloat(overOdds)).toFixed(4)} MATIC`}
 						</p>
 					</div>
 					<div>
@@ -470,11 +442,11 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 								? `${(
 										parseFloat(positionSize) -
 										parseFloat(positionSize) / parseFloat(underOdds)
-								  ).toFixed(4)} TRX`
+								  ).toFixed(4)} MATIC`
 								: `${(
 										parseFloat(positionSize) -
 										parseFloat(positionSize) / parseFloat(overOdds)
-								  ).toFixed(4)} TRX`}
+								  ).toFixed(4)} MATIC`}
 						</p>
 					</div>
 					<div>
@@ -483,25 +455,25 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 							{over
 								? `${parseFloat(positionSize)} + ${(
 										parseFloat(positionSize) / parseFloat(underOdds)
-								  ).toFixed(4)} TRX`
+								  ).toFixed(4)} MATIC`
 								: `${parseFloat(positionSize)} + ${(
 										parseFloat(positionSize) / parseFloat(overOdds)
-								  ).toFixed(4)} TRX`}
+								  ).toFixed(4)} MATIC`}
 						</p>
 					</div>
-					{approvalButtonLoading ? (
+					{isLoading ? (
 						<Button type="button" l={true}>
 							<Spinner />
 						</Button>
 					) : (
-						!true && (
-							<Button type="button" l={false} onClick={handleApprove}>
+						!isApprovedForAll && (
+							<Button type="button" l={false} onClick={() => write?.()}>
 								APPROVE
 							</Button>
 						)
 					)}
 					<>
-						{!true ? (
+						{!isApprovedForAll ? (
 							<NotApprovedButton type="button">CREATE MARKET</NotApprovedButton>
 						) : loadingButton ? (
 							<Button l={true}>
