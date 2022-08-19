@@ -1,12 +1,16 @@
 import type { NextPage } from 'next';
 import { useState } from 'react';
 import styled from 'styled-components';
+import dynamic from 'next/dynamic';
 
 import PriceChartContainer from '../components/Chart/PriceChartContainer';
 import Banner from '../components/Banner';
 import { symbolToCoingeckoId } from '../utils/misc';
-import MakerThing from '../components/MakerThing';
 import { FiActivity, FiExternalLink } from 'react-icons/fi';
+
+const MakerThing = dynamic(() => import('../components/MakerThing'), {
+	ssr: false,
+});
 
 const Container = styled.div`
 	display: grid;
@@ -52,7 +56,7 @@ const Maker: NextPage = () => {
 		<>
 			{txHash !== '' && (
 				<NewTx>
-					<a href={`https://nile.tronscan.org/#/transaction/${txHash}`} target="_blank" rel="noreferrer">
+					<a href={`https://mumbai.polygonscan.com/tx/${txHash}`} target="_blank" rel="noreferrer">
 						Tx Hash: {txHash} <FiExternalLink />
 					</a>
 				</NewTx>

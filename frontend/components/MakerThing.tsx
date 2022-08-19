@@ -9,7 +9,7 @@ import { blackTheme } from '../design/themes';
 import { ethers } from 'ethers';
 import { Spinner } from './Spinner';
 import { BiLinkExternal } from 'react-icons/bi';
-import { FallbackProviderContext, TronWebContext, TronWebFallbackContext } from '../pages/_app';
+import { FallbackProviderContext } from '../pages/_app';
 import { mumbai, nile } from '../../contracts/scripts/addresses';
 import { useQuery } from 'react-query';
 import { useAccount, useContractRead, useContractWrite, usePrepareContractWrite } from 'wagmi';
@@ -149,14 +149,6 @@ type MakerThingProps = {
 	setTxHash: Dispatch<SetStateAction<string>>;
 };
 
-const isApprovedFetcher = async (tronWeb: any) => {
-	let predictionMarket = await tronWeb.contract(PredictionMarket.abi, nile.predictionMarket);
-
-	const isApproved = await predictionMarket.isApprovedForAll(tronWeb.defaultAddress.base58, nile.exchange).call();
-
-	return isApproved;
-};
-
 const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 	const fallbackProvider = useContext(FallbackProviderContext);
 	const [over, setOver] = useState(true);
@@ -171,8 +163,6 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 	const [createdMarketId, setCreatedMarketId] = useState(null);
 	const [loadingButton, setLoadingButton] = useState(false);
 	const [approvalButtonLoading, setApprovalButtonLoading] = useState(false);
-
-	// write isApproved with wagmi
 
 	const { address, isConnecting, isDisconnected } = useAccount();
 
@@ -196,8 +186,15 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 	const { data, isLoading, isSuccess, write } = useContractWrite({
 		...config,
 		onSuccess(data) {
-			console.log('Success', data);
+			console.log('Successful approval:', data);
 			refetchIsApprovedForAll(); // does not work?
+			setTimeout(() => {
+				refetchIsApprovedForAll();
+			}, 2500);
+
+			setTimeout(() => {
+				setTxHash('');
+			}, 7500);
 		},
 	});
 
@@ -306,38 +303,6 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 		setTimeout(() => {
 			setTxHash('');
 		}, 20000);
-	};
-
-	// do with wagmi
-	const handleApprove = async () => {
-		if (!tronWeb) {
-			return;
-		}
-
-		let predictionMarket = await tronWeb.contract(PredictionMarket.abi, nile.predictionMarket);
-
-		setApprovalButtonLoading(true);
-		let result;
-		try {
-			result = await predictionMarket.setApprovalForAll(nile.exchange, true).send({
-				callValue: 0,
-				shouldPollResponse: false,
-			});
-		} catch (e) {
-			console.log(e);
-			setApprovalButtonLoading(false);
-			return;
-		}
-		setApprovalButtonLoading(false);
-		setTxHash(result);
-
-		setTimeout(() => {
-			refetchIsApproved();
-		}, 2500);
-
-		setTimeout(() => {
-			setTxHash('');
-		}, 7500);
 	};
 
 	// useEffect(() => {
@@ -465,13 +430,11 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 						<Button type="button" l={true}>
 							<Spinner />
 						</Button>
-					) : (
-						!isApprovedForAll && (
-							<Button type="button" l={false} onClick={() => write?.()}>
-								APPROVE
-							</Button>
-						)
-					)}
+					) : !isApprovedForAll ? (
+						<Button type="button" l={false} onClick={() => write?.()}>
+							APPROVE
+						</Button>
+					) : null}
 					<>
 						{!isApprovedForAll ? (
 							<NotApprovedButton type="button">CREATE MARKET</NotApprovedButton>

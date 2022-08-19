@@ -18,7 +18,7 @@ export const FallbackProviderContext = createContext<any>('');
 
 const { chains, provider } = configureChains(
 	[chain.rinkeby, chain.polygon, chain.polygonMumbai],
-	[alchemyProvider({ alchemyId: process.env.ALCHEMY_ID }), publicProvider()]
+	[alchemyProvider(), publicProvider()]
 );
 
 const { connectors } = getDefaultWallets({
@@ -36,10 +36,7 @@ const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
 	const [fallbackProvider, setFallbackProvider] = useState(new ethers.providers.JsonRpcProvider(process.env.mumbai));
-	// useEffect(() => {
-	// 	const provider = new ethers.providers.JsonRpcProvider(process.env.mumbai);
-	// 	setFallbackProvider(provider);
-	// }, []);
+
 	return (
 		<ThemeProvider theme={blackTheme}>
 			<GlobalStyle />
