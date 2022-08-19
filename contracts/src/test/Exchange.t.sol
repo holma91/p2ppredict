@@ -98,9 +98,9 @@ contract ExchangeTest is Test, Exchange {
 
         exchange.setPredictionMarketAddress(address(predictionMarket));
 
-        ethMarket = PredictionMarket.Market(address(ethUsdPriceFeed), 1_000 * 10**8, 1000, 1 ether);
+        ethMarket = PredictionMarket.Market(address(ethUsdPriceFeed), 1_000 * 10**8, 1000, 1 ether, "", "");
 
-        btcMarket = PredictionMarket.Market(address(btcUsdPriceFeed), 23_000 * 10**8, 1000, 2 ether);
+        btcMarket = PredictionMarket.Market(address(btcUsdPriceFeed), 23_000 * 10**8, 1000, 2 ether, "", "");
 
         cheats.prank(alice);
         (aliceMarketId, aliceOverId, aliceUnderId) = predictionMarket.createMarket{value: 1 ether}(ethMarket);

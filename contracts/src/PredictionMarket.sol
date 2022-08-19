@@ -26,9 +26,6 @@ contract PredictionMarket is ERC721URIStorage {
     mapping(uint256 => Prediction) public predictionById;
     uint256 public currentPredictionId;
 
-    // mapping(address => Prediction[]) public predictionsByAccount;
-    // mapping(address => Prediction[]) public predictionsByPriceFeed;
-
     string baseSvg =
         "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMinYMin meet' viewBox='0 0 350 350'><style>.base { fill: white; font-family: serif; font-size: 24px; }</style><rect width='100%' height='100%' fill='black' />";
 
@@ -45,6 +42,8 @@ contract PredictionMarket is ERC721URIStorage {
         int256 strikePrice;
         uint256 expiry;
         uint256 collateral;
+        string ipfsOver;
+        string ipfsUnder;
     }
 
     event MarketCreated(
@@ -117,12 +116,12 @@ contract PredictionMarket is ERC721URIStorage {
         Prediction memory over = Prediction(market, true, currentPredictionId);
         predictionById[currentPredictionId] = over;
         _safeMint(msg.sender, currentPredictionId); // OVER
-        _setTokenURI(currentPredictionId++, createURI(true));
+        _setTokenURI(currentPredictionId++, market.ipfsOver);
 
         Prediction memory under = Prediction(market, false, currentPredictionId);
         predictionById[currentPredictionId] = under;
         _safeMint(msg.sender, currentPredictionId); // UNDER
-        _setTokenURI(currentPredictionId++, createURI(false));
+        _setTokenURI(currentPredictionId++, market.ipfsUnder);
 
         emit MarketCreated(
             market.priceFeed,

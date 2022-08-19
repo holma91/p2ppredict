@@ -91,12 +91,12 @@ const createSvg = (market: Market, choices: Choices) => {
     </svg>`;
 };
 
-const generateMetadata = (market: Market, choices: Choices, svg: string) => {
+const generateMetadata = (market: Market, choices: Choices, svgURI: string) => {
 	const asset = priceFeedToSymbol.mumbai[market.priceFeed].toUpperCase();
 	return {
 		description: `A prediction on p2ppredict.xyz regarding the value of ${asset}`,
 		name: `${choices.over ? 'OVER' : 'UNDER'} ${asset}/USD`,
-		image: svg,
+		image: svgURI,
 		attributes: [
 			{
 				trait_type: 'Asset',

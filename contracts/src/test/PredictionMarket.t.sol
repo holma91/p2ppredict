@@ -64,9 +64,9 @@ contract PredictionMarketTest is Test, PredictionMarket, ERC721Holder {
         bnbUsdPriceFeed = new MockV3Aggregator(8, 2_00 * 10**8);
         trxUsdPriceFeed = new MockV3Aggregator(8, 0.07 * 10**8);
 
-        ethMarket = Market(address(ethUsdPriceFeed), 1_000 * 10**8, 1000, 1 ether);
+        ethMarket = Market(address(ethUsdPriceFeed), 1_000 * 10**8, 1000, 1 ether, "", "");
 
-        btcMarket = Market(address(btcUsdPriceFeed), 23_000 * 10**8, 1000, 2 ether);
+        btcMarket = Market(address(btcUsdPriceFeed), 23_000 * 10**8, 1000, 2 ether, "", "");
     }
 
     function testCanCreateMarket() public {
@@ -156,7 +156,7 @@ contract PredictionMarketTest is Test, PredictionMarket, ERC721Holder {
     }
 
     function testScenario() public {
-        Market memory trxMarket = Market(address(trxUsdPriceFeed), 0.08 * 10**8, 1000, 1 ether);
+        Market memory trxMarket = Market(address(trxUsdPriceFeed), 0.08 * 10**8, 1000, 1 ether, "", "");
         uint256 listPrice = 0.5 ether;
         (, uint256 overId, uint256 underId) = predictionMarket.createMarketWithPosition{value: 1 ether}(
             trxMarket,

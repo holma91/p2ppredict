@@ -4,7 +4,7 @@ const Exchange = require("../out/Exchange.sol/Exchange.json");
 require("dotenv").config("");
 
 const main = async () => {
-  const provider = new ethers.providers.JsonRpcProvider(process.env.mumbai);
+  const provider = new ethers.providers.JsonRpcProvider(process.env.polygon);
   const wallet = new ethers.Wallet(process.env.pk1, provider);
   const pmFactory = new ethers.ContractFactory(
     PredictionMarket.abi,
@@ -47,6 +47,8 @@ const main = async () => {
   await approvalTx.wait();
   console.log("acc1 approval set");
 
+  // cut off here
+  return;
   predictionMarket = predictionMarket.connect(process.env.pk2);
 
   approvalTx = await predictionMarket.setApprovalForAll(exchange.address, true);
