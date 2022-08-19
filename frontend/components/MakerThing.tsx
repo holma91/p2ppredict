@@ -185,9 +185,17 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 
 	const { data, isLoading, isSuccess, write } = useContractWrite({
 		...config,
-		onSuccess(data) {
+		async onSettled(data, error) {
+			if (!data) {
+				console.log(error);
+				return;
+			}
+
 			console.log('Successful approval:', data);
-			refetchIsApprovedForAll(); // does not work?
+			await data.wait();
+			console.log('transaction confirmed.');
+			setTxHash(data.hash);
+
 			setTimeout(() => {
 				refetchIsApprovedForAll();
 			}, 2500);
