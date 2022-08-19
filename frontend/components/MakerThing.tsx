@@ -162,7 +162,8 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 
 	const [createdMarketId, setCreatedMarketId] = useState(null);
 	const [loadingButton, setLoadingButton] = useState(false);
-	const [approvalButtonLoading, setApprovalButtonLoading] = useState(false);
+	const [market, setMarket] = useState({});
+	const [choices, setChoices] = useState({});
 
 	const { address, isConnecting, isDisconnected } = useAccount();
 
@@ -176,15 +177,19 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 
 	console.log('isApprovedForAll:', isApprovedForAll);
 
-	const { config } = usePrepareContractWrite({
+	const { config: setApprovalForAllConfig } = usePrepareContractWrite({
 		addressOrName: mumbai.predictionMarket,
 		contractInterface: PredictionMarket.abi,
 		functionName: 'setApprovalForAll',
 		args: [mumbai.exchange, true],
 	});
 
-	const { data, isLoading, isSuccess, write } = useContractWrite({
-		...config,
+	const {
+		data,
+		isLoading: setApprovalForAllIsLoading,
+		write: writeSetApprovalForAll,
+	} = useContractWrite({
+		...setApprovalForAllConfig,
 		async onSettled(data, error) {
 			if (!data) {
 				console.log(error);
@@ -203,6 +208,28 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 			setTimeout(() => {
 				setTxHash('');
 			}, 7500);
+		},
+	});
+
+	const { config: createMarketWithPositionConfig } = usePrepareContractWrite({
+		addressOrName: mumbai.predictionMarket,
+		contractInterface: PredictionMarket.abi,
+		functionName: 'createMarketWithPosition',
+		args: [market, choices],
+	});
+
+	const {
+		data: dataCreateMarket,
+		isLoading: createMarketIsLoading,
+		write: writeCreateMarket,
+	} = useContractWrite({
+		...createMarketWithPositionConfig,
+		async onSettled(data, error) {
+			if (!data) {
+				console.log(error);
+				return;
+			}
+			console.log('market tx', data);
 		},
 	});
 
@@ -257,14 +284,12 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 		setAsset(selectedOption.value);
 	};
 
-	const createMarket = async () => {
-		console.log('creating market yo');
-		return;
-		const priceFeed = symbolToPriceFeed.nile[asset];
-		if (!priceFeed || !tronWeb) return;
+	const createMarketWithPosition = async () => {
+		const priceFeed = symbolToPriceFeed.mumbai[asset];
+		if (!priceFeed) return;
 
-		const DECIMALS = 6;
-		const FEED_DECIMALS = 6;
+		const DECIMALS = 18;
+		const FEED_DECIMALS = 8;
 		const market = {
 			priceFeed,
 			strikePrice: ethers.utils.parseUnits(strikePrice, FEED_DECIMALS),
@@ -280,37 +305,22 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 			listPrice = parseFloat(market.collateral.toString()) / parseFloat(overOdds);
 		}
 
-		let predictionMarket = await tronWeb.contract(PredictionMarket.abi, nile.predictionMarket);
-
 		const choices = {
 			over,
 			listPrice: parseInt(listPrice.toString()),
 			endTime: new Date(expiry).getTime() / 1000,
-			tresHoldPrice: tronWeb.toSun(limitOrder),
+			tresHoldPrice: ethers.utils.parseUnits(limitOrder, DECIMALS),
 		};
 
-		setLoadingButton(true);
-		let result;
-		try {
-			result = await predictionMarket
-				.createMarketWithPosition(Object.values(market), ...Object.values(choices))
-				.send({
-					feeLimit: 1000_000_000,
-					callValue: market.collateral,
-					shouldPollResponse: false,
-				});
-		} catch (e) {
-			console.log(e);
-			setLoadingButton(false);
-			return;
-		}
-		setLoadingButton(false);
+		console.log(market);
+		console.log(choices);
+		setMarket(market);
+		setChoices(choices);
 
-		setTxHash(result);
+		console.log('wsafa', writeSetApprovalForAll);
+		console.log('wsm', writeCreateMarket);
 
-		setTimeout(() => {
-			setTxHash('');
-		}, 20000);
+		writeCreateMarket?.();
 	};
 
 	// useEffect(() => {
@@ -434,12 +444,12 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 								  ).toFixed(4)} MATIC`}
 						</p>
 					</div>
-					{isLoading ? (
+					{setApprovalForAllIsLoading ? (
 						<Button type="button" l={true}>
 							<Spinner />
 						</Button>
 					) : !isApprovedForAll ? (
-						<Button type="button" l={false} onClick={() => write?.()}>
+						<Button type="button" l={false} onClick={() => writeSetApprovalForAll?.()}>
 							APPROVE
 						</Button>
 					) : null}
@@ -451,7 +461,7 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 								<Spinner />
 							</Button>
 						) : (
-							<Button type="button" l={false} onClick={createMarket}>
+							<Button type="button" l={false} onClick={createMarketWithPosition}>
 								CREATE MARKET
 							</Button>
 						)}
