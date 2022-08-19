@@ -13,6 +13,8 @@ import { FallbackProviderContext } from '../pages/_app';
 import { mumbai, nile } from '../../contracts/scripts/addresses';
 import { useQuery } from 'react-query';
 import { useAccount, useContractRead, useContractWrite, usePrepareContractWrite } from 'wagmi';
+import { createSvg, generateMetadata, uploadMetadataToIpfs, uploadSVGToIpfs, uploadToIpfs } from '../utils/ipfs';
+import { Choices, Market } from '../types';
 
 const StyledChoice = styled.div`
 	display: flex;
@@ -162,8 +164,18 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 
 	const [createdMarketId, setCreatedMarketId] = useState(null);
 	const [loadingButton, setLoadingButton] = useState(false);
-	const [market, setMarket] = useState({});
-	const [choices, setChoices] = useState({});
+	const [market, setMarket] = useState<Market>({
+		priceFeed: symbolToPriceFeed.mumbai.btc,
+		strikePrice: ethers.utils.parseUnits('1', 8),
+		expiry: ethers.BigNumber.from(new Date(expiry).getTime() / 1000),
+		collateral: ethers.utils.parseUnits('1', 18),
+	});
+	const [choices, setChoices] = useState<Choices>({
+		over: true,
+		listPrice: ethers.BigNumber.from('10'),
+		endTime: ethers.BigNumber.from(new Date(expiry).getTime() / 1000),
+		tresholdPrice: ethers.BigNumber.from('10'),
+	});
 
 	const { address, isConnecting, isDisconnected } = useAccount();
 
@@ -215,13 +227,15 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 		addressOrName: mumbai.predictionMarket,
 		contractInterface: PredictionMarket.abi,
 		functionName: 'createMarketWithPosition',
-		args: [market, choices],
+		args: [...Object.values(market), ...Object.values(choices)],
 	});
 
 	const {
 		data: dataCreateMarket,
 		isLoading: createMarketIsLoading,
 		write: writeCreateMarket,
+		status,
+		error,
 	} = useContractWrite({
 		...createMarketWithPositionConfig,
 		async onSettled(data, error) {
@@ -232,6 +246,10 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 			console.log('market tx', data);
 		},
 	});
+
+	// console.log('s', status);
+	// console.log('e', error);
+	// console.log('w', writeCreateMarket);
 
 	const handlePositionSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		// check that position is not too large
@@ -290,7 +308,7 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 
 		const DECIMALS = 18;
 		const FEED_DECIMALS = 8;
-		const market = {
+		const market: Market = {
 			priceFeed,
 			strikePrice: ethers.utils.parseUnits(strikePrice, FEED_DECIMALS),
 			expiry: ethers.BigNumber.from(new Date(expiry).getTime() / 1000),
@@ -305,15 +323,21 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 			listPrice = parseFloat(market.collateral.toString()) / parseFloat(overOdds);
 		}
 
-		const choices = {
+		const choices: Choices = {
 			over,
-			listPrice: parseInt(listPrice.toString()),
-			endTime: new Date(expiry).getTime() / 1000,
-			tresHoldPrice: ethers.utils.parseUnits(limitOrder, DECIMALS),
+			listPrice: ethers.BigNumber.from(listPrice.toString()),
+			endTime: ethers.BigNumber.from(new Date(expiry).getTime() / 1000),
+			tresholdPrice: ethers.BigNumber.from(ethers.utils.parseUnits(limitOrder, DECIMALS)),
 		};
 
 		console.log(market);
 		console.log(choices);
+		// create images here and upload to ipfs
+		const generatedSvg = createSvg(market, choices);
+		const svgURI = await uploadSVGToIpfs(generatedSvg);
+		const metadata = generateMetadata(market, choices, svgURI);
+		const metadataURI = await uploadMetadataToIpfs(metadata);
+
 		setMarket(market);
 		setChoices(choices);
 
