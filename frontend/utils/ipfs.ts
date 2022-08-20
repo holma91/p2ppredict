@@ -62,8 +62,9 @@ const uploadMetadataToIpfs = async (metadata: any) => {
 	return metadataURI;
 };
 
-const createSvg = (market: Market, choices: Choices) => {
-	let asset = priceFeedToSymbol.mumbai[market.priceFeed];
+const createSvg = (market: Market, choices: Choices, activeChain: string) => {
+	let asset = priceFeedToSymbol[activeChain][market.priceFeed].toUpperCase();
+	let collateralAsset = activeChain === 'rinkeby' ? 'ETH' : 'MATIC';
 
 	return `<svg
       width="350"
@@ -73,17 +74,17 @@ const createSvg = (market: Market, choices: Choices) => {
     >
       <rect x="0" y="0" width="350" height="350" fill="white" />
       <text x="50%" y="49" font-size="24" font-weight="300" dominant-baseline="middle" text-anchor="middle">
-      ${asset.toUpperCase()} ${choices.over ? 'OVER' : 'UNDER'}
+      ${asset} ${choices.over ? 'OVER' : 'UNDER'}
       </text>
       <line x1="40" y1="73" x2="310" y2="73" stroke="black" stroke-width="1.5" dominant-baseline="middle" text-anchor="middle" />
       <text x="50%" y="110" font-size="22" font-weight="200" dominant-baseline="middle" text-anchor="middle">
-        Price Feed: ${asset.toUpperCase()}/USD
+        Price Feed: ${asset}/USD
       </text>
       <text x="50%" y="155" font-size="22" font-weight="200" dominant-baseline="middle" text-anchor="middle">
         Strike Price: $${ethers.utils.formatUnits(market.strikePrice, 8)}
       </text>
       <text x="50%" y="200" font-size="22" font-weight="200" dominant-baseline="middle" text-anchor="middle">
-        Value: ${ethers.utils.formatEther(market.collateral)} MATIC
+        Value: ${ethers.utils.formatEther(market.collateral)} ${collateralAsset}
       </text>
       <text x="50%" y="245" font-size="22" font-weight="200" dominant-baseline="middle" text-anchor="middle">
         Expiry: ${formatDate(market.expiry.toString())}
@@ -91,8 +92,10 @@ const createSvg = (market: Market, choices: Choices) => {
     </svg>`;
 };
 
-const generateMetadata = (market: Market, choices: Choices, svgURI: string) => {
-	const asset = priceFeedToSymbol.mumbai[market.priceFeed].toUpperCase();
+const generateMetadata = (market: Market, choices: Choices, svgURI: string, activeChain: string) => {
+	let asset = priceFeedToSymbol[activeChain][market.priceFeed].toUpperCase();
+	let collateralAsset = activeChain === 'rinkeby' ? 'ETH' : 'MATIC';
+
 	return {
 		description: `A prediction on p2ppredict.xyz regarding the value of ${asset}`,
 		name: `${choices.over ? 'OVER' : 'UNDER'} ${asset}/USD`,
@@ -108,7 +111,7 @@ const generateMetadata = (market: Market, choices: Choices, svgURI: string) => {
 			},
 			{
 				trait_type: 'Value',
-				value: `${ethers.utils.formatEther(market.collateral)} MATIC`,
+				value: `${ethers.utils.formatEther(market.collateral)} ${collateralAsset}`,
 			},
 			{
 				trait_type: 'Expiry',

@@ -23,6 +23,8 @@ export type Market = {
 	strikePrice: ethers.BigNumber;
 	collateral: ethers.BigNumber;
 	expiry: ethers.BigNumber;
+	ipfsOver: string;
+	ipfsUnder: string;
 };
 
 export type Choices = {

@@ -1,11 +1,12 @@
 import { useQuery } from 'react-query';
 import { priceFeedToSymbol, symbolToCoingeckoId, symbolToPriceFeed } from '../utils/misc';
-// import { nile, mainnet } from '../../contracts/scripts/addresses';
+import { mumbai } from '../../contracts/scripts/addresses';
 import PredictionMarket from '../../contracts/out/PredictionMarket.sol/PredictionMarket.json';
 import Exchange from '../../contracts/out/Exchange.sol/Exchange.json';
 import { Position } from '../types';
 import { formatDate } from '../utils/helpers';
 import { ethers } from 'ethers';
+import { useAccount } from 'wagmi';
 
 const getStatus = (strikePrice: any, currentPrice: any, over: boolean) => {
 	if (over) {
@@ -76,9 +77,10 @@ const fetcher = async (fallbackProvider: ethers.providers.JsonRpcProvider) => {
 };
 
 export const useFetchPositions = (fallbackProvider: any) => {
-	const activeAddress = '0xdcb9048D6bb9C31e60af7595ef597ADC642B9cB6';
+	const { address, isConnecting, isDisconnected } = useAccount();
+
 	const { isLoading, isError, data } = useQuery(['positions'], () => fetcher(fallbackProvider), {
-		enabled: !!fallbackProvider && !!activeAddress,
+		enabled: !!fallbackProvider && !!address,
 	});
 
 	return {

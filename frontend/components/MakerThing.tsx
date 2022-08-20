@@ -10,11 +10,13 @@ import { ethers } from 'ethers';
 import { Spinner } from './Spinner';
 import { BiLinkExternal } from 'react-icons/bi';
 import { FallbackProviderContext } from '../pages/_app';
-import { mumbai, nile } from '../../contracts/scripts/addresses';
+import { predictionMarketAddresses, exchangeAddresses } from '../utils/addresses';
 import { useQuery } from 'react-query';
-import { useAccount, useContractRead, useContractWrite, usePrepareContractWrite } from 'wagmi';
-import { createSvg, generateMetadata, uploadMetadataToIpfs, uploadSVGToIpfs, uploadToIpfs } from '../utils/ipfs';
+import { useAccount, useContractRead, useContractWrite, usePrepareContractWrite, useNetwork } from 'wagmi';
+import { createSvg, generateMetadata, uploadMetadataToIpfs, uploadSVGToIpfs } from '../utils/ipfs';
 import { Choices, Market } from '../types';
+
+declare var window: any;
 
 const StyledChoice = styled.div`
 	display: flex;
@@ -152,7 +154,6 @@ type MakerThingProps = {
 };
 
 const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
-	const fallbackProvider = useContext(FallbackProviderContext);
 	const [over, setOver] = useState(true);
 	const [positionSize, setPositionSize] = useState('0.001');
 	const [strikePrice, setStrikePrice] = useState('0');
@@ -164,36 +165,26 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 
 	const [createdMarketId, setCreatedMarketId] = useState(null);
 	const [loadingButton, setLoadingButton] = useState(false);
-	const [market, setMarket] = useState<Market>({
-		priceFeed: symbolToPriceFeed.mumbai.btc,
-		strikePrice: ethers.utils.parseUnits('1', 8),
-		expiry: ethers.BigNumber.from(new Date(expiry).getTime() / 1000),
-		collateral: ethers.utils.parseUnits('1', 18),
-	});
-	const [choices, setChoices] = useState<Choices>({
-		over: true,
-		listPrice: ethers.BigNumber.from('10'),
-		endTime: ethers.BigNumber.from(new Date(expiry).getTime() / 1000),
-		tresholdPrice: ethers.BigNumber.from('10'),
-	});
 
 	const { address, isConnecting, isDisconnected } = useAccount();
+	const { chain, chains } = useNetwork();
+	console.log(chain);
+	const activeChain = chain?.network;
+	console.log('activeChain:', activeChain);
 
 	const { data: isApprovedForAll, refetch: refetchIsApprovedForAll } = useContractRead({
-		addressOrName: mumbai.predictionMarket,
+		addressOrName: predictionMarketAddresses[activeChain ? activeChain : 'rinkeby'],
 		contractInterface: PredictionMarket.abi,
 		functionName: 'isApprovedForAll',
-		args: [address, mumbai.exchange],
-		enabled: !!address,
+		args: [address, exchangeAddresses[activeChain ? activeChain : 'rinkeby']],
+		enabled: !!address && !!chain && !!activeChain,
 	});
 
-	console.log('isApprovedForAll:', isApprovedForAll);
-
 	const { config: setApprovalForAllConfig } = usePrepareContractWrite({
-		addressOrName: mumbai.predictionMarket,
+		addressOrName: predictionMarketAddresses[activeChain ? activeChain : 'rinkeby'],
 		contractInterface: PredictionMarket.abi,
 		functionName: 'setApprovalForAll',
-		args: [mumbai.exchange, true],
+		args: [exchangeAddresses[activeChain ? activeChain : 'rinkeby'], true],
 	});
 
 	const {
@@ -222,34 +213,6 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 			}, 7500);
 		},
 	});
-
-	const { config: createMarketWithPositionConfig } = usePrepareContractWrite({
-		addressOrName: mumbai.predictionMarket,
-		contractInterface: PredictionMarket.abi,
-		functionName: 'createMarketWithPosition',
-		args: [...Object.values(market), ...Object.values(choices)],
-	});
-
-	const {
-		data: dataCreateMarket,
-		isLoading: createMarketIsLoading,
-		write: writeCreateMarket,
-		status,
-		error,
-	} = useContractWrite({
-		...createMarketWithPositionConfig,
-		async onSettled(data, error) {
-			if (!data) {
-				console.log(error);
-				return;
-			}
-			console.log('market tx', data);
-		},
-	});
-
-	// console.log('s', status);
-	// console.log('e', error);
-	// console.log('w', writeCreateMarket);
 
 	const handlePositionSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		// check that position is not too large
@@ -303,7 +266,9 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 	};
 
 	const createMarketWithPosition = async () => {
-		const priceFeed = symbolToPriceFeed.mumbai[asset];
+		if (!activeChain) return;
+
+		const priceFeed = symbolToPriceFeed[activeChain][asset];
 		if (!priceFeed) return;
 
 		const DECIMALS = 18;
@@ -313,6 +278,8 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 			strikePrice: ethers.utils.parseUnits(strikePrice, FEED_DECIMALS),
 			expiry: ethers.BigNumber.from(new Date(expiry).getTime() / 1000),
 			collateral: ethers.utils.parseUnits(positionSize, DECIMALS),
+			ipfsOver: 'ipfs',
+			ipfsUnder: 'ifps',
 		};
 
 		// odds = collateral / price <=> price = collateral / odds
@@ -333,18 +300,49 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 		console.log(market);
 		console.log(choices);
 		// create images here and upload to ipfs
-		const generatedSvg = createSvg(market, choices);
+		const generatedSvg = createSvg(market, choices, activeChain);
 		const svgURI = await uploadSVGToIpfs(generatedSvg);
-		const metadata = generateMetadata(market, choices, svgURI);
+		const metadata = generateMetadata(market, choices, svgURI, activeChain);
 		const metadataURI = await uploadMetadataToIpfs(metadata);
 
-		setMarket(market);
-		setChoices(choices);
+		const { ethereum } = window;
+		if (ethereum) {
+			const provider = new ethers.providers.Web3Provider(ethereum);
+			console.log(ethereum);
+			const signer = provider.getSigner();
 
-		console.log('wsafa', writeSetApprovalForAll);
-		console.log('wsm', writeCreateMarket);
+			console.log('not undefined:', predictionMarketAddresses[activeChain]);
+			const predictionMarket = new ethers.Contract(
+				predictionMarketAddresses[activeChain],
+				PredictionMarket.abi,
+				signer
+			);
+			console.log(predictionMarket);
+			console.log(market, ...Object.values(choices));
 
-		writeCreateMarket?.();
+			setLoadingButton(true);
+			let tx;
+			try {
+				// tx = await predictionMarket.exchangeAddress();
+				tx = await predictionMarket.createMarketWithPosition(market, ...Object.values(choices), {
+					value: market.collateral,
+				});
+				console.log(tx.hash);
+				await tx.wait();
+				console.log('success!');
+			} catch (e) {
+				console.log(e);
+				setLoadingButton(false);
+				return;
+			}
+			setLoadingButton(false);
+
+			setTxHash(tx.hash);
+
+			setTimeout(() => {
+				setTxHash('');
+			}, 20000);
+		}
 	};
 
 	// useEffect(() => {
@@ -384,7 +382,7 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 				</Header>
 				<SizeDiv>
 					<div className="inner-size">
-						<img src={assetToImage['matic']} alt={`matic-logo`} />
+						<img src={assetToImage[activeChain === 'rinkeby' ? 'eth' : 'matic']} alt={`currency-logo`} />
 						<div className="input-div">
 							<input type="number" value={positionSize} onChange={handlePositionSizeChange} />
 						</div>
@@ -432,14 +430,20 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 				<SummaryDiv>
 					<div>
 						<p>Depositing</p>
-						<p>{positionSize} TRX</p>
+						<p>
+							{positionSize} {activeChain === 'rinkeby' ? 'ETH' : 'MATIC'}
+						</p>
 					</div>
 					<div>
 						<p>Listing {over ? 'UNDER' : 'OVER'} for</p>
 						<p>
 							{over
-								? `${(parseFloat(positionSize) / parseFloat(underOdds)).toFixed(4)} MATIC`
-								: `${(parseFloat(positionSize) / parseFloat(overOdds)).toFixed(4)} MATIC`}
+								? `${(parseFloat(positionSize) / parseFloat(underOdds)).toFixed(4)} ${
+										activeChain === 'rinkeby' ? 'ETH' : 'MATIC'
+								  }`
+								: `${(parseFloat(positionSize) / parseFloat(overOdds)).toFixed(4)} ${
+										activeChain === 'rinkeby' ? 'ETH' : 'MATIC'
+								  }`}
 						</p>
 					</div>
 					<div>
@@ -449,11 +453,11 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 								? `${(
 										parseFloat(positionSize) -
 										parseFloat(positionSize) / parseFloat(underOdds)
-								  ).toFixed(4)} MATIC`
+								  ).toFixed(4)} ${activeChain === 'rinkeby' ? 'ETH' : 'MATIC'}`
 								: `${(
 										parseFloat(positionSize) -
 										parseFloat(positionSize) / parseFloat(overOdds)
-								  ).toFixed(4)} MATIC`}
+								  ).toFixed(4)} ${activeChain === 'rinkeby' ? 'ETH' : 'MATIC'}`}
 						</p>
 					</div>
 					<div>
@@ -462,10 +466,10 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 							{over
 								? `${parseFloat(positionSize)} + ${(
 										parseFloat(positionSize) / parseFloat(underOdds)
-								  ).toFixed(4)} MATIC`
+								  ).toFixed(4)} ${activeChain === 'rinkeby' ? 'ETH' : 'MATIC'}`
 								: `${parseFloat(positionSize)} + ${(
 										parseFloat(positionSize) / parseFloat(overOdds)
-								  ).toFixed(4)} MATIC`}
+								  ).toFixed(4)} ${activeChain === 'rinkeby' ? 'ETH' : 'MATIC'}`}
 						</p>
 					</div>
 					{setApprovalForAllIsLoading ? (

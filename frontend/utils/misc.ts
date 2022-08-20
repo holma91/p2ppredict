@@ -83,7 +83,7 @@ export const symbolToPriceFeed: { [key: string]: { [key: string]: string } } = {
 		link: '0xd8bD0a1cB028a31AA859A21A3758685a95dE4623',
 		matic: '0x7794ee502922e2b723432DDD852B3C30A911F021',
 	},
-	mumbai: {
+	maticmum: {
 		btc: '0x007A22900a3B98143368Bd5906f8E17e9867581b',
 		eth: '0x0715A7794a1dc8e42615F059dD6e406A6594651A',
 		matic: '0xd0D5e3DB44DE05E9F294BB0a3bEEaF030DE24Ada',
@@ -91,6 +91,7 @@ export const symbolToPriceFeed: { [key: string]: { [key: string]: string } } = {
 		usdt: '0x92C09849638959196E976289418e5973CC96d645',
 		dai: '0x0FCAa9c899EC5A91eBc3D5Dd869De833b06fB046',
 	},
+	matic: {},
 };
 
 export const priceFeedToSymbol: { [key: string]: { [key: string]: string } } = {
@@ -102,7 +103,7 @@ export const priceFeedToSymbol: { [key: string]: { [key: string]: string } } = {
 		'0xd8bD0a1cB028a31AA859A21A3758685a95dE4623': 'link',
 		'0x7794ee502922e2b723432DDD852B3C30A911F021': 'matic',
 	},
-	mumbai: {
+	maticmum: {
 		'0x007A22900a3B98143368Bd5906f8E17e9867581b': 'btc',
 		'0x0715A7794a1dc8e42615F059dD6e406A6594651A': 'eth',
 		'0xd0D5e3DB44DE05E9F294BB0a3bEEaF030DE24Ada': 'matic',
@@ -110,6 +111,7 @@ export const priceFeedToSymbol: { [key: string]: { [key: string]: string } } = {
 		'0x92C09849638959196E976289418e5973CC96d645': 'usdt',
 		'0x0FCAa9c899EC5A91eBc3D5Dd869De833b06fB046': 'dai',
 	},
+	matic: {},
 };
 
 export const assetToImage: { [key: string]: string } = {
