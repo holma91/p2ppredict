@@ -4,19 +4,30 @@ import { mumbai } from '../../contracts/scripts/addresses';
 import PredictionMarket from '../../contracts/out/PredictionMarket.sol/PredictionMarket.json';
 import Exchange from '../../contracts/out/Exchange.sol/Exchange.json';
 import { ethers } from 'ethers';
-import { useAccount } from 'wagmi';
+import { useAccount, useNetwork } from 'wagmi';
+import { exchangeAddresses, predictionMarketAddresses } from '../utils/addresses';
+declare var window: any;
 
-const fetcher = async (asset: string, activeAddress: string, fallbackProvider: ethers.providers.JsonRpcProvider) => {
-	console.log(fallbackProvider);
-	const priceFeed = symbolToPriceFeed.mumbai[asset];
+const fetcher = async (asset: string, activeAddress: string, activeChain: string) => {
+	const provider = ethers.getDefaultProvider(process.env[activeChain]);
+	const priceFeed = symbolToPriceFeed[activeChain][asset];
 
 	if (!priceFeed) {
 		console.log('pricefeed for ', asset, ' not available');
 		return '';
 	}
+
 	// set up market and exchange
-	let predictionMarket = new ethers.Contract(mumbai.predictionMarket, PredictionMarket.abi, fallbackProvider);
-	let exchange = new ethers.Contract(mumbai.exchange, Exchange.abi, fallbackProvider);
+	let predictionMarket = new ethers.Contract(
+		predictionMarketAddresses[activeChain ? activeChain : 'rinkeby'],
+		PredictionMarket.abi,
+		provider
+	);
+	let exchange = new ethers.Contract(
+		exchangeAddresses[activeChain ? activeChain : 'rinkeby'],
+		Exchange.abi,
+		provider
+	);
 	console.log(predictionMarket);
 
 	// get predictions and makerasks
@@ -43,7 +54,6 @@ const fetcher = async (asset: string, activeAddress: string, fallbackProvider: e
 		if (!price) continue;
 
 		let marketInfo = prediction.market;
-		let market = priceFeedToSymbol.mumbai[marketInfo.priceFeed];
 		let key = `${marketInfo.priceFeed.toString()}:${marketInfo.strikePrice.toString()}:${marketInfo.expiry.toString()}`;
 		if (!(key in markets)) {
 			markets[key] = {
@@ -101,11 +111,14 @@ export const useFetchMarkets = (
 	fallbackProvider: ethers.providers.JsonRpcProvider
 ) => {
 	const { address, isConnecting, isDisconnected } = useAccount();
+	const { chain, chains } = useNetwork();
+	const activeChain = chain?.network;
+
 	const { isLoading, isError, data } = useQuery(
-		['markets', asset, address],
-		() => fetcher(asset, address ? (address as string) : '0x0', fallbackProvider),
+		['markets', asset, address, activeChain],
+		() => fetcher(asset, address ? (address as string) : '0x0', activeChain ? activeChain : 'rinkeby'),
 		{
-			enabled: !!fallbackProvider,
+			enabled: !!address && !!activeChain,
 		}
 	);
 

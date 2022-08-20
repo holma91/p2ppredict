@@ -308,28 +308,21 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 		const { ethereum } = window;
 		if (ethereum) {
 			const provider = new ethers.providers.Web3Provider(ethereum);
-			console.log(ethereum);
 			const signer = provider.getSigner();
-
-			console.log('not undefined:', predictionMarketAddresses[activeChain]);
 			const predictionMarket = new ethers.Contract(
 				predictionMarketAddresses[activeChain],
 				PredictionMarket.abi,
 				signer
 			);
-			console.log(predictionMarket);
-			console.log(market, ...Object.values(choices));
 
 			setLoadingButton(true);
 			let tx;
 			try {
-				// tx = await predictionMarket.exchangeAddress();
 				tx = await predictionMarket.createMarketWithPosition(market, ...Object.values(choices), {
 					value: market.collateral,
 				});
-				console.log(tx.hash);
 				await tx.wait();
-				console.log('success!');
+				console.log(tx.hash);
 			} catch (e) {
 				console.log(e);
 				setLoadingButton(false);
