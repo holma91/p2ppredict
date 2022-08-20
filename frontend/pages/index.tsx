@@ -99,10 +99,6 @@ const Home: NextPage = () => {
 						<Link href="/trade">
 							<a>Take Markets</a>
 						</Link>
-						<a className="mainnet" href="https://tpMarket.io" target="_blank" rel="noreferrer">
-							Mainnet
-							<FiExternalLink />
-						</a>
 					</div>
 				</Left>
 				<Right>

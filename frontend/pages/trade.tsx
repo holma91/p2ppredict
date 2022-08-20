@@ -1,24 +1,19 @@
 import type { NextPage } from 'next';
-import { useState, useEffect, useContext } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import { FiExternalLink } from 'react-icons/fi';
-import { useContractRead, useNetwork } from 'wagmi';
+import { useNetwork } from 'wagmi';
 
 import type { Token } from '../types';
 import Banner from '../components/Banner';
 
 import { assetToImage, assets, symbolToCoingeckoId } from '../utils/misc';
-import { allMarkets, btcMarkets } from '../data/mockMarkets';
+import { allMarkets } from '../data/mockMarkets';
 import PriceChartContainer from '../components/Chart/PriceChartContainer';
 import { useFetchPrices } from '../hooks/useFetchPrices';
 import { formatDate } from '../utils/helpers';
 import OrderBook from '../components/OrderBook';
-// import { useFetchMarkets } from '../hooks/useFetchMarkets';
-import { FallbackProviderContext } from './_app';
-import PredictionMarket from '../../contracts/out/PredictionMarket.sol/PredictionMarket.json';
-import Exchange from '../../contracts/out/Exchange.sol/Exchange.json';
 import { useRouter } from 'next/router';
-import { ethers } from 'ethers';
 import { useFetchMarkets } from '../hooks/useFetchMarkets';
 
 interface Props {
@@ -37,8 +32,6 @@ const Container = styled.div`
 		grid-template-columns: 100% 0;
 	}
 `;
-
-// fetch markets
 
 const Taker: NextPage = () => {
 	const { chain } = useNetwork();

@@ -30,7 +30,7 @@ export type Market = {
 export type Choices = {
 	over: Boolean;
 	endTime: ethers.BigNumber;
-	listPrice: ethers.BigNumber;
+	listPrice: string | ethers.BigNumber;
 	tresholdPrice: ethers.BigNumber;
 };
 

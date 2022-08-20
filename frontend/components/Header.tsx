@@ -2,14 +2,16 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { PrimaryButton } from './Buttons';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useNetwork } from 'wagmi';
 
 interface ActorProps {
 	isActive: boolean;
 }
 
 const Header = () => {
+	const { chain } = useNetwork();
 	const router = useRouter();
 	const page =
 		router.asPath === '/trade'
@@ -20,13 +22,23 @@ const Header = () => {
 			? 'positions'
 			: '';
 
+	const [isSSR, setIsSSR] = useState(true);
+
+	useEffect(() => {
+		setIsSSR(false);
+	}, []);
+
 	return (
 		<HeaderContainer>
 			<Title>
 				<Link href="/">
 					<a>p2ppredict</a>
 				</Link>
-				<span>testnet</span>
+				{!isSSR && (
+					<span>
+						{chain?.network === 'rinkeby' ? 'rinkeby' : chain?.network === 'maticmum' ? 'mumbai' : ''}
+					</span>
+				)}
 			</Title>
 			<MenuContainer>
 				<Link href="/create">

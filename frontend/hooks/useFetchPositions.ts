@@ -6,7 +6,14 @@ import Exchange from '../../contracts/out/Exchange.sol/Exchange.json';
 import { Position } from '../types';
 import { formatDate } from '../utils/helpers';
 import { ethers } from 'ethers';
-import { useAccount } from 'wagmi';
+import { useAccount, useNetwork } from 'wagmi';
+import { exchangeAddresses, predictionMarketAddresses } from '../utils/addresses';
+
+const rpcs: { [key: string]: string } = {
+	rinkeby: 'https://rpc.ankr.com/eth_rinkeby',
+	matic: 'https://polygon-mainnet.public.blastapi.io',
+	maticmum: 'https://polygon-testnet.public.blastapi.io',
+};
 
 const getStatus = (strikePrice: any, currentPrice: any, over: boolean) => {
 	if (over) {
@@ -24,17 +31,25 @@ const getStatus = (strikePrice: any, currentPrice: any, over: boolean) => {
 	}
 };
 
-const fetcher = async (fallbackProvider: ethers.providers.JsonRpcProvider) => {
-	console.log(fallbackProvider);
-	return;
-	let predictionMarket = await tronWeb.contract(PredictionMarket.abi, mainnet.predictionMarket);
-	let exchange = await tronWeb.contract(Exchange.abi, mainnet.exchange);
+const fetcher = async (address: string, activeChain: string) => {
+	const provider = ethers.getDefaultProvider(rpcs[activeChain]);
 
-	const account = tronWeb.defaultAddress.base58;
+	// set up market and exchange
+	let predictionMarket = new ethers.Contract(
+		predictionMarketAddresses[activeChain ? activeChain : 'rinkeby'],
+		PredictionMarket.abi,
+		provider
+	);
+	let exchange = new ethers.Contract(
+		exchangeAddresses[activeChain ? activeChain : 'rinkeby'],
+		Exchange.abi,
+		provider
+	);
+	console.log(predictionMarket);
 
-	const [predictions, latestAnswers] = await predictionMarket.getPredictionsByAccount(account).call();
-
-	const makerAsks = await exchange.getMakerAsksByAccount(account).call();
+	// get predictions and makerasks
+	const [predictions, latestAnswers] = await predictionMarket.getPredictionsByAccount(address);
+	const makerAsks = await exchange.getMakerAsksByAccount(address);
 
 	const listPriceById: { [key: string]: any } = {};
 	for (const ask of makerAsks) {
@@ -46,21 +61,21 @@ const fetcher = async (fallbackProvider: ethers.providers.JsonRpcProvider) => {
 
 	for (let i = 0; i < predictions.length; i++) {
 		let marketInfo = predictions[i][0];
-		let market = priceFeedToSymbol.mainnet[tronWeb.address.fromHex(marketInfo.priceFeed)];
+		let market = priceFeedToSymbol[activeChain][marketInfo.priceFeed];
 
 		let position: Position = {
 			timestamp: parseInt(marketInfo.expiry),
 			asset: market,
 			side: predictions[i].over ? 'OVER' : 'UNDER',
-			strikePrice: tronWeb.fromSun(marketInfo.strikePrice),
+			strikePrice: ethers.utils.formatUnits(marketInfo.strikePrice, 8),
 			expiry: formatDate(marketInfo.expiry.toString()),
 			tokenId: predictions[i].id.toString(),
-			size: tronWeb.fromSun(marketInfo.collateral),
+			size: ethers.utils.formatUnits(marketInfo.collateral, 18),
 			status: getStatus(marketInfo.strikePrice, latestAnswers[i], predictions[i].over),
-			latestAnswer: tronWeb.fromSun(latestAnswers[i].toString()),
+			latestAnswer: ethers.utils.formatUnits(latestAnswers[i].toString(), 8),
 		};
 		if (position.tokenId in listPriceById) {
-			position.listPrice = tronWeb.fromSun(listPriceById[position.tokenId].toString());
+			position.listPrice = ethers.utils.formatUnits(listPriceById[position.tokenId].toString(), 18);
 			listedPositions.push(position);
 			listedPositions.sort(function (a: Position, b: Position) {
 				return a.timestamp - b.timestamp;
@@ -76,12 +91,18 @@ const fetcher = async (fallbackProvider: ethers.providers.JsonRpcProvider) => {
 	return { listedPositions, unlistedPositions };
 };
 
-export const useFetchPositions = (fallbackProvider: any) => {
+export const useFetchPositions = () => {
 	const { address, isConnecting, isDisconnected } = useAccount();
+	const { chain, chains } = useNetwork();
+	const activeChain = chain?.network;
 
-	const { isLoading, isError, data } = useQuery(['positions'], () => fetcher(fallbackProvider), {
-		enabled: !!fallbackProvider && !!address,
-	});
+	const { isLoading, isError, data } = useQuery(
+		['positions', address, activeChain],
+		() => fetcher(address as string, activeChain as string),
+		{
+			enabled: !!address && !!activeChain,
+		}
+	);
 
 	return {
 		positions: data,
