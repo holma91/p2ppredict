@@ -12,6 +12,8 @@ const fetcher = async (asset: string, activeAddress: string, activeChain: string
 	const provider = ethers.getDefaultProvider(process.env[activeChain]);
 	const priceFeed = symbolToPriceFeed[activeChain][asset];
 
+	console.log('provider', provider);
+
 	if (!priceFeed) {
 		console.log('pricefeed for ', asset, ' not available');
 		return '';

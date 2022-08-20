@@ -292,7 +292,7 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 
 		const choices: Choices = {
 			over,
-			listPrice: ethers.BigNumber.from(listPrice.toString()),
+			listPrice: ethers.BigNumber.from(Math.floor(listPrice)),
 			endTime: ethers.BigNumber.from(new Date(expiry).getTime() / 1000),
 			tresholdPrice: ethers.BigNumber.from(ethers.utils.parseUnits(limitOrder, DECIMALS)),
 		};

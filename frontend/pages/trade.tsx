@@ -44,7 +44,6 @@ const Taker: NextPage = () => {
 	const router = useRouter();
 	let { asset } = router.query;
 	asset = asset as string; // I promise
-	// const tronWeb = useContext(TronWebContext);
 	const fallbackProvider: ethers.providers.JsonRpcProvider = useContext(FallbackProviderContext);
 	const [asset0, setAsset0] = useState(asset ? asset : 'btc');
 	const [asset1, setAsset1] = useState<Token>({

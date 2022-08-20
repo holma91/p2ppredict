@@ -7,6 +7,7 @@ import PriceChartContainer from '../components/Chart/PriceChartContainer';
 import Banner from '../components/Banner';
 import { symbolToCoingeckoId } from '../utils/misc';
 import { FiActivity, FiExternalLink } from 'react-icons/fi';
+import { useNetwork } from 'wagmi';
 
 const MakerThing = dynamic(() => import('../components/MakerThing'), {
 	ssr: false,
@@ -42,9 +43,17 @@ const Container = styled.div`
 `;
 
 const Maker: NextPage = () => {
+	const { chain, chains } = useNetwork();
 	const [asset, setAsset] = useState('btc');
 	const asset1 = { symbol: 'usd', coingeckoId: 'usd' };
 	const [txHash, setTxHash] = useState('');
+
+	const explorer =
+		chain?.network === 'rinkeby'
+			? 'https://rinkeby.etherscan.io/tx'
+			: chain?.network === 'maticmum'
+			? 'https://mumbai.polygonscan.com/tx'
+			: 'https://polygonscan.com/tx';
 
 	const dimensions = {
 		height: '84%',
@@ -56,7 +65,7 @@ const Maker: NextPage = () => {
 		<>
 			{txHash !== '' && (
 				<NewTx>
-					<a href={`https://mumbai.polygonscan.com/tx/${txHash}`} target="_blank" rel="noreferrer">
+					<a href={`${explorer}/${txHash}`} target="_blank" rel="noreferrer">
 						Tx Hash: {txHash} <FiExternalLink />
 					</a>
 				</NewTx>

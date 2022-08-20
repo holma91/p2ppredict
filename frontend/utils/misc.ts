@@ -82,6 +82,7 @@ export const symbolToPriceFeed: { [key: string]: { [key: string]: string } } = {
 		atom: '0x3539F2E214d8BC7E611056383323aC6D1b01943c',
 		link: '0xd8bD0a1cB028a31AA859A21A3758685a95dE4623',
 		matic: '0x7794ee502922e2b723432DDD852B3C30A911F021',
+		usdc: '0xa24de01df22b63d23Ebc1882a5E3d4ec0d907bFB',
 	},
 	maticmum: {
 		btc: '0x007A22900a3B98143368Bd5906f8E17e9867581b',
@@ -102,6 +103,7 @@ export const priceFeedToSymbol: { [key: string]: { [key: string]: string } } = {
 		'0x3539F2E214d8BC7E611056383323aC6D1b01943c': 'atom',
 		'0xd8bD0a1cB028a31AA859A21A3758685a95dE4623': 'link',
 		'0x7794ee502922e2b723432DDD852B3C30A911F021': 'matic',
+		'0xa24de01df22b63d23Ebc1882a5E3d4ec0d907bFB': 'usdc',
 	},
 	maticmum: {
 		'0x007A22900a3B98143368Bd5906f8E17e9867581b': 'btc',
