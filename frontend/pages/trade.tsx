@@ -2,7 +2,7 @@ import type { NextPage } from 'next';
 import { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { FiExternalLink } from 'react-icons/fi';
-import { useContractRead } from 'wagmi';
+import { useContractRead, useNetwork } from 'wagmi';
 
 import type { Token } from '../types';
 import Banner from '../components/Banner';
@@ -41,10 +41,10 @@ const Container = styled.div`
 // fetch markets
 
 const Taker: NextPage = () => {
+	const { chain } = useNetwork();
 	const router = useRouter();
 	let { asset } = router.query;
 	asset = asset as string; // I promise
-	const fallbackProvider: ethers.providers.JsonRpcProvider = useContext(FallbackProviderContext);
 	const [asset0, setAsset0] = useState(asset ? asset : 'btc');
 	const [asset1, setAsset1] = useState<Token>({
 		symbol: 'usd',
@@ -54,27 +54,9 @@ const Taker: NextPage = () => {
 	const { prices, isLoading, isError } = useFetchPrices(assets);
 	const [txHash, setTxHash] = useState('');
 	const [buyInfo, setBuyInfo] = useState({ asset: '', price: '', side: '' });
-	let {
-		markets,
-		isLoading: isl,
-		isError: ise,
-	} = useFetchMarkets(asset0, '0xdcb9048D6bb9C31e60af7595ef597ADC642B9cB6', fallbackProvider);
+	let { markets, isLoading: isl, isError: ise } = useFetchMarkets(asset0);
 
 	console.log('markets:', markets);
-
-	const { data: predictions } = useContractRead({
-		addressOrName: '',
-		contractInterface: PredictionMarket.abi,
-		functionName: 'getPredictionsByFeed',
-	});
-
-	const { data: makerAsks } = useContractRead({
-		addressOrName: '',
-		contractInterface: PredictionMarket.abi,
-		functionName: 'getPredictionsByFeed',
-	});
-
-	// markets = allMarkets;
 
 	let dimensions = { height: '375px', width: '100%', chartHeight: '240px' };
 
@@ -87,15 +69,23 @@ const Taker: NextPage = () => {
 		return parseFloat(odds).toFixed(2);
 	};
 
+	const collateralAsset = chain?.network === 'rinkeby' ? 'ETH' : 'MATIC';
+	const explorer =
+		chain?.network === 'rinkeby'
+			? 'https://rinkeby.etherscan.io/tx'
+			: chain?.network === 'maticmum'
+			? 'https://mumbai.polygonscan.com/tx'
+			: 'https://polygonscan.com/tx';
+
 	return (
 		<>
 			{txHash !== '' && buyInfo.asset !== '' && (
 				<NewTx>
 					<p>
 						You just bought the {buyInfo.side} side of a {buyInfo.asset.toUpperCase()} prediction for{' '}
-						{buyInfo.price} TRX
+						{buyInfo.price} {collateralAsset}
 					</p>
-					<a href={`https://tronscan.org/#/transaction/${txHash}`} target="_blank" rel="noreferrer">
+					<a href={`${explorer}/${txHash}`} target="_blank" rel="noreferrer">
 						Tx Hash: {txHash} <FiExternalLink />
 					</a>
 				</NewTx>
@@ -176,13 +166,13 @@ const Taker: NextPage = () => {
 							asset0={asset0 === 'all' ? allMarkets[0].asset : asset0}
 							asset1={asset1}
 						></PriceChartContainer>
-						{/* {markets && (
+						{markets && (
 							<OrderBook
 								market={Object.values(markets)[active]}
 								setTxHash={setTxHash}
 								setBuyInfo={setBuyInfo}
 							></OrderBook>
-						)} */}
+						)}
 					</Right>
 				</Container>
 			</OuterContainer>

@@ -1,10 +1,14 @@
 import styled from 'styled-components';
 import { assetToImage, priceFeedToSymbol } from '../utils/misc';
 import Exchange from '../../contracts/out/Exchange.sol/Exchange.json';
-import { nile } from '../../contracts/scripts/addresses';
-import { Dispatch, SetStateAction, useContext } from 'react';
-// import { TronWebContext } from '../pages/_app';
+import { predictionMarketAddresses, exchangeAddresses } from '../utils/addresses';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { formatDate } from '../utils/helpers';
+import { ethers } from 'ethers';
+import { useAccount, useNetwork } from 'wagmi';
+import { TakerBid } from '../types';
+import { Spinner } from './Spinner';
+declare var window: any;
 
 type OrderBookProps = {
 	market: any;
@@ -13,52 +17,69 @@ type OrderBookProps = {
 };
 
 export default function OrderBook({ market, setTxHash, setBuyInfo }: OrderBookProps) {
-	// const tronWeb = useContext(TronWebContext);
+	const [currentlyBeingBought, setCurrentlyBeingBought] = useState('-1');
+
+	const { chain } = useNetwork();
+	const activeChain = chain?.network;
+
+	const { address } = useAccount();
 
 	const formatOdds = (odds: string) => {
 		return parseFloat(odds).toFixed(2);
 	};
 
 	const handleBuy = async (prediction: any, side: string) => {
-		if (!tronWeb || !tronWeb.defaultAddress) {
-			return;
-		}
+		if (!address) return;
 
-		let exchange = await tronWeb.contract(Exchange.abi, nile.exchange);
-
-		const takerBid = {
-			taker: tronWeb.defaultAddress.base58,
+		const takerBid: TakerBid = {
+			taker: address,
 			price: prediction.price,
-			collection: nile.predictionMarket,
+			collection: predictionMarketAddresses[activeChain ? activeChain : 'rinkeby'],
 			tokenId: prediction.id,
 		};
 
-		let result;
-		try {
-			result = await exchange.matchAskWithTakerBid(Object.values(takerBid)).send({
-				feeLimit: 200_000_000,
-				callValue: takerBid.price,
-				shouldPollResponse: false,
+		const { ethereum } = window;
+		if (ethereum) {
+			const provider = new ethers.providers.Web3Provider(ethereum);
+			const signer = provider.getSigner();
+			const exchange = new ethers.Contract(
+				exchangeAddresses[activeChain ? activeChain : 'rinkeby'],
+				Exchange.abi,
+				signer
+			);
+
+			setCurrentlyBeingBought(takerBid.tokenId);
+			let tx;
+			try {
+				tx = await exchange.matchAskWithTakerBid(Object.values(takerBid), {
+					value: prediction.price,
+				});
+				await tx.wait();
+				console.log(tx.hash);
+			} catch (e) {
+				console.log(e);
+				setCurrentlyBeingBought('-1');
+				return;
+			}
+			setCurrentlyBeingBought('-1');
+
+			setTxHash(tx.hash);
+
+			setBuyInfo({
+				asset: prediction.asset,
+				side,
+				price: ethers.utils.formatUnits(takerBid.price, 18),
 			});
-		} catch (e) {
-			console.log(e);
-			return;
+
+			setTimeout(() => {
+				setTxHash('');
+				setBuyInfo({ asset: '', price: '', side: '' });
+			}, 20000);
 		}
-
-		setTxHash(result);
-		setBuyInfo({
-			asset: prediction.asset,
-			side,
-			price: tronWeb.fromSun(takerBid.price),
-		});
-
-		// refetching
-
-		setTimeout(() => {
-			setTxHash('');
-			setBuyInfo({ asset: '', price: '', side: '' });
-		}, 20000);
 	};
+
+	const collateralAsset = activeChain === 'rinkeby' ? 'ETH' : 'MATIC';
+
 	return (
 		<Container>
 			{market && (
@@ -68,9 +89,7 @@ export default function OrderBook({ market, setTxHash, setBuyInfo }: OrderBookPr
 							<img src={assetToImage[market.asset]} alt="logo" />
 							<p>{market.asset.toUpperCase()}/USD</p>
 						</Asset>
-						<div className="price">
-							Oracle price: ${market.latestAnswer} <span>(go to mainnet for real prices)</span>
-						</div>
+						<div className="price">Oracle price: ${market.latestAnswer}</div>
 						<div className="summary">
 							<p>
 								At {formatDate(market.expiry)}, will the price of {market.asset.toUpperCase()} be over
@@ -82,9 +101,19 @@ export default function OrderBook({ market, setTxHash, setBuyInfo }: OrderBookPr
 						<Direction>
 							<p>OVER</p>
 							{market.over.map((prediction: any) => {
-								return (
-									<div key={prediction.id} onClick={() => handleBuy(prediction, 'OVER')}>
-										<p>{TronWeb.fromSun(prediction.price)} TRX</p>
+								return currentlyBeingBought === prediction.id ? (
+									<Button l={true} key={prediction.id}>
+										<Spinner />
+									</Button>
+								) : (
+									<div
+										className="prediction"
+										key={prediction.id}
+										onClick={() => handleBuy(prediction, 'OVER')}
+									>
+										<p>
+											{ethers.utils.formatUnits(prediction.price, 18)} {collateralAsset}
+										</p>
 										<p>{formatOdds(prediction.odds.toString())}</p>
 									</div>
 								);
@@ -93,9 +122,19 @@ export default function OrderBook({ market, setTxHash, setBuyInfo }: OrderBookPr
 						<Direction>
 							<p>UNDER</p>
 							{market.under.map((prediction: any) => {
-								return (
-									<div key={prediction.id} onClick={() => handleBuy(prediction, 'UNDER')}>
-										<p>{TronWeb.fromSun(prediction.price)} TRX</p>
+								return currentlyBeingBought === prediction.id ? (
+									<Button l={true} key={prediction.id}>
+										<Spinner />
+									</Button>
+								) : (
+									<div
+										className="prediction"
+										key={prediction.id}
+										onClick={() => handleBuy(prediction, 'UNDER')}
+									>
+										<p>
+											{ethers.utils.formatUnits(prediction.price, 18)} {collateralAsset}
+										</p>
 										<p>{formatOdds(prediction.odds.toString())}</p>
 									</div>
 								);
@@ -108,6 +147,26 @@ export default function OrderBook({ market, setTxHash, setBuyInfo }: OrderBookPr
 		</Container>
 	);
 }
+
+const Button = styled.button<{ l: boolean }>`
+	width: 100%;
+	/* margin-top: 0.5rem; */
+	padding: ${({ l: loading }) => (loading ? '0.5rem 0.75rem' : '0.75rem')};
+	outline: none;
+	border: none;
+	border-radius: 0.25rem;
+	color: ${({ theme }) => theme.background.primary};
+	font-weight: 600;
+	background-color: ${({ theme }) => theme.colors.primary};
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0.9;
+	:hover {
+		opacity: 1;
+	}
+`;
 
 const Asset = styled.div`
 	display: flex;
@@ -135,7 +194,7 @@ const Direction = styled.div`
 	.header {
 	}
 
-	div {
+	.prediction {
 		padding: 0.5rem;
 		border: 2px solid ${({ theme }) => theme.background.senary};
 		border-radius: 0.25rem;

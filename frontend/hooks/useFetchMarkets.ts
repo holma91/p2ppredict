@@ -8,11 +8,15 @@ import { useAccount, useNetwork } from 'wagmi';
 import { exchangeAddresses, predictionMarketAddresses } from '../utils/addresses';
 declare var window: any;
 
-const fetcher = async (asset: string, activeAddress: string, activeChain: string) => {
-	const provider = ethers.getDefaultProvider(process.env[activeChain]);
-	const priceFeed = symbolToPriceFeed[activeChain][asset];
+const rpcs: { [key: string]: string } = {
+	rinkeby: 'https://rpc.ankr.com/eth_rinkeby',
+	matic: 'https://polygon-mainnet.public.blastapi.io',
+	maticmum: 'https://polygon-testnet.public.blastapi.io',
+};
 
-	console.log('provider', provider);
+const fetcher = async (asset: string, activeAddress: string, activeChain: string) => {
+	const provider = ethers.getDefaultProvider(rpcs[activeChain]);
+	const priceFeed = symbolToPriceFeed[activeChain][asset];
 
 	if (!priceFeed) {
 		console.log('pricefeed for ', asset, ' not available');
@@ -107,11 +111,7 @@ const fetcher = async (asset: string, activeAddress: string, activeChain: string
 	return markets;
 };
 
-export const useFetchMarkets = (
-	asset: string,
-	activeAddress: string,
-	fallbackProvider: ethers.providers.JsonRpcProvider
-) => {
+export const useFetchMarkets = (asset: string) => {
 	const { address, isConnecting, isDisconnected } = useAccount();
 	const { chain, chains } = useNetwork();
 	const activeChain = chain?.network;

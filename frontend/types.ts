@@ -33,3 +33,10 @@ export type Choices = {
 	listPrice: ethers.BigNumber;
 	tresholdPrice: ethers.BigNumber;
 };
+
+export type TakerBid = {
+	taker: string;
+	price: ethers.BigNumber;
+	collection: string;
+	tokenId: string;
+};
