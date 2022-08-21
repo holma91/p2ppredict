@@ -10,6 +10,7 @@ import { publicProvider } from 'wagmi/providers/public';
 
 import { blackTheme, GlobalStyle } from '../design/themes';
 import Layout from '../components/Layout';
+import Head from 'next/head';
 
 const { chains, provider } = configureChains(
 	[chain.polygon, chain.polygonMumbai, chain.rinkeby],
@@ -34,6 +35,10 @@ function MyApp({ Component, pageProps }: AppProps) {
 		<ThemeProvider theme={blackTheme}>
 			<GlobalStyle />
 			<QueryClientProvider client={queryClient}>
+				<Head>
+					<title>p2ppredict</title>
+					<meta property="og:title" content="p2ppredict" key="title" />
+				</Head>
 				<WagmiConfig client={wagmiClient}>
 					<RainbowKitProvider
 						chains={chains}
