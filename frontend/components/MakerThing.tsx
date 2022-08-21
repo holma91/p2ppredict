@@ -116,8 +116,8 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 	const [createdMarketId, setCreatedMarketId] = useState(null);
 	const [loadingButton, setLoadingButton] = useState(false);
 
-	const { address, isConnecting, isDisconnected } = useAccount();
-	const { chain, chains } = useNetwork();
+	const { address } = useAccount();
+	const { chain } = useNetwork();
 	const activeChain = chain?.network;
 
 	const { data: isApprovedForAll, refetch: refetchIsApprovedForAll } = useContractRead({
@@ -245,7 +245,7 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 			tresholdPrice: ethers.BigNumber.from(ethers.utils.parseUnits(limitOrder, DECIMALS)),
 		};
 
-		// create images here and upload to ipfs
+		// create svgs here and upload to ipfs
 		const [overSVG, underSVG] = createSvg(market, activeChain);
 		const [overSVGURI, underSVGURI] = await uploadSVGToIpfs(overSVG, underSVG);
 		const [overMetadata, underMetadata] = generateMetadata(market, overSVGURI, underSVGURI, activeChain);

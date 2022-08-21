@@ -1,6 +1,5 @@
 import { useQuery } from 'react-query';
-import { priceFeedToSymbol, symbolToCoingeckoId, symbolToPriceFeed } from '../utils/misc';
-import { mumbai } from '../../contracts/scripts/addresses';
+import { priceFeedToSymbol } from '../utils/misc';
 import PredictionMarket from '../../contracts/out/PredictionMarket.sol/PredictionMarket.json';
 import Exchange from '../../contracts/out/Exchange.sol/Exchange.json';
 import { Position } from '../types';
@@ -34,7 +33,6 @@ const getStatus = (strikePrice: any, currentPrice: any, over: boolean) => {
 const fetcher = async (address: string, activeChain: string) => {
 	const provider = ethers.getDefaultProvider(rpcs[activeChain]);
 
-	// set up market and exchange
 	let predictionMarket = new ethers.Contract(
 		predictionMarketAddresses[activeChain ? activeChain : 'rinkeby'],
 		PredictionMarket.abi,
@@ -45,9 +43,7 @@ const fetcher = async (address: string, activeChain: string) => {
 		Exchange.abi,
 		provider
 	);
-	console.log(predictionMarket);
 
-	// get predictions and makerasks
 	const [predictions, latestAnswers] = await predictionMarket.getPredictionsByAccount(address);
 	const makerAsks = await exchange.getMakerAsksByAccount(address);
 
@@ -92,8 +88,8 @@ const fetcher = async (address: string, activeChain: string) => {
 };
 
 export const useFetchPositions = () => {
-	const { address, isConnecting, isDisconnected } = useAccount();
-	const { chain, chains } = useNetwork();
+	const { address } = useAccount();
+	const { chain } = useNetwork();
 	const activeChain = chain?.network;
 
 	const { isLoading, isError, data } = useQuery(

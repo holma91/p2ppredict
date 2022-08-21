@@ -16,30 +16,6 @@ const typeScale = {
 	copyrightText: '0.7rem',
 };
 
-const purple = {
-	100: '#A679DC',
-	200: '#8D53D2',
-	300: '#742DC8',
-	400: '#5F25A4',
-	500: '#050449',
-};
-
-const bet365Green = '#126e51';
-const bet365GreenHover = '#26ffbe';
-const bet365Yellow = '#FFE418';
-
-const niceBlue = '#004E98';
-
-const bet365Gray = {
-	100: '#585858',
-	200: '#505050',
-	300: '#404040',
-	400: '#383838',
-	500: '#333333',
-	600: '#303030',
-	hover: '#636363',
-};
-
 const gray = {
 	5: '#CED4DA',
 	10: '#ADB5BD',
@@ -60,18 +36,9 @@ const darkerGray = {
 	hover: '#303030',
 };
 
-const bet365Text = {
+const someText = {
 	100: 'white',
 	200: '#dddddd',
-};
-
-const neutral = {
-	100: '#ffffff',
-	200: '#f4f5f7',
-	300: '#e1e1e1',
-	400: '#737581',
-	500: '#4a4b53',
-	600: '#000000',
 };
 
 type Theme = {
@@ -97,44 +64,6 @@ type Theme = {
 	font: object;
 };
 
-export const bet365Theme: DefaultTheme = {
-	colors: {
-		primary: bet365Green,
-		primaryHover: bet365Gray.hover,
-		secondary: bet365Yellow,
-		tertiary: bet365GreenHover,
-		gray: bet365Gray,
-	},
-	text: {
-		primary: bet365Text[100],
-		secondary: bet365Text[200],
-	},
-	font: {
-		primary: primaryFont,
-	},
-	typeScale: typeScale,
-};
-
-export const blueTheme: DefaultTheme = {
-	colors: {
-		primary: '#06283D',
-		primaryHover: gray.hover,
-		secondary: '#1363DF',
-		tertiary: '#47B5FF',
-		gray: gray,
-		green: '#31D0AA',
-		red: '#ED4B9E',
-	},
-	text: {
-		primary: bet365Text[100],
-		secondary: bet365Text[200],
-	},
-	font: {
-		primary: primaryFont,
-	},
-	typeScale: typeScale,
-};
-
 export const blackTheme: Theme = {
 	colors: {
 		primary: '#08B2E3',
@@ -144,8 +73,8 @@ export const blackTheme: Theme = {
 		gray: darkerGray,
 	},
 	text: {
-		primary: bet365Text[100],
-		secondary: bet365Text[200],
+		primary: someText[100],
+		secondary: someText[200],
 	},
 	background: {
 		primary: '#151515',

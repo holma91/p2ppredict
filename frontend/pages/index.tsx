@@ -1,11 +1,10 @@
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import styled from 'styled-components';
-import { FiExternalLink } from 'react-icons/fi';
 
 import { useFetchPrices } from '../hooks/useFetchPrices';
-import { assets, assetToImage, assetToName, symbolToCoingeckoId } from '../utils/misc';
-import Router, { useRouter } from 'next/router';
+import { assetToImage, assetToName, symbolToCoingeckoId } from '../utils/misc';
+import { useRouter } from 'next/router';
 import { useNetwork } from 'wagmi';
 import { useEffect, useState } from 'react';
 
@@ -16,7 +15,6 @@ const Container = styled.div`
 	grid-template-columns: 4fr 7fr;
 	justify-content: center;
 	gap: 3rem;
-	/* min-height: 100vh; */
 	padding: 1.5rem;
 	padding-bottom: 2.5rem;
 
@@ -69,7 +67,7 @@ const homepageAssetsIds = [
 
 const Home: NextPage = () => {
 	const router = useRouter();
-	const { prices, isLoading, isError } = useFetchPrices(homepageAssetsIds);
+	const { prices } = useFetchPrices(homepageAssetsIds);
 	const { chain } = useNetwork();
 
 	const formatPrice = (price: number) => {
@@ -197,13 +195,6 @@ const Home: NextPage = () => {
 							.
 						</p>
 					</div>
-					{/* <div className="box">
-        <p className="header">Support for TRC721m</p>
-        <p>
-          Genie shows listings from all major marketplaces so you can
-          discover more in fewer tabs.
-        </p>
-      </div> */}
 				</div>
 			</Bottom>
 		</>

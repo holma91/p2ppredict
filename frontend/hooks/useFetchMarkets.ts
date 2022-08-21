@@ -1,6 +1,5 @@
 import { useQuery } from 'react-query';
-import { priceFeedToSymbol, symbolToCoingeckoId, symbolToPriceFeed } from '../utils/misc';
-import { mumbai } from '../../contracts/scripts/addresses';
+import { symbolToPriceFeed } from '../utils/misc';
 import PredictionMarket from '../../contracts/out/PredictionMarket.sol/PredictionMarket.json';
 import Exchange from '../../contracts/out/Exchange.sol/Exchange.json';
 import { ethers } from 'ethers';
@@ -23,7 +22,6 @@ const fetcher = async (asset: string, activeAddress: string, activeChain: string
 		return '';
 	}
 
-	// set up market and exchange
 	let predictionMarket = new ethers.Contract(
 		predictionMarketAddresses[activeChain ? activeChain : 'rinkeby'],
 		PredictionMarket.abi,
@@ -34,18 +32,13 @@ const fetcher = async (asset: string, activeAddress: string, activeChain: string
 		Exchange.abi,
 		provider
 	);
-	console.log(predictionMarket);
 
-	// get predictions and makerasks
 	const [predictions, latestAnswer] = await predictionMarket.getPredictionsByFeed(priceFeed);
 
 	const [makerAsks, signers] = await exchange.getMakerAsksByFeed(priceFeed);
 
 	const listPriceById: { [key: string]: any } = {};
 	for (let i = 0; i < makerAsks.length; i++) {
-		console.log(activeAddress.toLowerCase(), signers[i].toLowerCase());
-		console.log(activeAddress.toLowerCase() === signers[i].toLowerCase());
-
 		if (activeAddress.toLowerCase() === signers[i].toLowerCase()) {
 			continue;
 		}
@@ -55,7 +48,6 @@ const fetcher = async (asset: string, activeAddress: string, activeChain: string
 	let markets: { [key: string]: any } = {};
 	let count = 0;
 	for (const prediction of predictions) {
-		// check if there is a makerAsk with prediction.id
 		let price = listPriceById[prediction.id.toString()];
 		if (!price) continue;
 
@@ -65,7 +57,6 @@ const fetcher = async (asset: string, activeAddress: string, activeChain: string
 			markets[key] = {
 				asset: asset,
 				strike: ethers.utils.formatUnits(marketInfo.strikePrice, 8).toString(),
-				// strike: tronWeb.fromSun(marketInfo.strikePrice).toString(),
 				expiry: marketInfo.expiry.toString(),
 				id: count++,
 				latestAnswer: ethers.utils.formatUnits(latestAnswer, 8).toString(),
@@ -75,7 +66,6 @@ const fetcher = async (asset: string, activeAddress: string, activeChain: string
 		}
 
 		// odds = collateral / price
-		// use fromSun to scale down
 
 		let odds = ethers.utils.formatUnits(
 			prediction.market.collateral
@@ -112,8 +102,8 @@ const fetcher = async (asset: string, activeAddress: string, activeChain: string
 };
 
 export const useFetchMarkets = (asset: string) => {
-	const { address, isConnecting, isDisconnected } = useAccount();
-	const { chain, chains } = useNetwork();
+	const { address } = useAccount();
+	const { chain } = useNetwork();
 	const activeChain = chain?.network;
 
 	const { isLoading, isError, data } = useQuery(

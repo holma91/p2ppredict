@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import { getTimeWindowChange } from './utils/utils';
 import SwapLineChart from './SwapLineChart';

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { assetToImage, priceFeedToSymbol } from '../utils/misc';
+import { assetToImage } from '../utils/misc';
 import Exchange from '../../contracts/out/Exchange.sol/Exchange.json';
 import { predictionMarketAddresses, exchangeAddresses } from '../utils/addresses';
 import { Dispatch, SetStateAction, useState } from 'react';
@@ -55,7 +55,6 @@ export default function OrderBook({ market, setTxHash, setBuyInfo }: OrderBookPr
 					value: prediction.price,
 				});
 				await tx.wait();
-				console.log(tx.hash);
 			} catch (e) {
 				console.log(e);
 				setCurrentlyBeingBought('-1');

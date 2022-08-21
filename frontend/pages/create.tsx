@@ -5,8 +5,7 @@ import dynamic from 'next/dynamic';
 
 import PriceChartContainer from '../components/Chart/PriceChartContainer';
 import Banner from '../components/Banner';
-import { symbolToCoingeckoId } from '../utils/misc';
-import { FiActivity, FiExternalLink } from 'react-icons/fi';
+import { FiExternalLink } from 'react-icons/fi';
 import { useNetwork } from 'wagmi';
 
 const MakerThing = dynamic(() => import('../components/MakerThing'), {

@@ -45,12 +45,10 @@ const Taker: NextPage = () => {
 		coingeckoId: 'usd',
 	});
 	const [active, setActive] = useState(0);
-	const { prices, isLoading, isError } = useFetchPrices(Object.values(symbolToCoingeckoId));
+	const { prices, isLoading } = useFetchPrices(Object.values(symbolToCoingeckoId));
 	const [txHash, setTxHash] = useState('');
 	const [buyInfo, setBuyInfo] = useState({ asset: '', price: '', side: '' });
-	let { markets, isLoading: isl, isError: ise } = useFetchMarkets(asset0);
-
-	console.log('markets:', markets);
+	let { markets } = useFetchMarkets(asset0);
 
 	let dimensions = { height: '375px', width: '100%', chartHeight: '240px' };
 

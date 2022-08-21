@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
-import { PrimaryButton } from './Buttons';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useNetwork } from 'wagmi';
 
@@ -58,11 +57,6 @@ const Header = () => {
 				</Link>
 			</MenuContainer>
 			<ButtonContainer>
-				{/* <Link href="/positions">
-					<PrimaryButton>
-						<a className="logIn">connect</a>
-					</PrimaryButton>
-				</Link> */}
 				<ConnectButton
 					accountStatus={{
 						smallScreen: 'avatar',
@@ -92,7 +86,6 @@ const Actor = styled.div<ActorProps>`
 	border-bottom: 3px solid ${({ theme, isActive }) => (isActive ? theme.colors.primary : theme.background.primary)};
 
 	a {
-		/* font-weight: 300; */
 		padding: 0 0.75rem;
 	}
 
@@ -148,7 +141,6 @@ const ButtonContainer = styled.div`
 
 	.signUp {
 		font-size: ${({ theme }) => theme.typeScale.paragraph};
-		/* font-weight: 300; */
 		color: white;
 		:hover {
 			cursor: pointer;

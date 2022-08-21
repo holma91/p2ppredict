@@ -1,4 +1,4 @@
-import { useState, Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import styled from 'styled-components';
 import { useNetwork } from 'wagmi';
 import { assetToImage } from '../utils/misc';
@@ -127,7 +127,6 @@ const Container = styled.div<{ fullWidth: boolean }>`
 	background-color: ${({ theme }) => theme.colors.gray[300]};
 	display: flex;
 	align-items: center;
-	/* justify-content: space-between; */
 	padding: 0.1rem 1.2rem;
 
 	.logo {
@@ -139,7 +138,6 @@ const Container = styled.div<{ fullWidth: boolean }>`
 
 		:hover {
 			cursor: pointer;
-			/* background-color: ${({ theme }) => theme.colors.gray[200]}; */
 			border-bottom: 3px solid ${({ theme }) => theme.colors.secondary};
 		}
 	}
