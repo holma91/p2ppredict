@@ -9,7 +9,7 @@ import { ethers } from 'ethers';
 import { Spinner } from './Spinner';
 import { BiLinkExternal } from 'react-icons/bi';
 import { predictionMarketAddresses, exchangeAddresses } from '../utils/addresses';
-import { useAccount, useContractRead, useContractWrite, usePrepareContractWrite, useNetwork } from 'wagmi';
+import { useAccount, useContractRead, useContractWrite, usePrepareContractWrite, useNetwork, useBalance } from 'wagmi';
 import { createSvg, generateMetadata, uploadMetadataToIpfs, uploadSVGToIpfs } from '../utils/ipfs';
 import { Choices, Market } from '../types';
 import { rinkebyOptions, mumbaiOptions, polygonOptions } from '../utils/stuff';
@@ -111,7 +111,6 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 	const [overOdds, setOverOdds] = useState('2');
 	const [underOdds, setUnderOdds] = useState('2');
 	const [limitOrder, setLimitOrder] = useState('0');
-	const [activeBalance, setActiveBalance] = useState('0');
 
 	const [createdMarketId, setCreatedMarketId] = useState(null);
 	const [loadingButton, setLoadingButton] = useState(false);
@@ -119,6 +118,11 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 	const { address } = useAccount();
 	const { chain } = useNetwork();
 	const activeChain = chain?.network;
+
+	const { data: activeBalance } = useBalance({
+		addressOrName: address,
+		enabled: !!address,
+	});
 
 	const { data: isApprovedForAll, refetch: refetchIsApprovedForAll } = useContractRead({
 		addressOrName: predictionMarketAddresses[activeChain ? activeChain : 'rinkeby'],
@@ -287,15 +291,6 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 		}
 	};
 
-	// useEffect(() => {
-	// 	if (!tronWeb) return;
-	// 	const getBalance = async () => {
-	// 		let balance = await tronWeb.trx.getBalance(tronWeb.defaultAddress.base58);
-	// 		setActiveBalance(tronWeb.fromSun(balance));
-	// 	};
-	// 	getBalance();
-	// }, [tronWeb]);
-
 	const options =
 		activeChain === 'rinkeby' ? rinkebyOptions : activeChain === 'maticmum' ? mumbaiOptions : polygonOptions;
 
@@ -333,7 +328,7 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 						</div>
 					</div>
 					<div className="inner-size">
-						<p>available: {activeBalance}</p>
+						<p>available: {activeBalance ? activeBalance.formatted.slice(0, 8) : 0}</p>
 						<p>Position Size</p>
 					</div>
 				</SizeDiv>
