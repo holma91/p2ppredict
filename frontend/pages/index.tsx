@@ -6,6 +6,8 @@ import { FiExternalLink } from 'react-icons/fi';
 import { useFetchPrices } from '../hooks/useFetchPrices';
 import { assets, assetToImage, assetToName, symbolToCoingeckoId } from '../utils/misc';
 import Router, { useRouter } from 'next/router';
+import { useNetwork } from 'wagmi';
+import { useEffect, useState } from 'react';
 
 const Container = styled.div`
 	background-color: ${({ theme }) => theme.background.primary};
@@ -31,9 +33,9 @@ const homepageAssetsSymbols = [
 	{ symbol: 'eth', mainnet: true, testnet: true, hide: false },
 	{ symbol: 'btc', mainnet: true, testnet: true, hide: false },
 	{ symbol: 'matic', mainnet: true, testnet: true, hide: false },
-	{ symbol: 'link', mainnet: true, testnet: true, hide: false },
 	{ symbol: 'usdc', mainnet: true, testnet: true, hide: false },
-	{ symbol: 'usdt', mainnet: true, testnet: true, hide: false },
+	{ symbol: 'link', mainnet: true, testnet: false, hide: false },
+	{ symbol: 'usdt', mainnet: true, testnet: false, hide: false },
 	{ symbol: 'sol', mainnet: true, testnet: false, hide: false },
 	{ symbol: 'avax', mainnet: true, testnet: false, hide: false },
 	{ symbol: 'yfi', mainnet: true, testnet: false, hide: false },
@@ -68,6 +70,7 @@ const homepageAssetsIds = [
 const Home: NextPage = () => {
 	const router = useRouter();
 	const { prices, isLoading, isError } = useFetchPrices(homepageAssetsIds);
+	const { chain } = useNetwork();
 
 	const formatPrice = (price: number) => {
 		let priceStr = price.toFixed(20);
@@ -81,6 +84,12 @@ const Home: NextPage = () => {
 	const handleClick = (symbol: string) => {
 		router.push(`/trade?asset=${symbol}`);
 	};
+
+	const [isSSR, setIsSSR] = useState(true);
+
+	useEffect(() => {
+		setIsSSR(false);
+	}, []);
 
 	return (
 		<>
@@ -106,18 +115,20 @@ const Home: NextPage = () => {
 						{homepageAssetsSymbols.map(asset => {
 							return (
 								<Box
-									onClick={asset.testnet ? () => handleClick(asset.symbol) : () => {}}
+									onClick={
+										asset.testnet || chain?.network === 'matic'
+											? () => handleClick(asset.symbol)
+											: () => {}
+									}
 									key={asset.symbol}
-									clickable={asset.testnet}
+									clickable={asset.testnet || chain?.network === 'matic'}
 								>
 									<div className="top">
 										<img src={assetToImage[asset.symbol]} alt={asset.symbol} />
 										<div>
 											<p className="head">
 												{assetToName[asset.symbol]}
-												{!asset.mainnet && !asset.testnet ? (
-													<span>coming soon</span>
-												) : !asset.testnet ? (
+												{!isSSR && chain?.network !== 'matic' && !asset.testnet ? (
 													<span>mainnet only</span>
 												) : null}
 											</p>

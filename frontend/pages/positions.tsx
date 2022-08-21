@@ -157,11 +157,26 @@ export default function PositionsPage() {
 												<p>{assetToName[position.asset]}</p>
 												<p>{position.asset.toUpperCase()}-USD</p>
 											</div>
+											<FiExternalLink />
 										</Asset>
 										<div>{position.side}</div>
 										<div>${position.strikePrice}</div>
 										<div>{position.expiry}</div>
-										<div>${position.latestAnswer}</div>
+
+										<div className="latest-answer">
+											${position.latestAnswer}{' '}
+											<a
+												href={`https://data.chain.link/polygon/mainnet/${
+													position.asset === 'usdc' || position.asset === 'usdt'
+														? 'stablecoins'
+														: 'crypto-usd'
+												}/${position.asset}-usd`}
+												target="_blank"
+												rel="noreferrer"
+											>
+												<FiExternalLink />
+											</a>
+										</div>
 										<div>
 											{position.size} {collateralAsset}
 										</div>
@@ -187,7 +202,7 @@ export default function PositionsPage() {
 									</Position>
 								);
 							})}
-						{positions && positions.listedPositions.length === 0 && (
+						{positions && positions.unlistedPositions.length === 0 && (
 							<Empty>
 								<p>You have no open positions</p>
 							</Empty>
@@ -292,6 +307,13 @@ const Asset = styled.div`
 		flex-direction: column;
 		gap: 0.2rem;
 	}
+	svg {
+		height: 16px;
+		width: 16px;
+		:hover {
+			color: ${({ theme }) => theme.colors.primary};
+		}
+	}
 
 	@media (max-width: 830px) {
 		.asset-name {
@@ -359,6 +381,23 @@ const Position = styled.div<{ winning: boolean }>`
 	.status {
 		font-weight: 600;
 		color: ${({ theme, winning }) => (winning ? theme.colors.primary : theme.colors.red)};
+	}
+
+	.latest-answer {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		a {
+			display: flex;
+			align-items: center;
+			svg {
+				height: 16px;
+				width: 16px;
+				:hover {
+					color: ${({ theme }) => theme.colors.primary};
+				}
+			}
+		}
 	}
 
 	@media (max-width: 1200px) {

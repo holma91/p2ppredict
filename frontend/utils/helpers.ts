@@ -44,3 +44,12 @@ export const formatDate = (timestamp: string) => {
 	var time = year + '-' + month + '-' + date;
 	return time;
 };
+
+export const formatPrice = (price: string) => {
+	let priceStr = parseFloat(price).toFixed(20);
+	let processedPrice = priceStr.slice(0, 7);
+	if (processedPrice[processedPrice.length - 1] === '.') {
+		processedPrice += parseFloat(price).toFixed(20).slice(7, 8);
+	}
+	return processedPrice;
+};

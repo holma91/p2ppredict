@@ -3,7 +3,7 @@ import { assetToImage, priceFeedToSymbol } from '../utils/misc';
 import Exchange from '../../contracts/out/Exchange.sol/Exchange.json';
 import { predictionMarketAddresses, exchangeAddresses } from '../utils/addresses';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { formatDate } from '../utils/helpers';
+import { formatDate, formatPrice } from '../utils/helpers';
 import { ethers } from 'ethers';
 import { useAccount, useNetwork } from 'wagmi';
 import { TakerBid } from '../types';
@@ -112,7 +112,8 @@ export default function OrderBook({ market, setTxHash, setBuyInfo }: OrderBookPr
 										onClick={() => handleBuy(prediction, 'OVER')}
 									>
 										<p>
-											{ethers.utils.formatUnits(prediction.price, 18)} {collateralAsset}
+											{formatPrice(ethers.utils.formatUnits(prediction.price, 18))}{' '}
+											{collateralAsset}
 										</p>
 										<p>{formatOdds(prediction.odds.toString())}</p>
 									</div>
@@ -133,7 +134,8 @@ export default function OrderBook({ market, setTxHash, setBuyInfo }: OrderBookPr
 										onClick={() => handleBuy(prediction, 'UNDER')}
 									>
 										<p>
-											{ethers.utils.formatUnits(prediction.price, 18)} {collateralAsset}
+											{formatPrice(ethers.utils.formatUnits(prediction.price, 18))}{' '}
+											{collateralAsset}
 										</p>
 										<p>{formatOdds(prediction.odds.toString())}</p>
 									</div>
