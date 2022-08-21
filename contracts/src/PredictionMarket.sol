@@ -5,12 +5,9 @@ import {Exchange} from "./Exchange.sol";
 
 import "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 import "openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "chainlink/contracts/src/v0.8/interfaces/AggregatorInterface.sol";
 
-import {Base64} from "./libraries/Base64.sol";
 import {OrderTypes} from "./libraries/OrderTypes.sol";
-
-import {WinkLinkAggregator} from "./interfaces/WinkLinkAggregator.sol";
 
 interface IExchange {
     function createMakerAsk(OrderTypes.MakerOrder calldata makerAsk) external;
@@ -25,11 +22,6 @@ contract PredictionMarket is ERC721URIStorage {
 
     mapping(uint256 => Prediction) public predictionById;
     uint256 public currentPredictionId;
-
-    string baseSvg =
-        "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMinYMin meet' viewBox='0 0 350 350'><style>.base { fill: white; font-family: serif; font-size: 24px; }</style><rect width='100%' height='100%' fill='black' />";
-
-    string textStart = "<text x='50%' y='50%' class='base' dominant-baseline='middle' text-anchor='middle'>";
 
     struct Prediction {
         Market market;
@@ -65,40 +57,6 @@ contract PredictionMarket is ERC721URIStorage {
     function setExchangeAddress(address _exchange) public {
         require(msg.sender == deployer, "Only deployer can change the prediction market address");
         exchangeAddress = _exchange;
-    }
-
-    function createURI(bool over) internal view returns (string memory) {
-        string memory strike = "$30";
-        string memory asset = "SOL";
-        string memory direction = over ? "OVER" : "UNDER";
-        string memory finalSvg = string.concat(
-            baseSvg,
-            textStart,
-            asset,
-            " ",
-            direction,
-            " ",
-            strike,
-            "</text></svg>"
-        );
-        string memory json = Base64.encode(
-            bytes(
-                string.concat(
-                    '{"name": "',
-                    asset,
-                    " ",
-                    direction,
-                    " ",
-                    strike,
-                    '", "description": "A market on p2ppredict.", "image": "data:image/svg+xml;base64,',
-                    Base64.encode(bytes(finalSvg)),
-                    '"}'
-                )
-            )
-        );
-        string memory finalTokenUri = string.concat("data:application/json;base64,", json);
-
-        return finalTokenUri;
     }
 
     function createMarket(Market calldata market)
@@ -153,8 +111,6 @@ contract PredictionMarket is ERC721URIStorage {
     {
         (uint256 marketId, uint256 overId, uint256 underId) = createMarket(market);
 
-        // odds = collateral / listPrice
-
         OrderTypes.MakerOrder memory makerAsk = OrderTypes.MakerOrder(
             msg.sender,
             address(this),
@@ -185,7 +141,7 @@ contract PredictionMarket is ERC721URIStorage {
         Prediction memory prediction = predictionById[id];
         require(block.timestamp >= prediction.market.expiry, "PredictionMarket: not at expiry yet");
 
-        int256 price = WinkLinkAggregator(prediction.market.priceFeed).latestAnswer();
+        int256 price = AggregatorInterface(prediction.market.priceFeed).latestAnswer();
         if (prediction.over) {
             require(price >= prediction.market.strikePrice, "PredictionMarket: can't exercise a losing bet");
         } else {
@@ -235,7 +191,7 @@ contract PredictionMarket is ERC721URIStorage {
         uint256 j = 0;
         for (uint256 i = 0; i < currentPredictionId; i++) {
             if (ownerOf(i) == account && predictionById[i].market.priceFeed != address(0)) {
-                latestPrices[j] = WinkLinkAggregator(predictionById[i].market.priceFeed).latestAnswer();
+                latestPrices[j] = AggregatorInterface(predictionById[i].market.priceFeed).latestAnswer();
                 predictions[j++] = predictionById[i];
             }
         }
@@ -259,7 +215,7 @@ contract PredictionMarket is ERC721URIStorage {
             }
         }
 
-        int256 latestPrice = WinkLinkAggregator(feed).latestAnswer();
+        int256 latestPrice = AggregatorInterface(feed).latestAnswer();
 
         return (predictions, latestPrice);
     }

@@ -1,5 +1,5 @@
-what do the add for the polygon submission:
-- images for every prediction
-- link to chainlink data feed page when price is shown
-- link to opensea on positions page
+how to do a successful submission:
+- link to something interesting in the code
+- start with the most important
+- problem statement -> solution
 - 

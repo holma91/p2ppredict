@@ -4,7 +4,7 @@ const Exchange = require("../out/Exchange.sol/Exchange.json");
 require("dotenv").config("");
 
 const main = async () => {
-  const provider = new ethers.providers.JsonRpcProvider(process.env.rinkeby);
+  const provider = new ethers.providers.JsonRpcProvider(process.env.mumbai);
   const wallet = new ethers.Wallet(process.env.pk1, provider);
   const pmFactory = new ethers.ContractFactory(
     PredictionMarket.abi,

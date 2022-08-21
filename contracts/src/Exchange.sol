@@ -3,11 +3,10 @@ pragma solidity 0.8.13;
 
 import {IERC721} from "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 import {ERC721} from "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
-//import {AggregatorV3Interface} from "chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 import {OrderTypes} from "./libraries/OrderTypes.sol";
 
-// OBS: These contracts are unoptimized as hell and gas-inefficient
+// OBS: This contract is unoptimized and gas-inefficient
 contract Exchange {
     address public deployer;
     address public predictionMarketAddress;
@@ -90,15 +89,12 @@ contract Exchange {
 
         require(msg.value == takerBid.price, "Order: Not enough <native currency>");
 
-        // canExecuteTakerBid checks for validity apart from the price
         bool isExecutionValid = canExecuteTakerBid(takerBid, makerAsk);
         require(isExecutionValid, "Strategy: Execution invalid");
 
-        // transfer ETH to the maker
         (bool sent, ) = makerAsk.signer.call{value: msg.value}("");
         require(sent, "failed ether transfer");
 
-        // transfer NFT to the taker
         transferNonFungibleToken(makerAsk.signer, takerBid.taker, takerBid.tokenId, takerBid.collection);
 
         emit TakerBid(takerBid.taker, makerAsk.signer, takerBid.tokenId, takerBid.price);
