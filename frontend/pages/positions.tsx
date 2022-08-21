@@ -120,6 +120,11 @@ export default function PositionsPage() {
 			? 'https://mumbai.polygonscan.com/tx'
 			: 'https://polygonscan.com/tx';
 
+	const marketplace =
+		chain?.network === 'rinkeby'
+			? `https://testnets.opensea.io/assets/rinkeby/${predictionMarketAddresses.rinkeby}`
+			: '';
+
 	return (
 		<>
 			{txHash !== '' && predictionSize !== '' && (
@@ -157,7 +162,13 @@ export default function PositionsPage() {
 												<p>{assetToName[position.asset]}</p>
 												<p>{position.asset.toUpperCase()}-USD</p>
 											</div>
-											<FiExternalLink />
+											<a
+												href={`${marketplace}/${position.tokenId}`}
+												target="_blank"
+												rel="noreferrer"
+											>
+												<FiExternalLink />
+											</a>
 										</Asset>
 										<div>{position.side}</div>
 										<div>${position.strikePrice}</div>
