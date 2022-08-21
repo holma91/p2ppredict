@@ -168,9 +168,7 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 
 	const { address, isConnecting, isDisconnected } = useAccount();
 	const { chain, chains } = useNetwork();
-	console.log(chain);
 	const activeChain = chain?.network;
-	console.log('activeChain:', activeChain);
 
 	const { data: isApprovedForAll, refetch: refetchIsApprovedForAll } = useContractRead({
 		addressOrName: predictionMarketAddresses[activeChain ? activeChain : 'rinkeby'],
@@ -297,13 +295,14 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 			tresholdPrice: ethers.BigNumber.from(ethers.utils.parseUnits(limitOrder, DECIMALS)),
 		};
 
-		console.log(market);
-		console.log(choices);
 		// create images here and upload to ipfs
-		const generatedSvg = createSvg(market, choices, activeChain);
-		const svgURI = await uploadSVGToIpfs(generatedSvg);
-		const metadata = generateMetadata(market, choices, svgURI, activeChain);
-		const metadataURI = await uploadMetadataToIpfs(metadata);
+		const [overSVG, underSVG] = createSvg(market, activeChain);
+		const [overSVGURI, underSVGURI] = await uploadSVGToIpfs(overSVG, underSVG);
+		const [overMetadata, underMetadata] = generateMetadata(market, overSVGURI, underSVGURI, activeChain);
+		const [overMetadataURI, underMetadataURI] = await uploadMetadataToIpfs(overMetadata, underMetadata);
+
+		market.ipfsOver = overMetadataURI;
+		market.ipfsUnder = underMetadataURI;
 
 		const { ethereum } = window;
 		if (ethereum) {

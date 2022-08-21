@@ -25,7 +25,7 @@ function ensureIpfsUriPrefix(cidOrURI: string) {
 	return uri;
 }
 
-const uploadSVGToIpfs = async (svg: string) => {
+const uploadSVGToIpfs = async (overSVG: string, underSVG: string) => {
 	const ipfs = ipfsClient.create({
 		host: 'ipfs.infura.io',
 		port: 5001,
@@ -35,14 +35,16 @@ const uploadSVGToIpfs = async (svg: string) => {
 		},
 	});
 
-	const { cid }: { cid: any } = await ipfs.add({ content: svg }, ipfsAddOptions);
+	const { cid: overSVGcid }: { cid: any } = await ipfs.add({ content: overSVG }, ipfsAddOptions);
+	const { cid: underSVGcid }: { cid: any } = await ipfs.add({ content: underSVG }, ipfsAddOptions);
 
-	const svgURI = ensureIpfsUriPrefix(cid);
+	const overSVGURI = ensureIpfsUriPrefix(overSVGcid);
+	const underSVGURI = ensureIpfsUriPrefix(underSVGcid);
 
-	return svgURI;
+	return [overSVGURI, underSVGURI];
 };
 
-const uploadMetadataToIpfs = async (metadata: any) => {
+const uploadMetadataToIpfs = async (overMetadata: any, underMetadata: any) => {
 	const ipfs = ipfsClient.create({
 		host: 'ipfs.infura.io',
 		port: 5001,
@@ -52,58 +54,102 @@ const uploadMetadataToIpfs = async (metadata: any) => {
 		},
 	});
 
-	const { cid }: { cid: any } = await ipfs.add(
-		{ path: '/nft/metadata.json', content: JSON.stringify(metadata) },
+	const { cid: overCID }: { cid: any } = await ipfs.add(
+		{ path: '/nft/metadata.json', content: JSON.stringify(overMetadata) },
+		ipfsAddOptions
+	);
+	const { cid: underCID }: { cid: any } = await ipfs.add(
+		{ path: '/nft/metadata.json', content: JSON.stringify(underMetadata) },
 		ipfsAddOptions
 	);
 
-	const metadataURI = ensureIpfsUriPrefix(cid) + '/metadata.json';
+	const overMetadataURI = ensureIpfsUriPrefix(overCID) + '/metadata.json';
+	const underMetadataURI = ensureIpfsUriPrefix(underCID) + '/metadata.json';
 
-	return metadataURI;
+	return [overMetadataURI, underMetadataURI];
 };
 
-const createSvg = (market: Market, choices: Choices, activeChain: string) => {
+const createSvg = (market: Market, activeChain: string): string[] => {
 	let asset = priceFeedToSymbol[activeChain][market.priceFeed].toUpperCase();
 	let collateralAsset = activeChain === 'rinkeby' ? 'ETH' : 'MATIC';
-
-	return `<svg
+	let chainName = activeChain === 'rinkeby' ? 'Rinkeby' : activeChain === 'maticmum' ? 'Mumbai' : 'Polygon';
+	const overSVG = `
+	<svg
       width="350"
       height="350"
       version="1.1"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <rect x="0" y="0" width="350" height="350" fill="white" />
-      <text x="50%" y="49" font-size="24" font-weight="300" dominant-baseline="middle" text-anchor="middle">
-      ${asset} ${choices.over ? 'OVER' : 'UNDER'}
+      <rect x="0" y="0" width="350" height="350" fill="black" />
+      <text x="50%" y="50" font-size="22" font-weight="300" dominant-baseline="middle" text-anchor="middle" fill="white">
+				Price Feed: ${asset}/USD
       </text>
-      <line x1="40" y1="73" x2="310" y2="73" stroke="black" stroke-width="1.5" dominant-baseline="middle" text-anchor="middle" />
-      <text x="50%" y="110" font-size="22" font-weight="200" dominant-baseline="middle" text-anchor="middle">
-        Price Feed: ${asset}/USD
+  <text x="50%" y="100" font-size="22" font-weight="300" dominant-baseline="middle" text-anchor="middle" fill="white">
+        Prediction: OVER
       </text>
-      <text x="50%" y="155" font-size="22" font-weight="200" dominant-baseline="middle" text-anchor="middle">
-        Strike Price: $${ethers.utils.formatUnits(market.strikePrice, 8)}
+      <text x="50%" y="150" font-size="22" font-weight="300" dominant-baseline="middle" text-anchor="middle" fill="white">
+				Strike Price: $${ethers.utils.formatUnits(market.strikePrice, 8)}
       </text>
-      <text x="50%" y="200" font-size="22" font-weight="200" dominant-baseline="middle" text-anchor="middle">
-        Value: ${ethers.utils.formatEther(market.collateral)} ${collateralAsset}
+      <text x="50%" y="200" font-size="22" font-weight="300" dominant-baseline="middle" text-anchor="middle" fill="white">
+				Value: ${ethers.utils.formatEther(market.collateral)} ${collateralAsset}
       </text>
-      <text x="50%" y="245" font-size="22" font-weight="200" dominant-baseline="middle" text-anchor="middle">
-        Expiry: ${formatDate(market.expiry.toString())}
+      <text x="50%" y="250" font-size="22" font-weight="300" dominant-baseline="middle" text-anchor="middle" fill="white">
+				Expiry: ${formatDate(market.expiry.toString())}
       </text>
-    </svg>`;
+  <text x="50%" y="300" font-size="22" font-weight="300" dominant-baseline="middle" text-anchor="middle" fill="white">
+        Network: ${chainName}
+      </text>
+    </svg>
+	`;
+	const underSVG = `
+	<svg
+      width="350"
+      height="350"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect x="0" y="0" width="350" height="350" fill="black" />
+      <text x="50%" y="50" font-size="22" font-weight="300" dominant-baseline="middle" text-anchor="middle" fill="white">
+				Price Feed: ${asset}/USD
+      </text>
+  <text x="50%" y="100" font-size="22" font-weight="300" dominant-baseline="middle" text-anchor="middle" fill="white">
+        Prediction: UNDER
+      </text>
+      <text x="50%" y="150" font-size="22" font-weight="300" dominant-baseline="middle" text-anchor="middle" fill="white">
+				Strike Price: $${ethers.utils.formatUnits(market.strikePrice, 8)}
+      </text>
+      <text x="50%" y="200" font-size="22" font-weight="300" dominant-baseline="middle" text-anchor="middle" fill="white">
+				Value: ${ethers.utils.formatEther(market.collateral)} ${collateralAsset}
+      </text>
+      <text x="50%" y="250" font-size="22" font-weight="300" dominant-baseline="middle" text-anchor="middle" fill="white">
+				Expiry: ${formatDate(market.expiry.toString())}
+      </text>
+  <text x="50%" y="300" font-size="22" font-weight="300" dominant-baseline="middle" text-anchor="middle" fill="white">
+        Network: ${chainName}
+      </text>
+    </svg>
+	`;
+
+	return [overSVG, underSVG];
 };
 
-const generateMetadata = (market: Market, choices: Choices, svgURI: string, activeChain: string) => {
+const generateMetadata = (market: Market, overSVGURI: string, underSVGURI: string, activeChain: string) => {
 	let asset = priceFeedToSymbol[activeChain][market.priceFeed].toUpperCase();
 	let collateralAsset = activeChain === 'rinkeby' ? 'ETH' : 'MATIC';
+	let chainName = activeChain === 'rinkeby' ? 'Rinkeby' : activeChain === 'maticmum' ? 'Mumbai' : 'Polygon';
 
-	return {
+	const overMetadata = {
 		description: `A prediction on p2ppredict.xyz regarding the value of ${asset}`,
-		name: `${choices.over ? 'OVER' : 'UNDER'} ${asset}/USD`,
-		image: svgURI,
+		name: `OVER ${asset}/USD`,
+		image: overSVGURI,
 		attributes: [
 			{
 				trait_type: 'Asset',
 				value: asset,
+			},
+			{
+				trait_type: 'Prediction',
+				value: 'OVER',
 			},
 			{
 				trait_type: 'Strike Price',
@@ -118,11 +164,45 @@ const generateMetadata = (market: Market, choices: Choices, svgURI: string, acti
 				value: formatDate(market.expiry.toString()),
 			},
 			{
-				trait_type: 'Direction',
-				value: choices.over ? 'OVER' : 'UNDER',
+				trait_type: 'Network',
+				value: chainName,
 			},
 		],
 	};
+
+	const underMetadata = {
+		description: `A prediction on p2ppredict.xyz regarding the value of ${asset}`,
+		name: `UNDER ${asset}/USD`,
+		image: underSVGURI,
+		attributes: [
+			{
+				trait_type: 'Asset',
+				value: asset,
+			},
+			{
+				trait_type: 'Prediction',
+				value: 'UNDER',
+			},
+			{
+				trait_type: 'Strike Price',
+				value: `$${ethers.utils.formatUnits(market.strikePrice, 8)}`,
+			},
+			{
+				trait_type: 'Value',
+				value: `${ethers.utils.formatEther(market.collateral)} ${collateralAsset}`,
+			},
+			{
+				trait_type: 'Expiry',
+				value: formatDate(market.expiry.toString()),
+			},
+			{
+				trait_type: 'Network',
+				value: chainName,
+			},
+		],
+	};
+
+	return [overMetadata, underMetadata];
 };
 
 export { generateMetadata, uploadSVGToIpfs, uploadMetadataToIpfs, createSvg };
