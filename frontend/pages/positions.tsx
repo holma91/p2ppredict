@@ -16,19 +16,17 @@ const Outer = styled.div`
 	color: ${({ theme }) => theme.text.secondary};
 	font-size: ${({ theme }) => theme.typeScale.smallParagraph};
 	display: flex;
-	/* justify-content: center; */
 	align-items: center;
 	flex-direction: column;
 	gap: 1rem;
 	min-height: 100vh;
+	padding-bottom: 2rem;
 `;
 
 const Container = styled.div`
 	width: 1250px;
 	display: flex;
 	flex-direction: column;
-	/* align-items: center; */
-	/* gap: 0.75rem; */
 	padding: 2rem 3.5rem;
 	padding-bottom: 0;
 
@@ -64,14 +62,12 @@ const formatPrice = (price: string) => {
 
 export default function PositionsPage() {
 	const { chain } = useNetwork();
-	const [loadingButton, setLoadingButton] = useState(false);
 	const [txHash, setTxHash] = useState('');
 	const [predictionSize, setPredictionSize] = useState('');
 	const [currentlyBeingExercised, setCurrentlyBeingExercised] = useState('-1');
 
-	const { positions, isLoading, isError } = useFetchPositions();
+	const { positions } = useFetchPositions();
 
-	console.log(positions);
 	const activeChain = chain?.network;
 
 	const handleExercise = async (position: Position) => {
@@ -123,7 +119,9 @@ export default function PositionsPage() {
 	const marketplace =
 		chain?.network === 'rinkeby'
 			? `https://testnets.opensea.io/assets/rinkeby/${predictionMarketAddresses.rinkeby}`
-			: '';
+			: chain?.network == 'maticmum'
+			? `https://testnets.opensea.io/assets/rinkeby/${predictionMarketAddresses.rinkeby}`
+			: `https://opensea.io/assets/matic/${predictionMarketAddresses.matic}`;
 
 	return (
 		<>

@@ -66,6 +66,7 @@ export const symbolToCoingeckoId: { [key: string]: string } = {
 	busd: 'binance-usd',
 	icp: 'internet-computer',
 	ftm: 'fantom',
+	sushi: 'sushi',
 };
 
 export const symbolToPriceFeed: { [key: string]: { [key: string]: string } } = {

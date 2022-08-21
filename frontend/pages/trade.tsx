@@ -15,6 +15,7 @@ import { formatDate } from '../utils/helpers';
 import OrderBook from '../components/OrderBook';
 import { useRouter } from 'next/router';
 import { useFetchMarkets } from '../hooks/useFetchMarkets';
+import Link from 'next/link';
 
 interface Props {
 	colored?: boolean;
@@ -110,8 +111,7 @@ const Taker: NextPage = () => {
 									<div>UNDER</div>
 								</ChoiceDiv>
 							</SectionHeader>
-							{true &&
-								markets &&
+							{markets &&
 								Object.values(markets).map((market: any) => {
 									return (
 										<MarketContainer
@@ -149,6 +149,14 @@ const Taker: NextPage = () => {
 										</MarketContainer>
 									);
 								})}
+							{markets && Object.values(markets).length === 0 && (
+								<NoMarkets>
+									<p>No markets for {asset0.toUpperCase()} available</p>
+									<Link href="/create">
+										<a>Create Markets</a>
+									</Link>
+								</NoMarkets>
+							)}
 						</Overview>
 					</Left>
 					<Right>
@@ -172,6 +180,32 @@ const Taker: NextPage = () => {
 		</>
 	);
 };
+
+const NoMarkets = styled.div`
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	gap: 0.75rem;
+	height: 300px;
+	border-right: 1px solid ${({ theme }) => theme.background.tertiary};
+	border-bottom: 1px solid ${({ theme }) => theme.background.tertiary};
+	font-size: ${({ theme }) => theme.typeScale.header3};
+
+	a {
+		border: 2px solid ${({ theme }) => theme.background.primary};
+		padding: 0.5rem;
+		border-radius: 0.5rem;
+
+		font-size: ${({ theme }) => theme.typeScale.paragraph};
+		border: 2px solid ${({ theme }) => theme.colors.primary};
+		:hover {
+			cursor: pointer;
+			background-color: ${({ theme }) => theme.colors.primary};
+			color: white;
+		}
+	}
+`;
 
 const Right = styled.div`
 	padding: 0 1.75rem;

@@ -81,72 +81,74 @@ export default function OrderBook({ market, setTxHash, setBuyInfo }: OrderBookPr
 	const collateralAsset = activeChain === 'rinkeby' ? 'ETH' : 'MATIC';
 
 	return (
-		<Container>
+		<>
 			{market && (
-				<>
-					<Header>
-						<Asset>
-							<img src={assetToImage[market.asset]} alt="logo" />
-							<p>{market.asset.toUpperCase()}/USD</p>
-						</Asset>
-						<div className="price">Oracle price: ${market.latestAnswer}</div>
-						<div className="summary">
-							<p>
-								At {formatDate(market.expiry)}, will the price of {market.asset.toUpperCase()} be over
-								or under ${market.strike}?
-							</p>
-						</div>
-					</Header>
-					<OverUnder>
-						<Direction>
-							<p>OVER</p>
-							{market.over.map((prediction: any) => {
-								return currentlyBeingBought === prediction.id ? (
-									<Button l={true} key={prediction.id}>
-										<Spinner />
-									</Button>
-								) : (
-									<div
-										className="prediction"
-										key={prediction.id}
-										onClick={() => handleBuy(prediction, 'OVER')}
-									>
-										<p>
-											{formatPrice(ethers.utils.formatUnits(prediction.price, 18))}{' '}
-											{collateralAsset}
-										</p>
-										<p>{formatOdds(prediction.odds.toString())}</p>
-									</div>
-								);
-							})}
-						</Direction>
-						<Direction>
-							<p>UNDER</p>
-							{market.under.map((prediction: any) => {
-								return currentlyBeingBought === prediction.id ? (
-									<Button l={true} key={prediction.id}>
-										<Spinner />
-									</Button>
-								) : (
-									<div
-										className="prediction"
-										key={prediction.id}
-										onClick={() => handleBuy(prediction, 'UNDER')}
-									>
-										<p>
-											{formatPrice(ethers.utils.formatUnits(prediction.price, 18))}{' '}
-											{collateralAsset}
-										</p>
-										<p>{formatOdds(prediction.odds.toString())}</p>
-									</div>
-								);
-							})}
-						</Direction>
-					</OverUnder>
-					<Orders></Orders>
-				</>
+				<Container>
+					<>
+						<Header>
+							<Asset>
+								<img src={assetToImage[market.asset]} alt="logo" />
+								<p>{market.asset.toUpperCase()}/USD</p>
+							</Asset>
+							<div className="price">Oracle price: ${market.latestAnswer}</div>
+							<div className="summary">
+								<p>
+									At {formatDate(market.expiry)}, will the price of {market.asset.toUpperCase()} be
+									over or under ${market.strike}?
+								</p>
+							</div>
+						</Header>
+						<OverUnder>
+							<Direction>
+								<p>OVER</p>
+								{market.over.map((prediction: any) => {
+									return currentlyBeingBought === prediction.id ? (
+										<Button l={true} key={prediction.id}>
+											<Spinner />
+										</Button>
+									) : (
+										<div
+											className="prediction"
+											key={prediction.id}
+											onClick={() => handleBuy(prediction, 'OVER')}
+										>
+											<p>
+												{formatPrice(ethers.utils.formatUnits(prediction.price, 18))}{' '}
+												{collateralAsset}
+											</p>
+											<p>{formatOdds(prediction.odds.toString())}</p>
+										</div>
+									);
+								})}
+							</Direction>
+							<Direction>
+								<p>UNDER</p>
+								{market.under.map((prediction: any) => {
+									return currentlyBeingBought === prediction.id ? (
+										<Button l={true} key={prediction.id}>
+											<Spinner />
+										</Button>
+									) : (
+										<div
+											className="prediction"
+											key={prediction.id}
+											onClick={() => handleBuy(prediction, 'UNDER')}
+										>
+											<p>
+												{formatPrice(ethers.utils.formatUnits(prediction.price, 18))}{' '}
+												{collateralAsset}
+											</p>
+											<p>{formatOdds(prediction.odds.toString())}</p>
+										</div>
+									);
+								})}
+							</Direction>
+						</OverUnder>
+						<Orders></Orders>
+					</>
+				</Container>
 			)}
-		</Container>
+		</>
 	);
 }
 
