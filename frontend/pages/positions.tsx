@@ -211,11 +211,12 @@ export default function PositionsPage() {
 									</Position>
 								);
 							})}
-						{positions && positions.unlistedPositions.length === 0 && (
-							<Empty>
-								<p>You have no open positions</p>
-							</Empty>
-						)}
+						{(positions && positions.unlistedPositions.length === 0) ||
+							(!positions && (
+								<Empty>
+									<p>You have no open positions</p>
+								</Empty>
+							))}
 					</Positions>
 				</Container>
 				<Container>
@@ -258,11 +259,12 @@ export default function PositionsPage() {
 								);
 							})}
 
-						{positions && positions.listedPositions.length === 0 && (
-							<Empty>
-								<p>You have no listed positions</p>
-							</Empty>
-						)}
+						{(positions && positions.listedPositions.length === 0) ||
+							(!positions && (
+								<Empty>
+									<p>You have no listed positions</p>
+								</Empty>
+							))}
 					</Positions>
 				</Container>
 			</Outer>

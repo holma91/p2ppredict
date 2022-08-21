@@ -101,9 +101,10 @@ type MakerThingProps = {
 	asset: string;
 	setAsset: Dispatch<SetStateAction<string>>;
 	setTxHash: Dispatch<SetStateAction<string>>;
+	setConnectMessage: Dispatch<SetStateAction<string>>;
 };
 
-const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
+const MakerThing = ({ asset, setAsset, setTxHash, setConnectMessage }: MakerThingProps) => {
 	const [over, setOver] = useState(true);
 	const [positionSize, setPositionSize] = useState('0.001');
 	const [strikePrice, setStrikePrice] = useState('0');
@@ -287,6 +288,19 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 		}
 	};
 
+	const handleSetApprovalForAll = () => {
+		if (!chain) {
+			console.log('connect wallet!');
+			setConnectMessage('You need to connect with a wallet before interacting!');
+
+			setTimeout(() => {
+				setConnectMessage('');
+			}, 7500);
+			return;
+		}
+		writeSetApprovalForAll?.();
+	};
+
 	const options =
 		activeChain === 'rinkeby' ? rinkebyOptions : activeChain === 'maticmum' ? mumbaiOptions : polygonOptions;
 
@@ -413,7 +427,7 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 							<Spinner />
 						</Button>
 					) : !isApprovedForAll ? (
-						<Button type="button" l={false} onClick={() => writeSetApprovalForAll?.()}>
+						<Button type="button" l={false} onClick={handleSetApprovalForAll}>
 							APPROVE
 						</Button>
 					) : null}

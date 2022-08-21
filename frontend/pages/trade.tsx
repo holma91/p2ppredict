@@ -147,14 +147,15 @@ const Taker: NextPage = () => {
 										</MarketContainer>
 									);
 								})}
-							{markets && Object.values(markets).length === 0 && (
-								<NoMarkets>
-									<p>No markets for {asset0.toUpperCase()} available</p>
-									<Link href="/create">
-										<a>Create Markets</a>
-									</Link>
-								</NoMarkets>
-							)}
+							{(markets && Object.values(markets).length === 0) ||
+								(!markets && (
+									<NoMarkets>
+										<p>No markets for {asset0.toUpperCase()} available</p>
+										<Link href="/create">
+											<a>Create Markets</a>
+										</Link>
+									</NoMarkets>
+								))}
 						</Overview>
 					</Left>
 					<Right>

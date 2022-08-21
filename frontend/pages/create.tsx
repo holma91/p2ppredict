@@ -46,6 +46,7 @@ const Maker: NextPage = () => {
 	const [asset, setAsset] = useState('btc');
 	const asset1 = { symbol: 'usd', coingeckoId: 'usd' };
 	const [txHash, setTxHash] = useState('');
+	const [connectMessage, setConnectMessage] = useState('');
 
 	const explorer =
 		chain?.network === 'rinkeby'
@@ -62,6 +63,11 @@ const Maker: NextPage = () => {
 
 	return (
 		<>
+			{connectMessage !== '' && (
+				<NewTx>
+					<p>{connectMessage}</p>
+				</NewTx>
+			)}
 			{txHash !== '' && (
 				<NewTx>
 					<a href={`${explorer}/${txHash}`} target="_blank" rel="noreferrer">
@@ -87,7 +93,12 @@ const Maker: NextPage = () => {
 					></PriceChartContainer>
 				</Left>
 				<Right>
-					<MakerThing asset={asset} setAsset={setAsset} setTxHash={setTxHash} />
+					<MakerThing
+						asset={asset}
+						setAsset={setAsset}
+						setTxHash={setTxHash}
+						setConnectMessage={setConnectMessage}
+					/>
 				</Right>
 			</Container>
 		</>
@@ -152,6 +163,11 @@ const NewTx = styled.div`
 	}
 	svg {
 		width: 22px;
+	}
+	p {
+		color: white;
+		font-weight: 500;
+		padding-bottom: 0.1rem;
 	}
 `;
 

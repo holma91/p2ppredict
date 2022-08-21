@@ -68,8 +68,7 @@ export default function Banner({
 	const { chain } = useNetwork();
 
 	const handleBannerChange = (symbol: string) => {
-		if (!chain || !chain.network) return;
-		if (isBlackAndWhite(chain.network, symbol)) return;
+		if (isBlackAndWhite(chain?.network ? chain?.network : 'matic', symbol)) return;
 		setActive(0);
 		setBannerChoice(symbol);
 	};
