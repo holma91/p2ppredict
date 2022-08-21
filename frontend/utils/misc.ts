@@ -32,6 +32,10 @@ export const assetToName: { [key: string]: string } = {
 	link: 'Chainlink',
 	axs: 'Axie Infinity',
 	ape: 'Apecoin',
+	sushi: 'Sushi',
+	fil: 'Filecoin',
+	ltc: 'Litecoin',
+	doge: 'Dogecoin',
 };
 
 export const symbolToCoingeckoId: { [key: string]: string } = {
@@ -42,7 +46,6 @@ export const symbolToCoingeckoId: { [key: string]: string } = {
 	usdt: 'tether',
 	usdc: 'usd-coin',
 	xrp: 'ripple',
-	dogecoin: 'dogecoin',
 	matic: 'matic-network',
 	ada: 'cardano',
 	dot: 'polkadot',
@@ -67,6 +70,8 @@ export const symbolToCoingeckoId: { [key: string]: string } = {
 	icp: 'internet-computer',
 	ftm: 'fantom',
 	sushi: 'sushi',
+	fil: 'filecoin',
+	doge: 'dogecoin',
 };
 
 export const symbolToPriceFeed: { [key: string]: { [key: string]: string } } = {

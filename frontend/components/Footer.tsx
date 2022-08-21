@@ -3,22 +3,17 @@ import styled from 'styled-components';
 const Footer = () => {
 	return (
 		<FooterContainer>
-			<FooterText>an MVP for a prediction market, created for the polygon 2022 hackathon</FooterText>
+			<p>p2ppredict is a prediction market created for the polygon hackathon summer 2022</p>
 		</FooterContainer>
 	);
 };
 
 const FooterContainer = styled.div`
-	border-top: 1px solid #ecedef;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 10px 15px;
-`;
-
-const FooterText = styled.span`
-	font-size: 12px;
-	font-weight: 300;
+	border-top: 1px solid ${({ theme }) => theme.background.secondary};
+	background-color: ${({ theme }) => theme.background.primary};
+	color: ${({ theme }) => theme.text.primary};
+	padding: 1rem 1.5rem;
+	font-size: ${({ theme }) => theme.typeScale.smallParagraph};
 `;
 
 export default Footer;

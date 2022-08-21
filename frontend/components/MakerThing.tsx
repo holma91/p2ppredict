@@ -139,11 +139,7 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 		args: [exchangeAddresses[activeChain ? activeChain : 'rinkeby'], true],
 	});
 
-	const {
-		data,
-		isLoading: setApprovalForAllIsLoading,
-		write: writeSetApprovalForAll,
-	} = useContractWrite({
+	const { isLoading: setApprovalForAllIsLoading, write: writeSetApprovalForAll } = useContractWrite({
 		...setApprovalForAllConfig,
 		async onSettled(data, error) {
 			if (!data) {

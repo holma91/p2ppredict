@@ -40,10 +40,14 @@ const homepageAssetsSymbols = [
 	{ symbol: 'crv', mainnet: true, testnet: false, hide: false },
 	{ symbol: 'aave', mainnet: true, testnet: false, hide: false },
 	{ symbol: 'ada', mainnet: true, testnet: false, hide: false },
-	{ symbol: 'snx', mainnet: true, testnet: false, hide: true },
-	{ symbol: 'uni', mainnet: true, testnet: false, hide: true },
-	{ symbol: 'bnb', mainnet: true, testnet: false, hide: true },
-	{ symbol: 'dot', mainnet: true, testnet: false, hide: true },
+	{ symbol: 'snx', mainnet: true, testnet: false, hide: false },
+	{ symbol: 'uni', mainnet: true, testnet: false, hide: false },
+	{ symbol: 'bnb', mainnet: true, testnet: false, hide: false },
+	{ symbol: 'dot', mainnet: true, testnet: false, hide: false },
+	{ symbol: 'sushi', mainnet: true, testnet: false, hide: true },
+	{ symbol: 'ltc', mainnet: true, testnet: false, hide: true },
+	{ symbol: 'fil', mainnet: true, testnet: false, hide: true },
+	{ symbol: 'doge', mainnet: true, testnet: false, hide: true },
 ];
 
 const homepageAssetsIds = [
@@ -63,6 +67,10 @@ const homepageAssetsIds = [
 	symbolToCoingeckoId['uni'],
 	symbolToCoingeckoId['bnb'],
 	symbolToCoingeckoId['dot'],
+	symbolToCoingeckoId['sushi'],
+	symbolToCoingeckoId['ltc'],
+	symbolToCoingeckoId['fil'],
+	symbolToCoingeckoId['doge'],
 ];
 
 const Home: NextPage = () => {
@@ -120,6 +128,7 @@ const Home: NextPage = () => {
 									}
 									key={asset.symbol}
 									clickable={asset.testnet || chain?.network === 'matic'}
+									hide={asset.hide}
 								>
 									<div className="top">
 										<img src={assetToImage[asset.symbol]} alt={asset.symbol} />
@@ -159,10 +168,10 @@ const Home: NextPage = () => {
 				</div>
 				<div className="largebox">
 					<div className="box">
-						<p className="header">~100 different crypto markets</p>
+						<p className="header">~30 different crypto markets</p>
 						<p>
-							Currently, p2ppredict has support for ~100 different crypto markets. In the future,
-							it&apos;s possible that we&apos;ll add more markets and the markets are not limited to
+							Currently, p2ppredict has support for ~30 different crypto markets. In the future, it&apos;s
+							possible that we&apos;ll add more markets and the markets are not limited to
 							cryptocurrencies.
 						</p>
 					</div>
@@ -187,8 +196,8 @@ const Home: NextPage = () => {
 					<div className="box hackathon">
 						<p className="header">Hackathon 2022 Participant</p>
 						<p>
-							p2ppredict is currently participating in the Polygon #BUIDL Hackathon. A link to our devpost
-							submission can be found at{' '}
+							p2ppredict is currently participating in the Polygon #BUIDL IT Hackathon. A link to our
+							devpost submission can be found at{' '}
 							<a href="https://devpost.com" target="_blank" rel="noreferrer">
 								devpost.com
 							</a>
@@ -206,7 +215,7 @@ const Boxes = styled.div`
 	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 	gap: 1rem;
 
-	@media (max-width: 1750px) {
+	@media (max-width: 1800px) {
 		grid-template-columns: 1fr 1fr 1fr 1fr;
 	}
 	@media (max-width: 1050px) {
@@ -221,7 +230,10 @@ const Boxes = styled.div`
 	}
 `;
 
-const Box = styled.div<{ clickable: boolean }>`
+const Box = styled.div<{ clickable: boolean; hide: boolean }>`
+	@media (max-width: 1800px) {
+		display: ${({ hide }) => (hide ? 'none' : '')};
+	}
 	padding: 1.5rem;
 	border-radius: 1rem;
 	border: 2px solid ${({ theme }) => theme.background.quinary};
