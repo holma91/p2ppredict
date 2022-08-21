@@ -1,4 +1,0 @@
-
-operations from fe:
-- get /markets
-  - need asset, strike, expiry
