@@ -1,7 +1,6 @@
 const ethers = require("ethers");
 const PredictionMarket = require("../out/PredictionMarket.sol/PredictionMarket.json");
 const { predictionMarketAddresses } = require("./addresses");
-const { assetToFeed } = require("./helper");
 require("dotenv").config();
 
 const main = async () => {

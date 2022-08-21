@@ -6,7 +6,9 @@ import {ERC721} from "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 
 import {OrderTypes} from "./libraries/OrderTypes.sol";
 
-// OBS: This contract is unoptimized and gas-inefficient
+/// @title Exchange
+/// @notice An MVP for a prediction market made for the polygon hackathon summer 2022
+/// @notice The contract is not gas-optimized and NOT audited, so expect some bugs
 contract Exchange {
     address public deployer;
     address public predictionMarketAddress;
@@ -36,11 +38,15 @@ contract Exchange {
         deployer = msg.sender;
     }
 
+    /// @notice Set the address of the prediction market contract
+    /// @param _predictionMarket The predictionMarket whose tokens are traded on this exchange
     function setPredictionMarketAddress(address _predictionMarket) public {
         require(msg.sender == deployer, "Only deployer can change the prediction market address");
         predictionMarketAddress = _predictionMarket;
     }
 
+    /// @notice Call this function to list a token on the exchange
+    /// @param makerAsk An ask to sell something (a listing)
     function createMakerAsk(OrderTypes.MakerOrder calldata makerAsk) external {
         require(
             msg.sender == makerAsk.signer || msg.sender == predictionMarketAddress,
@@ -80,6 +86,8 @@ contract Exchange {
         );
     }
 
+    /// @notice Matches an ask with a bid, and exchanges tokens
+    /// @param takerBid the bid for a particular token
     function matchAskWithTakerBid(OrderTypes.TakerOrder calldata takerBid) external payable {
         require(msg.sender == takerBid.taker, "Order: Taker must be the sender");
 
@@ -106,6 +114,9 @@ contract Exchange {
         delete makerAskByAccountAndId[makerAsk.signer][makerAsk.tokenId];
     }
 
+    /// @notice Does elementary validity checks
+    /// @param takerBid the bid for a particular token
+    /// @param makerAsk the ask for a particular token
     function canExecuteTakerBid(
         OrderTypes.TakerOrder calldata takerBid,
         OrderTypes.MakerOrder memory makerAsk

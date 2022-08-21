@@ -158,13 +158,7 @@ contract PredictionMarketTest is Test, PredictionMarket, ERC721Holder {
     function testScenario() public {
         Market memory trxMarket = Market(address(trxUsdPriceFeed), 0.08 * 10**8, 1000, 1 ether, "", "");
         uint256 listPrice = 0.5 ether;
-        (, uint256 overId, uint256 underId) = predictionMarket.createMarketWithPosition{value: 1 ether}(
-            trxMarket,
-            true,
-            listPrice,
-            500,
-            0.077 * 10**8
-        );
+        predictionMarket.createMarketWithPosition{value: 1 ether}(trxMarket, true, listPrice, 500, 0.077 * 10**8);
     }
 
     function testCanCreateMarketAndTakeUnderPosition() public {
@@ -212,30 +206,22 @@ contract PredictionMarketTest is Test, PredictionMarket, ERC721Holder {
         assertEq(predictionsByAccountAlice.length, 4);
         assertEq(latestPricesAlice.length, 4);
 
-        (Prediction[] memory predictionsByFeedETH, int256 latestPriceETH) = predictionMarket.getPredictionsByFeed(
-            address(ethUsdPriceFeed)
-        );
+        (Prediction[] memory predictionsByFeedETH, ) = predictionMarket.getPredictionsByFeed(address(ethUsdPriceFeed));
         assertEq(predictionsByFeedETH.length, 14);
 
-        (Prediction[] memory predictionsByFeedBTC, int256 latestPriceBTC) = predictionMarket.getPredictionsByFeed(
-            address(btcUsdPriceFeed)
-        );
+        (Prediction[] memory predictionsByFeedBTC, ) = predictionMarket.getPredictionsByFeed(address(btcUsdPriceFeed));
         assertEq(predictionsByFeedBTC.length, 6);
     }
 
     function testCanGetMarketByFeed() public {
         predictionMarket.createMarket{value: 1 ether}(ethMarket);
         predictionMarket.createMarket{value: 2 ether}(btcMarket);
-        (Prediction[] memory predictionsByFeedETH, int256 latestPriceETH) = predictionMarket.getPredictionsByFeed(
-            address(ethUsdPriceFeed)
-        );
+        (Prediction[] memory predictionsByFeedETH, ) = predictionMarket.getPredictionsByFeed(address(ethUsdPriceFeed));
         assertEq(predictionsByFeedETH.length, 2);
         assertEq(predictionsByFeedETH[0].market.priceFeed, address(ethUsdPriceFeed));
         assertEq(predictionsByFeedETH[1].market.priceFeed, address(ethUsdPriceFeed));
 
-        (Prediction[] memory predictionsByFeedBTC, int256 latestPriceBTC) = predictionMarket.getPredictionsByFeed(
-            address(btcUsdPriceFeed)
-        );
+        (Prediction[] memory predictionsByFeedBTC, ) = predictionMarket.getPredictionsByFeed(address(btcUsdPriceFeed));
         assertEq(predictionsByFeedBTC.length, 2);
 
         assertEq(predictionsByFeedBTC[0].market.priceFeed, address(btcUsdPriceFeed));

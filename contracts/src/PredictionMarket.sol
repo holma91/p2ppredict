@@ -3,7 +3,6 @@ pragma solidity 0.8.13;
 
 import {Exchange} from "./Exchange.sol";
 
-import "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 import "openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "chainlink/contracts/src/v0.8/interfaces/AggregatorInterface.sol";
 
@@ -13,6 +12,9 @@ interface IExchange {
     function createMakerAsk(OrderTypes.MakerOrder calldata makerAsk) external;
 }
 
+/// @title Prediction Market
+/// @notice An MVP for a prediction market made for the polygon hackathon summer 2022
+/// @notice The contract is not gas-optimized and NOT audited, so expect some bugs
 contract PredictionMarket is ERC721URIStorage {
     address public deployer;
     address public exchangeAddress;
@@ -54,11 +56,15 @@ contract PredictionMarket is ERC721URIStorage {
         currentPredictionId = 0;
     }
 
+    /// @notice Set the address of the exchange contract
+    /// @param _exchange The exchange contract where the predictions are traded
     function setExchangeAddress(address _exchange) public {
         require(msg.sender == deployer, "Only deployer can change the prediction market address");
         exchangeAddress = _exchange;
     }
 
+    /// @notice This function is for market-neutral participants, who want to create a market but not take a position
+    /// @param market The market you want to create tokens for
     function createMarket(Market calldata market)
         public
         payable
@@ -94,6 +100,13 @@ contract PredictionMarket is ERC721URIStorage {
         return (currentMarketId - 1, currentPredictionId - 2, currentPredictionId - 1);
     }
 
+    /// @notice This function is for participants who want to create a market AND take a position
+    /// @param market The market you want to create tokens for
+    /// @param over The side you want to be on in the prediction
+    /// @param listPrice What the side you're not on should be listed for
+    /// @param endTime When the listing should end
+    /// @param tresholdPrice Only allow the listing to exist when a price is over/under this treshold
+    /// @dev tresholdPrice is NOT yet implemented
     function createMarketWithPosition(
         Market calldata market,
         bool over,
@@ -134,6 +147,8 @@ contract PredictionMarket is ERC721URIStorage {
         return (marketId, overId, underId);
     }
 
+    /// @notice Called by the owner of a prediction when expiry is reached to get a payout (or not)
+    /// @param id The id of the prediction
     function exercise(uint256 id) public {
         require(ownerOf(id) == msg.sender, "PredictionMarket: not the correct owner");
         require(predictionById[id].market.priceFeed != address(0), "Market is dead");
@@ -158,10 +173,12 @@ contract PredictionMarket is ERC721URIStorage {
         require(sent, "failed ether transfer");
     }
 
+    /// @param id The id of the prediction
     function getPrediction(uint256 id) public view returns (Prediction memory) {
         return predictionById[id];
     }
 
+    /// @param id The id of the market
     function getMarket(uint256 id) public view returns (Market memory) {
         return marketById[id];
     }
@@ -174,6 +191,7 @@ contract PredictionMarket is ERC721URIStorage {
         return predictions;
     }
 
+    /// @param account The address of the account of interest
     function getPredictionsByAccount(address account)
         public
         view
@@ -199,6 +217,7 @@ contract PredictionMarket is ERC721URIStorage {
         return (predictions, latestPrices);
     }
 
+    /// @param feed The address of the feed of interest
     function getPredictionsByFeed(address feed) public view returns (Prediction[] memory, int256) {
         uint256 feedCount = 0;
         for (uint256 i = 0; i < currentPredictionId; i++) {
