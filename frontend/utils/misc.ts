@@ -6,18 +6,7 @@ export const timeWindowToNumber: { [key: string]: number } = {
 	'1Y': 4,
 };
 
-export const assets = [
-	'bitcoin',
-	'tron',
-	'ethereum',
-	'just',
-	'sun-token',
-	'wink',
-	'apenft',
-	'bittorrent',
-	'tether',
-	'usd-coin',
-];
+export const assets = [];
 
 export const assetToName: { [key: string]: string } = {
 	trx: 'Tron',
@@ -41,6 +30,8 @@ export const assetToName: { [key: string]: string } = {
 	yfi: 'Yearn',
 	crv: 'Curve',
 	link: 'Chainlink',
+	axs: 'Axie Infinity',
+	ape: 'Apecoin',
 };
 
 export const symbolToCoingeckoId: { [key: string]: string } = {
@@ -52,26 +43,23 @@ export const symbolToCoingeckoId: { [key: string]: string } = {
 	usdc: 'usd-coin',
 	xrp: 'ripple',
 	dogecoin: 'dogecoin',
+	matic: 'matic-network',
 	ada: 'cardano',
 	dot: 'polkadot',
 	dai: 'dai',
-	trx: 'tron',
+	ape: 'apecoin',
 	avax: 'avalanche-2',
-	matic: 'matic-network',
+	trx: 'tron',
 	link: 'chainlink',
 	algo: 'algorand',
 	atom: 'cosmos',
 	usd: 'usd',
-	jst: 'just',
-	sun: 'sun-token',
-	win: 'wink',
-	nft: 'apenft',
-	btt: 'bittorrent',
 	uni: 'uniswap',
 	snx: 'havven',
 	yfi: 'yearn-finance',
 	crv: 'curve-dao-token',
 	aave: 'aave',
+	axs: 'axie-infinity',
 };
 
 export const symbolToPriceFeed: { [key: string]: { [key: string]: string } } = {
@@ -198,6 +186,7 @@ export const assetToImage: { [key: string]: string } = {
 	uni: 'https://cryptologos.cc/logos/uniswap-uni-logo.svg?v=022',
 	crv: 'https://cryptologos.cc/logos/curve-dao-token-crv-logo.svg?v=022',
 	aave: 'https://cryptologos.cc/logos/aave-aave-logo.svg?v=022',
+	ape: 'https://cryptologos.cc/logos/apecoin-ape-ape-logo.svg?v=023',
 	snx: 'https://cryptologos.cc/logos/synthetix-network-token-snx-logo.svg?v=022',
 	yfi: 'https://cryptologos.cc/logos/yearn-finance-yfi-logo.svg?v=022',
 	sushi: 'https://cryptologos.cc/logos/sushiswap-sushi-logo.svg?v=022',
@@ -231,4 +220,5 @@ export const assetToImage: { [key: string]: string } = {
 	mana: 'https://cryptologos.cc/logos/decentraland-mana-logo.svg?v=022',
 	leo: 'https://cryptologos.cc/logos/unus-sed-leo-leo-logo.svg?v=022',
 	vet: 'https://cryptologos.cc/logos/vechain-vet-logo.svg?v=022',
+	axs: 'https://cryptologos.cc/logos/axie-infinity-axs-logo.svg?v=023',
 };

@@ -1,20 +1,18 @@
-import { useState, Dispatch, SetStateAction, useEffect, useContext } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 import Link from 'next/link';
 import styled from 'styled-components';
 import Select from 'react-select';
 import { assetToImage, symbolToPriceFeed } from '../utils/misc';
 import PredictionMarket from '../../contracts/out/PredictionMarket.sol/PredictionMarket.json';
-import Exchange from '../../contracts/out/Exchange.sol/Exchange.json';
 import { blackTheme } from '../design/themes';
 import { ethers } from 'ethers';
 import { Spinner } from './Spinner';
 import { BiLinkExternal } from 'react-icons/bi';
-import { FallbackProviderContext } from '../pages/_app';
 import { predictionMarketAddresses, exchangeAddresses } from '../utils/addresses';
-import { useQuery } from 'react-query';
 import { useAccount, useContractRead, useContractWrite, usePrepareContractWrite, useNetwork } from 'wagmi';
 import { createSvg, generateMetadata, uploadMetadataToIpfs, uploadSVGToIpfs } from '../utils/ipfs';
 import { Choices, Market } from '../types';
+import { rinkebyOptions, mumbaiOptions, polygonOptions } from '../utils/stuff';
 
 declare var window: any;
 
@@ -29,10 +27,10 @@ const StyledChoice = styled.div`
 `;
 
 const symbolToLabel: { [key: string]: JSX.Element } = {
-	trx: (
+	matic: (
 		<StyledChoice>
-			<img src={assetToImage['trx']} alt="logo" />
-			<span>TRX</span>
+			<img src={assetToImage['matic']} alt="logo" />
+			<span>MATIC</span>
 		</StyledChoice>
 	),
 	btc: (
@@ -48,54 +46,6 @@ const symbolToLabel: { [key: string]: JSX.Element } = {
 		</StyledChoice>
 	),
 };
-
-const options = [
-	{
-		value: 'matic',
-		label: (
-			<StyledChoice>
-				<img src={assetToImage['matic']} alt="logo" />
-				<span>MATIC</span>
-			</StyledChoice>
-		),
-	},
-	{
-		value: 'btc',
-		label: (
-			<StyledChoice>
-				<img src={assetToImage['btc']} alt="logo" />
-				<span>BTC</span>
-			</StyledChoice>
-		),
-	},
-	{
-		value: 'eth',
-		label: (
-			<StyledChoice>
-				<img src={assetToImage['eth']} alt="logo" />
-				<span>ETH</span>
-			</StyledChoice>
-		),
-	},
-	{
-		value: 'usdt',
-		label: (
-			<StyledChoice>
-				<img src={assetToImage['usdt']} alt="logo" />
-				<span>USDT</span>
-			</StyledChoice>
-		),
-	},
-	{
-		value: 'usdc',
-		label: (
-			<StyledChoice>
-				<img src={assetToImage['usdc']} alt="logo" />
-				<span>USDC</span>
-			</StyledChoice>
-		),
-	},
-];
 
 const customStyles = {
 	option: (provided: any, state: any) => ({
@@ -345,6 +295,9 @@ const MakerThing = ({ asset, setAsset, setTxHash }: MakerThingProps) => {
 	// 	};
 	// 	getBalance();
 	// }, [tronWeb]);
+
+	const options =
+		activeChain === 'rinkeby' ? rinkebyOptions : activeChain === 'maticmum' ? mumbaiOptions : polygonOptions;
 
 	return (
 		<Container>

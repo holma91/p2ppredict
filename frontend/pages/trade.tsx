@@ -7,7 +7,7 @@ import { useNetwork } from 'wagmi';
 import type { Token } from '../types';
 import Banner from '../components/Banner';
 
-import { assetToImage, assets, symbolToCoingeckoId } from '../utils/misc';
+import { assetToImage, symbolToCoingeckoId } from '../utils/misc';
 import { allMarkets } from '../data/mockMarkets';
 import PriceChartContainer from '../components/Chart/PriceChartContainer';
 import { useFetchPrices } from '../hooks/useFetchPrices';
@@ -44,7 +44,7 @@ const Taker: NextPage = () => {
 		coingeckoId: 'usd',
 	});
 	const [active, setActive] = useState(0);
-	const { prices, isLoading, isError } = useFetchPrices(assets);
+	const { prices, isLoading, isError } = useFetchPrices(Object.values(symbolToCoingeckoId));
 	const [txHash, setTxHash] = useState('');
 	const [buyInfo, setBuyInfo] = useState({ asset: '', price: '', side: '' });
 	let { markets, isLoading: isl, isError: ise } = useFetchMarkets(asset0);
