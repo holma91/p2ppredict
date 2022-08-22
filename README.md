@@ -4,6 +4,14 @@ Web app: [https://p2ppredict.xyz](https://p2ppredict.xyz)<br>
 DevPost submission: [https://devpost.com/software/p2ppredict-prediction-market](https://devpost.com/software/p2ppredict-prediction-market)<br>
 PredictionMarket.sol: https://polygonscan.com/address/0x8d1829F4be94EF37c2423622b725c88f528fD390 <br>
 Exchange.sol: https://polygonscan.com/address/0x0ada172BE483d891F512ee1b0ff03711215BC254 <br>
+
+/frontend <br>
+Typescript Next.js app. Nothing special.
+
+/contracts <br>
+All the smart contract code, foundry is used as dev environment. Tests can be found at /src/test and simple scripts can be found at /scripts. The contracts are documented with natspec, so if you want a closer look it's better that you check them out directly, instead of them being explained here. <br>
+
+There is no backend, everything is either on the frontend or on a smart contract (Exchange.sol or PredictionMarket.sol).
 # Project Details Required by DevPost 
 
 ## Inspiration
