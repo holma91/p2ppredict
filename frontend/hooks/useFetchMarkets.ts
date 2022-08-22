@@ -106,12 +106,12 @@ export const useFetchMarkets = (asset: string) => {
 	const { chain } = useNetwork();
 	const activeChain = chain?.network;
 
-	const { isLoading, isError, data } = useQuery(
-		['markets', asset, address, activeChain],
-		() => fetcher(asset, address ? (address as string) : '0x0', activeChain ? activeChain : 'rinkeby'),
-		{
-			enabled: !!address && !!activeChain,
-		}
+	const { isLoading, isError, data } = useQuery(['markets', asset, address, activeChain], () =>
+		fetcher(
+			asset,
+			address ? (address as string) : '0x0000000000000000000000000000000000000000',
+			activeChain ? activeChain : 'matic'
+		)
 	);
 
 	return {

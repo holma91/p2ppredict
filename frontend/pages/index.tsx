@@ -122,12 +122,12 @@ const Home: NextPage = () => {
 							return (
 								<Box
 									onClick={
-										asset.testnet || chain?.network === 'matic'
+										asset.testnet || chain?.network === 'matic' || !chain
 											? () => handleClick(asset.symbol)
 											: () => {}
 									}
 									key={asset.symbol}
-									clickable={asset.testnet || chain?.network === 'matic'}
+									clickable={asset.testnet || chain?.network === 'matic' || !chain}
 									hide={asset.hide}
 								>
 									<div className="top">
@@ -135,7 +135,7 @@ const Home: NextPage = () => {
 										<div>
 											<p className="head">
 												{assetToName[asset.symbol]}
-												{!isSSR && chain?.network !== 'matic' && !asset.testnet ? (
+												{!isSSR && chain?.network !== 'matic' && !asset.testnet && chain ? (
 													<span>mainnet only</span>
 												) : null}
 											</p>

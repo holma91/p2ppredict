@@ -96,7 +96,7 @@ const Taker: NextPage = () => {
 							<SectionHeader>
 								<div className="section-left">
 									<div className="top">
-										<h6>Expires: This week</h6>
+										<h6>Expires: Soon</h6>
 									</div>
 									<div className="bottom">
 										<p>ASSET</p>
@@ -109,7 +109,7 @@ const Taker: NextPage = () => {
 									<div>UNDER</div>
 								</ChoiceDiv>
 							</SectionHeader>
-							{markets &&
+							{markets && Object.values(markets).length > 0 ? (
 								Object.values(markets).map((market: any) => {
 									return (
 										<MarketContainer
@@ -146,16 +146,15 @@ const Taker: NextPage = () => {
 											</ChoiceDiv>
 										</MarketContainer>
 									);
-								})}
-							{(markets && Object.values(markets).length === 0) ||
-								(!markets && (
-									<NoMarkets>
-										<p>No markets for {asset0.toUpperCase()} available</p>
-										<Link href="/create">
-											<a>Create Markets</a>
-										</Link>
-									</NoMarkets>
-								))}
+								})
+							) : (
+								<NoMarkets>
+									<p>No markets for {asset0.toUpperCase()} available</p>
+									<Link href="/create">
+										<a>Create Markets</a>
+									</Link>
+								</NoMarkets>
+							)}
 						</Overview>
 					</Left>
 					<Right>

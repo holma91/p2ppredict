@@ -8,6 +8,7 @@ import { ethers } from 'ethers';
 import { useAccount, useNetwork } from 'wagmi';
 import { TakerBid } from '../types';
 import { Spinner } from './Spinner';
+import { FiExternalLink } from 'react-icons/fi';
 declare var window: any;
 
 type OrderBookProps = {
@@ -89,7 +90,20 @@ export default function OrderBook({ market, setTxHash, setBuyInfo }: OrderBookPr
 								<img src={assetToImage[market.asset]} alt="logo" />
 								<p>{market.asset.toUpperCase()}/USD</p>
 							</Asset>
-							<div className="price">Oracle price: ${market.latestAnswer}</div>
+							<div className="price">
+								<p>Oracle price: ${market.latestAnswer}</p>
+								<a
+									href={`https://data.chain.link/polygon/mainnet/${
+										market.asset === 'usdc' || market.asset === 'usdt' || market.asset === 'dai'
+											? 'stablecoins'
+											: 'crypto-usd'
+									}/${market.asset}-usd`}
+									target="_blank"
+									rel="noreferrer"
+								>
+									<FiExternalLink />
+								</a>
+							</div>
 							<div className="summary">
 								<p>
 									At {formatDate(market.expiry)}, will the price of {market.asset.toUpperCase()} be
@@ -258,10 +272,17 @@ const Header = styled.div`
 	/* justify-content: space-between; */
 	/* align-items: center; */
 	.price {
+		display: flex;
+		gap: 0.3rem;
 		font-weight: 500;
 		span {
 			font-weight: 400;
 			font-size: 0.85rem;
+		}
+		a {
+			:hover {
+				color: ${({ theme }) => theme.colors.primary};
+			}
 		}
 	}
 	.summary {
