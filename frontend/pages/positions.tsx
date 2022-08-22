@@ -150,7 +150,7 @@ export default function PositionsPage() {
 						<div className="status-header">Status</div>
 					</Header>
 					<Positions>
-						{positions &&
+						{positions && positions.unlistedPositions?.length > 0 ? (
 							positions.unlistedPositions.map(position => {
 								return (
 									<Position key={position.tokenId} winning={position.status === 'WINNING'}>
@@ -210,13 +210,12 @@ export default function PositionsPage() {
 										)}
 									</Position>
 								);
-							})}
-						{(positions && positions.unlistedPositions.length === 0) ||
-							(!positions && (
-								<Empty>
-									<p>You have no open positions</p>
-								</Empty>
-							))}
+							})
+						) : (
+							<Empty>
+								<p>You have no open positions</p>
+							</Empty>
+						)}
 					</Positions>
 				</Container>
 				<Container>
@@ -233,7 +232,7 @@ export default function PositionsPage() {
 						<div>Status</div>
 					</Header>
 					<Positions>
-						{positions &&
+						{positions && positions.listedPositions?.length > 0 ? (
 							positions.listedPositions.map(position => {
 								return (
 									<Position key={position.tokenId} winning={position.status === 'WINNING'}>
@@ -257,14 +256,12 @@ export default function PositionsPage() {
 										<ListButton>Listed</ListButton>
 									</Position>
 								);
-							})}
-
-						{(positions && positions.listedPositions.length === 0) ||
-							(!positions && (
-								<Empty>
-									<p>You have no listed positions</p>
-								</Empty>
-							))}
+							})
+						) : (
+							<Empty>
+								<p>You have no listed positions</p>
+							</Empty>
+						)}
 					</Positions>
 				</Container>
 			</Outer>
