@@ -1,5 +1,0 @@
-how to do a successful submission:
-- link to something interesting in the code
-- start with the most important
-- problem statement -> solution
-- 
