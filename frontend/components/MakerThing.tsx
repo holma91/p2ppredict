@@ -148,9 +148,7 @@ const MakerThing = ({ asset, setAsset, setTxHash, setConnectMessage }: MakerThin
 				return;
 			}
 
-			console.log('Successful approval:', data);
 			await data.wait();
-			console.log('transaction confirmed.');
 			setTxHash(data.hash);
 
 			setTimeout(() => {
@@ -272,7 +270,6 @@ const MakerThing = ({ asset, setAsset, setTxHash, setConnectMessage }: MakerThin
 					value: market.collateral,
 				});
 				await tx.wait();
-				console.log(tx.hash);
 			} catch (e) {
 				console.log(e);
 				setLoadingButton(false);
