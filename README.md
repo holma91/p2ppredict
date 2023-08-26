@@ -1,3 +1,5 @@
+![p2ppredict_header](https://github.com/holma91/p2ppredict/assets/64333867/525f8f51-c81a-4b6d-97e9-ce111e6008a3)
+
 # A Prediction Market on Polygon
 Created for the Polygon 2022 Summer Hackathon. Submitted in the DeFi category.<br>
 Web app: [https://p2ppredict.xyz](https://p2ppredict.xyz)<br>
